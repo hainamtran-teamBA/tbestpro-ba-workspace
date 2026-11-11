@@ -7,3 +7,4 @@
 - [Định dạng Google Doc chuẩn](feedback-dinh-dang-google-doc.md) — Arial, H1 17pt, dòng ghi chú xám 9pt, mục đánh số 13pt, bảng viền #bbb đầu bảng nền #eee
 - [Nhật ký công việc trên Notion](reference-nhat-ky-notion.md) — trang riêng tư, mỗi ngày một mục, cuối buổi ghi thêm
 - [Hiện skill đang dùng](feedback-hien-skill-dang-dung.md) — cuối mỗi câu trả lời ghi skill/agent đã dùng, hoặc ghi "không dùng skill"
+- [Đồng bộ hai máy](project-dong-bo-hai-may.md) — GitHub riêng tư + Notion + Drive; "chốt buổi" / "làm tiếp"
