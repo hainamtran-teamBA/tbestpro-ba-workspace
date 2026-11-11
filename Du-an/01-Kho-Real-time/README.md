@@ -49,7 +49,7 @@ Sếp (chỉ đạo) · Logistics và chứng từ XNK (1 người) · Mua hàng
 | Sếp chưa trả lời (chặn G0) | Gửi tờ một trang, hẹn thời gian |
 | Chưa có baseline | Kiểm kê thử một mã hàng ở tuần 1 |
 | Nhà cung cấp chỉ cho xem demo chuẩn | Bắt chạy 4 kịch bản với dữ liệu mẫu |
-| Nhãn không bền trên bao đay | Tự thử mài mòn, ẩm; thẻ buộc hoặc nhãn theo pallet |
+| Nhãn không bền trên bao | Tự thử mài mòn, ẩm; tem treo hoặc tem nhựa dán (kho không dùng pallet) |
 | Kho không cho kiểm kê thử | Xin phép sếp trước |
 | Thiếu thông tin về QC, lô, chuỗi hàng | Phỏng vấn Logistics và Mua hàng trước |
 | Rủi ro của việc không làm | Thất thoát tiếp diễn, không có số đo |

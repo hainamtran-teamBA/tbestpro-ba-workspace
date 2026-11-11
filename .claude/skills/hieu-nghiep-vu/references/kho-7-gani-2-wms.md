@@ -32,8 +32,8 @@
 |---|---|---|
 | 1 | **Ba ngưỡng độ ẩm khác nhau**: "chuẩn ≤ 12,5%", "rủi ro > 12,8% (AI bỏ qua FIFO, buộc xuất sớm)", bảng điều khiển cảnh báo "lô ẩm > 12,3%" | Ngưỡng nào là chuẩn? Đây là quy tắc nghiệp vụ cần chốt với kho/kế toán, không để mỗi màn một số |
 | 2 | **"AI sẽ bỏ qua FIFO"** khi độ ẩm cao | Quy tắc đè lên FIFO cần được duyệt và ghi lại; ai chịu trách nhiệm nếu AI sai? |
-| 3 | **Định danh theo lô/pallet** (tem pallet), còn từng bao nguyên có mã riêng không? | Quyết định mức truy vết: lô, pallet hay từng bao → ảnh hưởng chi phí tem và thao tác |
-| 4 | "Tối đa 15 bao/pallet" | Giả định cần xác nhận với kho thực tế |
+| 3 | **Định danh theo lô/pallet** (tem pallet), còn từng bao nguyên có mã riêng không? | **Đã chốt 2026-11-11:** theo lô, mỗi bao một tem QR; không dùng pallet (mục 10) |
+| 4 | "Tối đa 15 bao/pallet" | **Đã chốt 2026-11-11:** kho không dùng pallet; giả định này bỏ |
 | 5 | **Dung sai cân khi xuất** (lấy 30kg thì cân 30,3kg có chấp nhận không?) và **định mức hao hụt** | Không thấy trong chữ giao diện; nếu thiếu, mọi lệch nhỏ sẽ thành ngoại lệ hoặc bị bỏ qua |
 | 6 | Bước **"Mua hàng check"** khi nhập kho (có trong [PQ]) | Demo ghi kế toán duyệt nhập PO; chưa thấy bước mua hàng kiểm số lượng |
 | 7 | **Ai khởi tạo kiểm kê:** demo cho kho tự lập đề xuất; [PQ] ghi Kho/Quản lý kho tạo lệnh kiểm kê | Cần thống nhất: kiểm kê định kỳ do ai lập lệnh, kiểm kê mù ngẫu nhiên do ai |
@@ -164,3 +164,27 @@ Ghi chú: **KSNB** hiện kiểm soát chi phí ads, hóa đơn quảng cáo, co
 1. Gani 1 đang lưu **trường lô** nào cho phiếu nhập/xuất? Có thêm "lô nguồn" được không?
 2. API/webhook có thể nhận lệnh từ hệ thống kho mới không?
 3. Chạy song song và chuyển tồn đầu kỳ làm thế nào?
+
+## 10. Cân, quét và nối cân: đã chốt 2026-11-11 [người dùng nói; ảnh đầu cân do kho PH chụp]
+Tài liệu chi tiết (luồng, thiết bị, phương án dự phòng): [Số hóa kho cà phê: cân, QR và RFID](https://claude.ai/artifact/ECTZw6uTowC7fN3TLCbNJy).
+
+**Đã chốt**
+| Chủ đề | Chốt |
+|---|---|
+| Đơn vị tồn | Kg là chính, số bao là phụ; **không trừ bì** (kg cả bì) |
+| Cách cân | 10–12 bao một lượt trên cân sàn FI05; kg mỗi bao = kg cả lượt ÷ số bao, lưu mã lượt cân. Cân cả khi nhập và khi xuất |
+| Đối chiếu | Số bao phải đủ (thiếu là lập biên bản). Kg: chấp nhận **−0,5% đến +0,1%**; vượt thì quản lý duyệt. Hao hụt khi xuất: ngưỡng tăng theo thời gian lưu kho (đề xuất +0,1%/tháng, cài được) |
+| Xuất | Theo mặt hàng, lô nhập trước xuất trước (FIFO) |
+| Đánh dấu bao | Trước mắt **QR** (in bằng máy in nhiệt, quét bằng điện thoại; ở trạm cân dùng máy quét QR cắm USB). **RFID** treo trên bao để kiểm kê sau này |
+| Phần mềm | Hướng chính: Nextwaves nối cân (họ báo làm được, 07/11). Dự phòng: tự mua thiết bị, tự viết chương trình trạm cân, sau đẩy dữ liệu lên phần mềm công ty |
+| Ngôn ngữ | Nhân viên kho dùng tiếng Anh, quản lý dùng tiếng Việt |
+
+**Đầu cân Fuji FI05 [Quan sát qua ảnh 2026-11-11]:** mặt sau có 2 cổng DB9. **Comport #2** (xanh, đầu cái, tem ghi 2 = TXD, 3 = RXD, 5 = Ground) cắm thẳng cáp USB–RS232 thông thường, không cần đảo chân. **Comport #1** (đen, đầu đực, chân 9 = DC 5V) cần dây đảo chân; không dùng. Hãng không công bố giao thức; [?] cần bật xuất dữ liệu trong menu Set/Func và biết tốc độ truyền (hỏi FPSI, timbangan.ph). Cáp đang chọn: Ugreen USB–RS232 chip Prolific PL2303 (Shopee PH); cần hỏi người bán chip có chạy Windows 10/11 không.
+
+**Câu hỏi cho Nextwaves: số cân hiện trên phần mềm thế nào** (nối dây hay Bluetooth đều được; điều cần biết là cách hiển thị và lưu dữ liệu)
+1. Số cân hiện ở **màn hình nào** (app hay web, trong phiếu nhập/xuất nào)? Xin ảnh chụp màn hình hoặc cho xem demo.
+2. Nhân viên thao tác thế nào: quét thẻ các bao trên cân → số cân tự hiện → bấm xác nhận? Số cân có **bị khóa, không gõ tay sửa** được không?
+3. Một lượt 10–12 bao thì màn hình hiện **kg cả lượt hay từng bao**? Có tự chia đều kg cho từng thẻ không?
+4. Xem lại ở đâu: phiếu nhập có hiện **danh sách lượt cân và kg từng bao** không? Tổng so với số dự kiến và phần chênh lệch hiện thế nào, có cảnh báo khi vượt ngưỡng (−0,5% / +0,1%) không?
+5. Khi xuất: kg cân lúc xuất có hiện **cạnh kg lúc nhập** của cùng bao không? Hao hụt xem ở báo cáo nào?
+6. Dữ liệu lượt cân và kg từng bao có **xuất ra Excel hoặc lấy qua API** được không?

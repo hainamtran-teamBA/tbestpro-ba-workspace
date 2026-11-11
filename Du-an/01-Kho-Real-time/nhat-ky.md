@@ -2,6 +2,13 @@
 
 > Mỗi mục: ngày, việc/quyết định, bằng chứng/nguồn, việc tiếp theo. Mới nhất ở trên.
 
+## 2026-11-11
+- Chốt luồng cân + QR cho Kho 7 (grilling 6 vòng): kg cả bì, cân 10–12 bao/lượt cả khi nhập và xuất, ngưỡng −0,5%/+0,1%, FIFO, QR trước, RFID sau cho kiểm kê. Chi tiết: `kho-7-gani-2-wms.md` mục 10. [Người dùng nói]
+- Sửa dữ kiện sai: kho **không dùng pallet**; bỏ cân 150 kg. [Người dùng nói]
+- Đầu cân Fuji FI05 có cổng RS232; dùng Comport #2 với cáp USB–RS232. [Ảnh kho PH chụp]
+- Tài liệu: [Số hóa kho cà phê: cân, QR và RFID](https://claude.ai/artifact/ECTZw6uTowC7fN3TLCbNJy).
+- Tiếp theo: hỏi Nextwaves 6 câu về cách hiển thị số cân; mua cáp; viết chương trình đọc cân để thử.
+
 ## 2026-10-27
 - Người dùng đọc lại hai đoạn chat Gemini; xác nhận hướng sếp: tìm giải pháp QR/RFID, đăng ký demo, Gani cũ chạy song song, không xây lại phần mềm kho. [Người dùng nói]
 - Quyết định PM: **ưu tiên nhà cung cấp thiết bị nhận dạng tự động trước, phần mềm sau**. Cần soạn bộ RFI thiết bị (K3).

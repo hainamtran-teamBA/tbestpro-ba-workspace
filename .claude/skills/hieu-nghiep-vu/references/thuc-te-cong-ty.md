@@ -104,8 +104,8 @@ Phương pháp giá vốn (đề xuất FIFO); định nghĩa "doanh số tối 
 - **Kho 7 thêm dữ kiện 2026-10-28 [người dùng nói]:** quy mô khoảng **2.000 bao/tháng** (chưa rõ là nhập, xuất hay cả hai; chưa biết số bao mỗi ngày); chưa biết số người làm kho; **[Quan sát qua ảnh]** nhân viên dỡ bao từ container xuống, **đưa lên cân để cân lại** rồi xếp lên pallet. Chưa hỏi về thất thoát. Bộ câu hỏi khảo sát chuẩn bị ngày 2026-10-28 (skill `khao-sat-as-is`).
 - **Kho 7 dữ kiện 2026-11-02 [đội kho PH trả lời bằng tiếng Anh, người dùng chuyển lại; ảnh `image/kho7-nhan-bao-2026-10-27.png`]:**
   - **Nhãn bao [Quan sát qua ảnh]:** tờ giấy in sẵn đựng trong túi nhựa, buộc vào miệng bao; nội dung chữ: GREEN COFFEE BEAN / ROBUSTA S18 CLEAN GRADE 1 / ORIGIN: VIET NAM / NET WEIGHT: 60KG / LOT: ?70926AP (ký tự đầu bị che) / SKU: CF_ROBUSTA_S18_CLEAN_G… **Không có mã vạch hay QR.** Bao trông là bao dệt màu xanh (có vẻ PP, không phải bao đay) [S].
-  - **Xếp pallet:** 10 bao/pallet = 600 kg. (Demo Gani 2 giả định tối đa 15 bao/pallet: **lệch với thực tế**.)
-  - **Cân khi dỡ hàng:** đặt 10 bao (một pallet) lên cân. Thiết bị: **cân sàn 5 tấn** và **cân điện tử 150 kg**. Chưa biết cách nối cân với phần mềm.
+  - **Không dùng pallet [người dùng nói, sửa 2026-11-11]:** hàng nhập và quản lý **theo lô**, kiểm soát từng bao. (Ghi chú cũ "10 bao/pallet" là sai, đã bỏ.)
+  - **Cân khi dỡ hàng [người dùng nói, sửa 2026-11-11]:** cân **10–12 bao mỗi lượt** trên **cân sàn 5 tấn, đầu cân Fuji FI05** (hãng First Philippine Scales, hiệu chuẩn 28/07/2026, mức cân 0–5.000 kg). Cân điện tử 150 kg không nối máy tính được, **bỏ**. Cách nối cân: xem `kho-7-gani-2-wms.md` mục 10.
   - **Container:** quay video lúc chưa mở khóa/niêm phong rồi mới dỡ hàng [người dùng nói].
   - **Kiểm đếm:** đếm tay, không gửi ảnh.
   - **Bao lẻ:** đã có bao tách riêng cho đơn nhỏ.
