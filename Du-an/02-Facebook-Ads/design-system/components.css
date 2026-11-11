@@ -1,0 +1,147 @@
+/* Bảy nguyên tố của Marketing Hub: nút, badge trạng thái, ô nhập, card, dòng danh sách,
+   modal, trạng thái rỗng. Màn nào cũng ráp từ đây, không tự nặn biến thể.
+   Màu chỉ đọc từ tokens.css. */
+
+/* ---------- Icon (sprite lucide trong trang, nét 2px) ---------- */
+.icon { width: 1rem; height: 1rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon--sm { width: 0.875rem; height: 0.875rem; }
+.icon--md { width: 1.25rem; height: 1.25rem; }
+
+/* ---------- Nút: bốn dạng + nút xoá + nút chỉ icon ----------
+   Cao 40px (min-height để nhãn dài xuống dòng chứ không tràn), bo 12px, không bóng,
+   không vòng focus. Mặc định là .btn--outline. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 2.5rem; max-width: 100%; padding: 0.5rem 1rem;
+  border: 1px solid transparent; border-radius: 0.75rem;
+  font: 500 0.875rem/1.25 var(--app-font); text-align: center; overflow-wrap: anywhere;
+  color: var(--foreground); background: transparent; cursor: pointer; outline: none;
+  transition: background-color 150ms, color 150ms;
+}
+.btn--outline { border-color: var(--border-strong); background: var(--surface); }
+.btn--outline:hover { background: var(--button-hover); }
+.btn--primary { background: var(--primary); color: var(--primary-foreground); }
+.btn--primary:hover { background: var(--primary-hover); }
+.btn--secondary { background: var(--secondary); }
+.btn--secondary:hover { background: var(--secondary-hover); }
+.btn--ghost { color: var(--muted); }
+.btn--ghost:hover { background: color-mix(in srgb, var(--foreground) 5%, transparent); color: var(--foreground); }
+.btn--danger { background: var(--danger-bg); color: var(--danger); }
+.btn--danger:hover { background: var(--danger-bg-hover); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn[aria-busy="true"] { cursor: progress; }
+.btn--icon { flex: none; width: 2.5rem; padding: 0; color: var(--muted); }
+.btn--icon:hover { color: var(--foreground); }
+.btn--sm { min-height: 2rem; padding: 0.25rem 0.75rem; border-radius: 0.5rem; }
+.btn--icon.btn--sm { width: 2rem; padding: 0; }
+.btn .spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .btn .spin { animation: none; } }
+/* Nút trong form, footer modal: cao bằng ô nhập */
+.btn--form { min-height: 2.75rem; }
+@media (min-width: 768px) { .btn--form { min-height: 2.5rem; } }
+
+/* Link chữ: "Xem tất cả", lối ra trong câu rỗng. Không màu nhấn. */
+.link-quiet { padding: 0; border: 0; background: none; font: 500 0.875rem/1.25 var(--app-font); color: color-mix(in srgb, var(--foreground) 80%, transparent); text-underline-offset: 4px; cursor: pointer; }
+.link-quiet:hover { color: var(--foreground); text-decoration: underline; }
+.link { color: var(--primary-ink); text-underline-offset: 4px; }
+.link:hover { text-decoration: underline; }
+
+/* ---------- Badge trạng thái ----------
+   Pill nền mờ + icon + chữ cùng tông. Một bảng ánh xạ cho mọi màn (xem trang design system). */
+.badge {
+  display: inline-flex; align-items: center; gap: 0.375rem; white-space: nowrap;
+  padding: 0.25rem 0.625rem; border-radius: 9999px;
+  font: 500 0.75rem/1rem var(--app-font);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+.badge--success { background: var(--success-bg); color: var(--success); }
+.badge--warning { background: var(--warning-bg); color: var(--warning); }
+.badge--error { background: var(--error-bg); color: var(--error-strong); }
+.badge--neutral { background: var(--neutral-bg); color: var(--neutral); }
+
+/* ---------- Ô nhập ----------
+   Nền trắng phủ 4% trên card, viền --border-strong, focus = viền + quầng 2px. */
+.field { display: flex; flex-direction: column; gap: 0.375rem; min-width: 0; }
+.field__label { width: fit-content; font: 500 0.875rem/1.25rem var(--app-font); color: var(--foreground); cursor: pointer; }
+.field__label .req { color: var(--error-text); }
+.field__hint { min-height: 1rem; font-size: 0.75rem; line-height: 1rem; color: var(--muted); }
+.field__hint--error { color: var(--error-text); }
+.input {
+  width: 100%; height: 2.75rem; padding: 0 1rem;
+  border: 1px solid var(--border-strong); border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.04); color: var(--foreground);
+  font: 400 1rem var(--app-font); outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.input::placeholder { color: var(--muted); }
+.input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--ring-focus); }
+.input[aria-invalid="true"] { border-color: var(--error); }
+.input[aria-invalid="true"]:focus { box-shadow: 0 0 0 2px var(--error-ring); }
+.input:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (min-width: 768px) { .input { height: 2.5rem; font-size: 0.875rem; } }
+
+/* ---------- Card ----------
+   Viền tóc 1px + bo 16px, không bóng. Tiêu đề 16px semibold, padding 20px (16px ở màn hẹp). */
+.card { display: flex; flex-direction: column; min-width: 0; padding: 1rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
+.card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+.card__title { display: flex; align-items: center; gap: 0.5rem; min-width: 0; margin: 0; font: 600 1rem/1.5rem var(--app-font); text-wrap: balance; }
+.card__head--action .card__title { min-height: 2.5rem; }
+.card__head > :not(.card__title) { flex-shrink: 0; }
+.card__body { min-height: 0; flex: 1; font-size: 0.875rem; line-height: 1.25rem; }
+/* Thân là danh sách có nền rê: padding đặt ở từng khối để chữ dòng thẳng mép tiêu đề */
+.card--list { padding: 1rem 0; }
+.card--list .card__head { padding: 0 1rem; margin-bottom: 0.375rem; }
+.card--list .card__head--action { margin-bottom: 0; }
+.card--list .card__body { padding: 0 0.25rem; }
+@media (min-width: 640px) {
+  .card { padding: 1.25rem; }
+  .card--list { padding: 1.25rem 0; }
+  .card--list .card__head { padding: 0 1.25rem; }
+  .card--list .card__body { padding: 0 0.5rem; }
+}
+
+/* ---------- Dòng danh sách ----------
+   Bo 12px, nền rê trắng 5%, các dòng cách nhau 4px. Nút phụ ẩn, hiện khi rê / Tab / máy cảm ứng. */
+.rows { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.row { display: flex; align-items: center; gap: 0.75rem; min-width: 0; padding: 0.625rem 0.75rem; border-radius: 0.75rem; }
+.row:hover { background: var(--item-hover); }
+.row__main { min-width: 0; flex: 1; }
+.row__title { overflow: hidden; margin: 0; font: 500 0.875rem/1.25rem var(--app-font); text-overflow: ellipsis; white-space: nowrap; }
+.row__meta { margin: 0.125rem 0 0; font-size: 0.75rem; line-height: 1rem; color: var(--muted); }
+.row__meta .num { color: var(--foreground); }
+.row__side { display: flex; flex: none; align-items: center; gap: 0.5rem; }
+.row .btn--icon:hover { background: color-mix(in srgb, var(--foreground) 8%, transparent); }
+.row__hidden { opacity: 0; pointer-events: none; transition: opacity 150ms; }
+.row:hover .row__hidden, .row:focus-within .row__hidden { opacity: 1; pointer-events: auto; }
+@media (hover: none) { .row__hidden { opacity: 1; pointer-events: auto; } }
+
+/* ---------- Modal ----------
+   Rộng tối đa 448px, viền + bóng modal, nền phủ đen phía sau. Có ô nhập thì bấm ra ngoài không đóng. */
+.backdrop { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgb(0 0 0 / 0.6); }
+.dialog { position: relative; width: 100%; max-width: 28rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); box-shadow: var(--elevation-modal); }
+.dialog__grid { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 1rem; }
+.dialog__icon { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; }
+.dialog__icon--danger { background: var(--danger-bg); color: var(--danger); }
+.dialog__title { margin: 0; font: 600 1.125rem/1.75rem var(--app-font); }
+.dialog__body { grid-column: span 2; min-width: 0; margin-top: 0.5rem; }
+.dialog__desc { margin: 0; font-size: 0.875rem; line-height: 1.5rem; color: var(--muted); text-wrap: pretty; }
+.dialog__desc strong { font-weight: 500; color: var(--foreground); }
+.dialog__head { padding-right: 2.5rem; }
+.dialog__close { position: absolute; top: 1rem; right: 1rem; }
+.dialog__form { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
+.dialog__foot { display: flex; flex-direction: column-reverse; gap: 0.5rem; margin-top: 1.5rem; }
+@media (min-width: 640px) {
+  .dialog__body { grid-column: 2; margin-top: 0.125rem; }
+  .dialog__foot { flex-direction: row; justify-content: flex-end; }
+}
+
+/* ---------- Trạng thái rỗng ----------
+   Một dòng chữ mờ ở chỗ đáng lẽ có dữ liệu. Không hình, không tiêu đề. */
+.empty { margin: 0; padding: 1.5rem 0; text-align: center; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+.empty q { color: var(--foreground); quotes: "\201C" "\201D"; }
+.load-error { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem 0; text-align: center; }
+.load-error__title { margin: 0; font: 500 0.875rem/1.25rem var(--app-font); color: var(--error-text); }
+.load-error__why { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--muted); }
+
+.num { font-variant-numeric: tabular-nums; }

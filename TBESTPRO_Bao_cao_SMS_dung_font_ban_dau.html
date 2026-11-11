@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>TBESTPRO – Giải pháp tiếp nhận phản hồi khách hàng qua SMS</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#e9e9e9; font: 15px/1.52 "Times New Roman", Times, serif; color:#111; }
+  .toolbar { max-width: 920px; margin:22px auto 0; display:flex; justify-content:flex-end; gap:8px; }
+  .toolbar button { font:14px Arial,sans-serif; padding:9px 16px; background:#fff; border:1px solid #aaa; cursor:pointer; border-radius:4px; color:#111; }
+  main { width:210mm; min-height:297mm; background:#fff; margin:16px auto 40px; padding:21mm 19mm 20mm 22mm; box-shadow:0 2px 15px #0002; }
+  .kicker { text-align:center; font-size:12px; letter-spacing:1.2px; color:#444; font-weight:bold; margin-bottom:7px; }
+  h1 { text-align:center; font-size:19px; text-transform:uppercase; letter-spacing:.1px; line-height:1.4; margin:0 0 13px; }
+  .rule { width:84px; height:1px; background:#555; margin:0 auto 18px; }
+  h2 { font-size:16px; text-transform:uppercase; margin:23px 0 9px; border-bottom:1px solid #777; padding-bottom:5px; }
+  h3 { font-size:15.5px; margin:19px 0 7px; }
+  p { margin:7px 0; text-align:justify; }
+  .goal { margin-top:10px; }
+  table { width:100%; border-collapse:collapse; table-layout:fixed; margin:10px 0 12px; font-size:13.3px; }
+  th,td { border:1px solid #888; padding:8px 8px; vertical-align:top; line-height:1.38; overflow-wrap:anywhere; }
+  th { background:#ededed; font-weight:bold; text-align:center; }
+  td:first-child { font-weight:bold; }
+  .chosen { background:#f7f7f7; }
+  .flow { border:1px solid #888; padding:11px 12px; text-align:center; font-size:13.5px; margin:10px 0 13px; background:#fafafa; line-height:1.8; }
+  .flow strong { white-space:nowrap; }
+  .flow span { display:inline-block; margin:0 5px; color:#444; }
+  .linkline { margin:9px 0; padding:9px 11px; border-left:3px solid #777; background:#f6f6f6; font-size:13.6px; }
+  a { color:#111; text-decoration:underline; text-underline-offset:2px; overflow-wrap:anywhere; }
+  ol { margin:8px 0 8px 22px; padding:0; }
+  li { padding-left:3px; margin:5px 0; text-align:justify; }
+  .outcome { margin-top:10px; }
+  .note { font-style:italic; padding:9px 11px; border:1px solid #aaa; background:#fafafa; margin:12px 0; font-size:13.5px; }
+  ul { padding-left:22px; margin:8px 0; }
+  ul li { margin:5px 0; }
+  .footer { margin-top:22px; padding-top:9px; border-top:1px solid #999; text-align:center; font-size:12px; color:#555; }
+  @media screen and (max-width:900px) { .toolbar {margin:10px 12px 0;} main { width:calc(100% - 24px); margin:12px auto; padding:24px 19px; min-height:auto; } table {font-size:12px;} }
+  @media print { @page {size:A4; margin:0;} body {background:white;} .toolbar {display:none;} main {box-shadow:none; margin:0; width:210mm; min-height:297mm; padding:21mm 19mm 20mm 22mm;} h2,h3,.linkline,.flow,table {break-inside:avoid;} a {color:#111;} }
+</style>
+</head>
+<body>
+<div class="toolbar"><button onclick="window.print()">In / Lưu dưới dạng PDF</button></div>
+<main>
+<div class="kicker">TBESTPRO · BÁO CÁO GIẢI PHÁP</div>
+<h1>GIẢI PHÁP TIẾP NHẬN PHẢN HỒI<br/>KHÁCH HÀNG QUA SMS</h1>
+<div class="rule"></div>
+<p class="goal"><strong>Mục tiêu:</strong> Tạo kênh phản hồi cho khách COD tại Philippines, hỗ trợ hủy/đổi đơn hoặc giao hàng; đồng thời xem xét khả năng giảm chi phí SMS hiện tại của Tizi – Semaphore.</p>
+<h2>1. TỔNG HỢP 3 PHƯƠNG ÁN</h2>
+<table><colgroup><col style="width:27%"/><col style="width:38%"/><col style="width:35%"/></colgroup><thead><tr><th>Phương án</th><th>Luồng tiếp nhận</th><th>Điểm cần đánh giá</th></tr></thead><tbody>
+<tr class="chosen"><td>1. SMS + Hotline + Link</td><td>Khách cần hỗ trợ gọi hotline; nếu không gọi được, mở link POC Google Apps Script để điền form.</td><td>Tận dụng POC có sẵn; URL trong SMS có thể bị lọc.</td></tr>
+<tr><td>2. SMS hai chiều</td><td>Khách trả lời trực tiếp SMS; nhà cung cấp chuyển tin nhận về hệ thống qua webhook/inbox.</td><td>Thuận tiện cho khách; cần số 2 chiều, tích hợp, báo giá.</td></tr>
+<tr><td>3. Messenger + SMS fallback</td><td>Đơn Chatpage: ưu tiên Messenger khi đủ điều kiện; nếu không gửi được thì SMS. Đơn Landing Page: SMS.</td><td>Có tiềm năng tiết kiệm SMS; cần xác nhận tích hợp Tizi và chính sách Meta.</td></tr>
+</tbody></table>
+<h2>2. PHƯƠNG ÁN 1 – SMS + HOTLINE + LINK POC</h2>
+<h3>2.1. Mô hình hoạt động</h3>
+<div class="flow"><strong>Tizi</strong> → <strong>Semaphore SMS</strong> → <strong>Khách nhận SMS</strong><br/><strong>Gọi hotline nếu cần hỗ trợ ngay</strong><br/>↓ Nếu không gọi được / ngoài giờ<br/><strong>Mở link Google Apps Script → Điền form → Google Sheets</strong><br/>↓<br/><strong>CSKH xác minh và xử lý trên Tizi / J&amp;T</strong></div>
+<p><strong>Áp dụng POC hiện có:</strong> Form Order Support sau khi đặt hàng; Form Delivery Support sau khi J&amp;T nhận kiện. Khách gửi yêu cầu không đồng nghĩa đơn đã được hủy.</p>
+<div class="linkline"><strong>Form 1 – Order Support:</strong> <a href="https://script.google.com/macros/s/AKfycbx0BDFVxuNHNwu3t9CulT-Nc0_haE5yx0XyAVVJ5SGlKiAKFlfY4w0Ue68fFsd5PrcTbg/exec?form=order">Mở POC Google Apps Script</a><br/><strong>Form 2 – Delivery Support:</strong> <a href="https://script.google.com/macros/s/AKfycbx0BDFVxuNHNwu3t9CulT-Nc0_haE5yx0XyAVVJ5SGlKiAKFlfY4w0Ue68fFsd5PrcTbg/exec?form=delivery">Mở POC Google Apps Script</a></div>
+<p><strong>Ưu điểm:</strong> Triển khai nhanh trên Tizi/Semaphore hiện tại; khách có hai cách liên hệ; form tiếp nhận được ngoài giờ và lưu dữ liệu trên Google Sheets.</p>
+<p><strong>Nhược điểm:</strong> Hotline phụ thuộc nhân sự; form cần internet; URL có thể khiến nhà mạng lọc SMS; hai thành phần hotline và link khiến tin nhắn dài hơn, có thể tăng số segment tính cước.</p>
+<p><strong>Xác nhận từ Semaphore (14/10/2026):</strong> Link được phép nhưng không bảo đảm phát tới máy; không có cơ chế whitelist; domain riêng có khả năng qua bộ lọc tốt hơn link <em>script.google.com</em>; trạng thái <em>sent</em> chưa bảo đảm máy nhận SMS. Phải test handset trên Globe, Smart, DITO.</p>
+<h2>3. PHƯƠNG ÁN 2 – SMS HAI CHIỀU</h2>
+<div class="flow"><strong>Hệ thống gửi SMS qua nhà cung cấp hai chiều</strong> → <strong>Khách Reply (HELP / CHANGE / CANCEL)</strong><br/>↓<br/><strong>Provider nhận SMS → Webhook / Inbox CSKH</strong> → <strong>Tra cứu và xử lý Tizi</strong></div>
+<p><strong>Ưu điểm:</strong> Khách phản hồi ngay qua SMS, không cần internet hoặc mở form; có thể lưu yêu cầu tự động và phân loại phản hồi bằng từ khóa.</p>
+<p><strong>Nhược điểm:</strong> Cần số hỗ trợ nhận SMS (không thể giả định Sender ID hiện tại có thể nhận reply); thêm phí thuê số/tin nhận về; cần tích hợp webhook, đối soát số điện thoại với đơn hàng và xử lý phản hồi nhầm/trùng.</p>
+<table><thead><tr><th>Nhà cung cấp khảo sát</th><th>Thông tin công khai / cần làm rõ</th></tr></thead><tbody>
+<tr><td>UniSMS (Philippines)</td><td>Có API virtual number và nhận SMS qua webhook. Giá gửi quảng bá khoảng ₱0,35–₱0,50/tin theo gói; đây <strong>không phải báo giá tổng của SMS hai chiều</strong>. Cần hỏi thêm thuê số, SMS inbound, định tuyến và tích hợp.</td></tr>
+<tr><td>engageSPARK / Infobip</td><td>Có giải pháp phản hồi SMS; cần hỏi báo giá thực tế tại Philippines, loại số, phí gửi/nhận và hạn chế nhà mạng.</td></tr>
+</tbody></table>
+<p><strong>Cần xác minh:</strong> Tizi có thể đổi provider/luồng SMS hay không; nhận reply qua webhook có ánh xạ được đúng đơn; các mạng Globe/Smart/DITO có hỗ trợ kịch bản tương ứng hay không.</p>
+<h2>4. PHƯƠNG ÁN 3 – MESSENGER + SMS (FALLBACK)</h2>
+<div class="flow"><strong>Tizi phân biệt nguồn đơn</strong><br/>↙ <strong>Chatpage</strong>      <strong>Landing Page</strong> ↘<br/><strong>Kiểm tra có thể gửi Messenger hợp lệ?</strong>     <strong>SMS hiện tại</strong><br/>↓ Có: <strong>Messenger</strong>     ↓ Không / gửi thất bại: <strong>SMS fallback</strong></div>
+<p><strong>Ưu điểm:</strong> Đơn từ Chatpage có thể nhận thông báo trong cuộc trò chuyện quen thuộc; có phản hồi trực tiếp; giảm số lượng SMS tính phí nếu tỷ lệ gửi Messenger thành công đủ lớn.</p>
+<p><strong>Nhược điểm:</strong> Cần lưu định danh hội thoại liên kết với đơn Tizi, kiểm tra quyền/khung thời gian và loại thông báo được phép theo chính sách Meta; cần log trạng thái và chống gửi trùng. Không thể coi việc khách có tài khoản Facebook là điều kiện đủ để gửi Messenger.</p>
+<p><strong>Điểm kỹ thuật quan trọng:</strong> Fallback không chỉ là khi khách “không có Facebook”; còn xảy ra khi không có PSID liên kết, không đủ quyền hoặc không đáp ứng chính sách nhắn tin. Không phải mọi trạng thái gửi thất bại đều phát hiện được ngay; phải định nghĩa tiêu chí kích hoạt fallback.</p>
+<h2>5. ĐỀ XUẤT KIỂM THỬ &amp; RA QUYẾT ĐỊNH</h2>
+<table><thead><tr><th>Phương án</th><th>Bước tiếp theo</th><th>Điều kiện chốt</th></tr></thead><tbody>
+<tr><td>SMS + Hotline + Link</td><td>Kiểm thử SMS thật trên Globe, Smart, DITO; đo số segment, cước, số tin tới handset, tỷ lệ form và cuộc gọi.</td><td>Delivery thực tế chấp nhận được và chi phí phù hợp.</td></tr>
+<tr><td>SMS hai chiều</td><td>Xin báo giá số 2 chiều / outbound / inbound; demo reply + webhook và đối chiếu Tizi.</td><td>Tổng chi phí và khả năng tích hợp phù hợp.</td></tr>
+<tr><td>Messenger + SMS fallback</td><td>Làm rõ dữ liệu Chatpage của Tizi, quyền gửi qua Meta; POC phân luồng và fallback.</td><td>Không gửi trùng, tuân thủ chính sách và giảm SMS thực tế.</td></tr>
+</tbody></table>
+<p><strong>Định hướng:</strong> Phương án 1 là POC ngắn hạn; phương án 3 đáng ưu tiên khảo sát kỹ thuật vì có tiềm năng tiết kiệm SMS; phương án 2 giữ là lựa chọn chiến lược sau khi có báo giá đầy đủ.</p>
+<h2>6. NGUỒN &amp; GIẢ ĐỊNH CẦN XÁC MINH</h2>
+<ol>
+<li><strong>Email Semaphore – Alex Alabiso, 14/10/2026:</strong> <a href="https://mail.google.com/mail/u/1/#inbox/FMfcgzQhWpCDTNBdpbhGrfsSXKdWcjnB">Xem email phản hồi về URL và lọc SMS</a>.</li>
+<li><strong>POC nội bộ:</strong> <a href="https://docs.google.com/spreadsheets/d/1dC57UIQGGsgR7tKInYJhJSRwrI627lAoU_GoiYtNycg/edit?usp=drivesdk">Google Sheets – TBESTPRO COD Customer Responses</a>.</li>
+<li><strong>Nhà cung cấp SMS hai chiều:</strong> <a href="https://unisms.com/">UniSMS</a>; <a href="https://www.engagespark.com/">engageSPARK</a>; <a href="https://www.infobip.com/">Infobip</a>. Giá và khả năng áp dụng cần được nhà cung cấp xác nhận lại trước quyết định mua.</li>
+<li><strong>Messenger:</strong> <a href="https://developers.facebook.com/docs/messenger-platform/">Tài liệu Meta Messenger Platform</a>. Việc Tizi có hỗ trợ tích hợp và fallback là giả định kỹ thuật cần xác minh.</li>
+</ol>
+<div class="note">Tài liệu phân biệt phản hồi chính thức của Semaphore, POC hiện có và phương án kỹ thuật đề xuất. Không coi yêu cầu khách gửi là thao tác hủy đơn tự động.</div>
+<div class="footer">TBESTPRO · TÀI LIỆU NỘI BỘ · BÁO CÁO ĐÁNH GIÁ 3 PHƯƠNG ÁN</div>
+</main>
+</body>
+</html>

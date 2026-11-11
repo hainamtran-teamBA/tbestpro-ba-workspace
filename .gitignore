@@ -1,0 +1,39 @@
+# Bí mật: không bao giờ đẩy lên
+.env
+.env.*
+*.pem
+*.key
+
+# Tài liệu gốc, nặng: để trên Google Drive, cần thì tải về
+pdf/
+docx/
+image/
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.mp4
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.zip
+
+# Rác của máy
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
+.claude/settings.local.json
+
+# Bản sao lưu CapCut (chỉ dùng trên máy đang chạy CapCut)
+Du-an/02-Facebook-Ads/Claude-CapCut/sao-luu/
+Du-an/02-Facebook-Ads/Claude-CapCut/video-goc/
+Du-an/02-Facebook-Ads/Claude-CapCut/video-da-dung/
+
+# Kho của dev, tải riêng từ GitHub của dev
+Du-an/01-Kho-Real-time/kho-rfid/

@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketing Hub Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+/* Chỉ cho trang xem design system: khung trang, ô màu, nhãn trạng thái, ví dụ ép trạng thái. */
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--page-glow), var(--background); background-attachment: fixed; color: var(--foreground); font: 400 0.875rem/1.25rem var(--app-font); }
+.page { max-width: 72rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+@media (min-width: 640px) { .page { padding: 2.5rem 1.5rem 5rem; } }
+.page-head { margin-bottom: 2.5rem; }
+.page-head h1 { margin: 0; font: 700 1.25rem/1.75rem var(--app-font); }
+.page-head p { margin: 0.25rem 0 0; color: var(--muted); }
+section.ds { margin-top: 3rem; scroll-margin-top: 1.5rem; }
+section.ds > h2 { margin: 0 0 0.25rem; font: 600 1.125rem/1.75rem var(--app-font); }
+section.ds > .lead { margin: 0 0 1rem; color: var(--muted); max-width: 65ch; }
+.sub-h { margin: 1.5rem 0 0.75rem; font: 600 0.875rem/1.25rem var(--app-font); }
+.sub-h:first-child { margin-top: 0; }
+.state-label { display: block; margin-bottom: 0.5rem; font-size: 0.75rem; line-height: 1rem; color: var(--muted); }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.75rem; }
+.grid { display: grid; gap: 0.75rem; }
+.grid-2 { grid-template-columns: minmax(0, 1fr); }
+.grid-3 { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.states { display: flex; flex-wrap: wrap; gap: 1.25rem 1.5rem; align-items: flex-end; }
+
+/* Ô màu */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: 0.75rem; }
+.swatch__chip { height: 3.5rem; border-radius: 0.75rem; box-shadow: inset 0 0 0 1px var(--border); }
+.swatch__name { margin: 0.5rem 0 0; font-weight: 500; }
+.swatch__val { margin: 0.125rem 0 0; color: var(--muted); overflow-wrap: anywhere; }
+
+/* Bảng tương phản, bảng ánh xạ trạng thái */
+.table-wrap { overflow-x: auto; }
+table.plain { width: 100%; border-collapse: collapse; }
+table.plain th { padding: 0 0.75rem 0.5rem 0; text-align: left; font: 500 0.75rem/1rem var(--app-font); color: var(--muted); white-space: nowrap; }
+table.plain td { padding: 0.625rem 0.75rem 0.625rem 0; border-top: 1px solid var(--border); vertical-align: middle; }
+table.plain td:last-child, table.plain th:last-child { padding-right: 0; }
+.cr-sample { display: inline-flex; align-items: center; min-height: 2rem; padding: 0 0.75rem; border-radius: 0.5rem; font-weight: 500; white-space: nowrap; box-shadow: inset 0 0 0 1px var(--border); }
+.cr-fail { color: var(--warning); font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+
+/* Chữ */
+.type-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.25rem; padding: 0.875rem 0; border-top: 1px solid var(--border); }
+.type-row:first-child { border-top: 0; padding-top: 0; }
+@media (min-width: 768px) { .type-row { grid-template-columns: 14rem minmax(0, 1fr); gap: 1.5rem; align-items: baseline; } }
+.type-row .meta { color: var(--muted); font-size: 0.75rem; text-wrap: pretty; }
+.type-row p { margin: 0; }
+
+/* Khoảng cách, bo góc, viền, bóng */
+.space-row { display: flex; align-items: center; gap: 0.75rem; }
+.space-row + .space-row { margin-top: 0.5rem; }
+.space-row .mono { width: 3.5rem; color: var(--muted); flex: none; }
+.space-bar { height: 0.75rem; border-radius: 0.25rem; background: var(--chart-fill); }
+.shape { display: flex; align-items: center; justify-content: center; height: 4.5rem; background: var(--secondary); box-shadow: inset 0 0 0 1px var(--border-strong); color: var(--muted); }
+.line-box { height: 4.5rem; border-radius: 0.75rem; background: var(--surface); }
+.lift-stage { padding: 1.5rem; border-radius: 0.75rem; background: var(--background); }
+.lift { display: flex; align-items: center; justify-content: center; height: 4.5rem; border: 1px solid var(--border); border-radius: 0.75rem; background: var(--surface-overlay); color: var(--muted); }
+
+/* Khung đặt modal tĩnh */
+.demo-frame { position: relative; overflow: hidden; min-height: 30rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--background); }
+.demo-frame .backdrop { position: absolute; }
+
+/* Ví dụ ép trạng thái: chỉ để nhìn, inert nên không Tab, không rê được */
+[data-demo-state="hover"] .btn--outline { background: var(--button-hover); }
+[data-demo-state="hover"] .btn--primary { background: var(--primary-hover); }
+[data-demo-state="hover"] .btn--secondary { background: var(--secondary-hover); }
+[data-demo-state="hover"] .btn--ghost { background: color-mix(in srgb, var(--foreground) 5%, transparent); color: var(--foreground); }
+[data-demo-state="hover"] .btn--danger { background: var(--danger-bg-hover); }
+[data-demo-state="hover"] .row { background: var(--item-hover); }
+[data-demo-state="hover"] .row__hidden { opacity: 1; }
+[data-demo-state="focus"] .input { border-color: var(--border-focus); box-shadow: 0 0 0 2px var(--ring-focus); }
+.narrow { width: 9rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Chọn hướng màu: chỉ có trên trang duyệt. Hướng được chọn sẽ chép vào tokens.css. */
+.picker { margin-top: 1.25rem; }
+.picker__opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.picker__opt { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.5rem; padding: 0.5rem 0.875rem; border: 1px solid var(--border-strong); border-radius: 0.75rem; background: var(--surface); color: var(--foreground); font: 500 0.875rem/1.25 var(--app-font); cursor: pointer; outline: none; transition: background-color 150ms; }
+.picker__opt:hover { background: var(--button-hover); }
+.picker__opt[aria-checked="true"] { background: var(--secondary); border-color: var(--border-focus); }
+.picker__dots { display: inline-flex; }
+.picker__dots i { width: 0.875rem; height: 0.875rem; border-radius: 9999px; box-shadow: 0 0 0 2px var(--surface); }
+.picker__dots i + i { margin-left: -0.25rem; }
+.picker__why { margin: 0.75rem 0 0; max-width: 65ch; color: var(--muted); text-wrap: pretty; }
+
+/* D, E, F · Nền than ấm, chữ trắng ngà, quầng cam dịu ở góc trên.
+   Cảnh báo đổi sang vàng hổ phách để không lẫn với màu nhấn cam. */
+:root[data-huong="d"], :root[data-huong="e"], :root[data-huong="f"] {
+  --background: #0f0c0a; --surface: #181411; --surface-overlay: #221c18;
+  --surface-hover: #1d1814; --background-hover: #221c18;
+  --foreground: #f6efe7; --muted: #a89a8d; --neutral: #ada195; --neutral-bg: rgb(173 161 149 / 0.14);
+  --border: rgb(255 236 214 / 0.08); --border-strong: rgb(255 236 214 / 0.13);
+  --page-glow: radial-gradient(60rem 32rem at 12% -12%, rgb(255 138 61 / 0.13), transparent 70%);
+  --warning: #fbbf24; --warning-bg: rgb(251 191 36 / 0.13);
+  --chart-fill: #ff8a3d; --chart-2: #ffd2ad;
+}
+/* D · Cam ấm: nút cam, chữ nâu đậm trên nút */
+:root[data-huong="d"] {
+  --primary: #ff8a3d; --primary-hover: #f2782a; --primary-foreground: #1f0e02;
+  --primary-light: rgb(255 138 61 / 0.15); --primary-ink: #ffaa70;
+  --border-focus: rgb(255 158 94 / 0.65); --ring-focus: rgb(255 138 61 / 0.18);
+}
+/* E · Trắng ngà + cam điểm: nút trắng ngà, cam chỉ ở link, icon bật, biểu đồ, quầng nền */
+:root[data-huong="e"] {
+  --primary: #f6efe7; --primary-hover: #e4d9cc; --primary-foreground: #14100c;
+  --primary-light: rgb(255 138 61 / 0.14); --primary-ink: #ffaa70;
+  --border-focus: rgb(255 158 94 / 0.6); --ring-focus: rgb(255 138 61 / 0.16);
+}
+/* F · Cam đào: cam pha trắng, dịu nhất */
+:root[data-huong="f"] {
+  --primary: #ffb48a; --primary-hover: #ffa070; --primary-foreground: #2a1206;
+  --primary-light: rgb(255 180 138 / 0.15); --primary-ink: #ffc4a3;
+  --border-focus: rgb(255 180 138 / 0.6); --ring-focus: rgb(255 180 138 / 0.16);
+  --chart-fill: #ffb48a; --chart-2: #ff7a45;
+  --page-glow: radial-gradient(60rem 32rem at 12% -12%, rgb(255 180 138 / 0.12), transparent 70%);
+}
+/* B · Nền than trung tính, để so */
+:root[data-huong="b"] {
+  --background: #0b0b0e; --surface: #141418; --surface-overlay: #1c1c22;
+  --surface-hover: #18181d; --background-hover: #1c1c22;
+  --foreground: #ededf0; --muted: #9a9aa6; --neutral: #a1a1aa; --neutral-bg: rgb(161 161 170 / 0.14);
+  --border: rgb(255 255 255 / 0.08); --border-strong: rgb(255 255 255 / 0.12);
+  --page-glow: radial-gradient(60rem 32rem at 12% -12%, rgb(98 0 217 / 0.12), transparent 70%);
+}
+/* B · Than + trắng: nút chính gần trắng, màu brand chỉ ở dữ liệu và quầng nền */
+:root[data-huong="b"] {
+  --primary: #ededf0; --primary-hover: #d4d4da; --primary-foreground: #0b0b0e;
+  --primary-light: rgb(255 255 255 / 0.1); --primary-ink: #ededf0;
+  --border-focus: rgb(237 237 240 / 0.42); --ring-focus: rgb(237 237 240 / 0.12);
+  --chart-fill: #8b47f5;
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></symbol>
+  <symbol id="i-circle-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-circle-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/></symbol>
+  <symbol id="i-circle-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 15V9"/><path d="M14 15V9"/></symbol>
+  <symbol id="i-circle-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+</svg>
+
+<main class="page">
+  <header class="page-head">
+    <h1>Design system Marketing Hub</h1>
+    <p>Giao diện tối cố định · font Manrope · số liệu trên trang là giả</p>
+    <div class="picker">
+      <div class="picker__opts" role="radiogroup" aria-label="Hướng màu">
+        <button class="picker__opt" type="button" role="radio" data-huong="d"><span class="picker__dots" aria-hidden="true"><i style="background:#0f0c0a"></i><i style="background:#ff8a3d"></i></span>D · Cam ấm</button>
+        <button class="picker__opt" type="button" role="radio" data-huong="e"><span class="picker__dots" aria-hidden="true"><i style="background:#f6efe7"></i><i style="background:#ff8a3d"></i></span>E · Trắng ngà + cam</button>
+        <button class="picker__opt" type="button" role="radio" data-huong="f"><span class="picker__dots" aria-hidden="true"><i style="background:#0f0c0a"></i><i style="background:#ffb48a"></i></span>F · Cam đào</button>
+        <button class="picker__opt" type="button" role="radio" data-huong="b"><span class="picker__dots" aria-hidden="true"><i style="background:#0b0b0e"></i><i style="background:#ededf0"></i></span>B · Than + trắng</button>
+        <button class="picker__opt" type="button" role="radio" data-huong="goc"><span class="picker__dots" aria-hidden="true"><i style="background:#0c0513"></i><i style="background:#6200d9"></i></span>Bản trước · Tím đậm</button>
+      </div>
+      <p class="picker__why" id="huong-why"></p>
+    </div>
+  </header>
+
+  <!-- ============ MÀU ============ -->
+  <section class="ds" id="mau">
+    <h2>Màu</h2>
+    <p class="lead">Một màu nhấn duy nhất cho nút chính, ô đang bật, link. Xanh lá brand #13F287 luôn là màu "đang ổn", không dùng cho nút.</p>
+    <div class="card">
+      <h3 class="sub-h">Nền và chữ</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--background)"></div><p class="swatch__name mono">--background</p><p class="swatch__val mono" data-var="--background"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--surface)"></div><p class="swatch__name mono">--surface</p><p class="swatch__val mono" data-var="--surface"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--surface-overlay)"></div><p class="swatch__name mono">--surface-overlay</p><p class="swatch__val mono" data-var="--surface-overlay"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--foreground)"></div><p class="swatch__name mono">--foreground</p><p class="swatch__val mono" data-var="--foreground"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--muted)"></div><p class="swatch__name mono">--muted</p><p class="swatch__val mono" data-var="--muted"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--secondary)"></div><p class="swatch__name mono">--secondary</p><p class="swatch__val mono" data-var="--secondary"></p></div>
+      </div>
+
+      <h3 class="sub-h">Màu nhấn</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--primary)"></div><p class="swatch__name mono">--primary</p><p class="swatch__val mono" data-var="--primary"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--primary-hover)"></div><p class="swatch__name mono">--primary-hover</p><p class="swatch__val mono" data-var="--primary-hover"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--primary-ink)"></div><p class="swatch__name mono">--primary-ink</p><p class="swatch__val mono" data-var="--primary-ink"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--primary-light)"></div><p class="swatch__name mono">--primary-light</p><p class="swatch__val mono" data-var="--primary-light"></p></div>
+      </div>
+
+      <h3 class="sub-h">Màu mang nghĩa</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--success)"></div><p class="swatch__name mono">--success</p><p class="swatch__val mono" data-var="--success"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--warning)"></div><p class="swatch__name mono">--warning</p><p class="swatch__val mono" data-var="--warning"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--danger)"></div><p class="swatch__name mono">--danger</p><p class="swatch__val mono" data-var="--danger"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--error-text)"></div><p class="swatch__name mono">--error-text</p><p class="swatch__val mono" data-var="--error-text"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--neutral)"></div><p class="swatch__name mono">--neutral</p><p class="swatch__val mono" data-var="--neutral"></p></div>
+      </div>
+
+      <h3 class="sub-h">Màu dữ liệu</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--chart-fill)"></div><p class="swatch__name mono">--chart-fill</p><p class="swatch__val mono" data-var="--chart-fill"></p></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--chart-2)"></div><p class="swatch__name mono">--chart-2</p><p class="swatch__val mono" data-var="--chart-2"></p></div>
+      </div>
+
+      <h3 class="sub-h">Tương phản chữ</h3>
+      <div class="table-wrap">
+        <table class="plain">
+          <thead><tr><th>Mẫu</th><th>Chữ / nền</th><th>Tỉ lệ</th><th><span class="sr-only">Cảnh báo</span></th></tr></thead>
+          <tbody>
+            <tr data-fg="--foreground" data-bg="--background" data-min="4.5"><td><span class="cr-sample" style="color:var(--foreground);background:var(--background)">Chi phí hôm nay</span></td><td class="mono">foreground / background</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--foreground" data-bg="--surface-overlay" data-min="4.5"><td><span class="cr-sample" style="color:var(--foreground);background:var(--surface-overlay)">Chi phí hôm nay</span></td><td class="mono">foreground / surface-overlay</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--muted" data-bg="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--muted);background:var(--surface)">Cập nhật 09:42</span></td><td class="mono">muted / surface</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--muted" data-bg="--surface-overlay" data-min="4.5"><td><span class="cr-sample" style="color:var(--muted);background:var(--surface-overlay)">Cập nhật 09:42</span></td><td class="mono">muted / surface-overlay</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--muted" data-bg="--secondary" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--muted);background:var(--secondary)">Cập nhật 09:42</span></td><td class="mono">muted / secondary</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--primary-foreground" data-bg="--primary" data-min="4.5"><td><span class="cr-sample" style="color:var(--primary-foreground);background:var(--primary)">Tạo bài quảng cáo</span></td><td class="mono">primary-foreground / primary</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--primary-ink" data-bg="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--primary-ink);background:var(--surface)">Xem báo cáo Meta</span></td><td class="mono">primary-ink / surface</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--success" data-bg="--success-bg" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--success);background:var(--success-bg)">Đang chạy</span></td><td class="mono">success / success-bg</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--warning" data-bg="--warning-bg" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--warning);background:var(--warning-bg)">Tạm dừng</span></td><td class="mono">warning / warning-bg</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--error-strong" data-bg="--error-bg" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--error-strong);background:var(--error-bg)">Bị từ chối</span></td><td class="mono">error-strong / error-bg</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--neutral" data-bg="--neutral-bg" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--neutral);background:var(--neutral-bg)">Nháp</span></td><td class="mono">neutral / neutral-bg</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--danger" data-bg="--danger-bg" data-on="--surface" data-min="4.5"><td><span class="cr-sample" style="color:var(--danger);background:var(--danger-bg)">Xoá bài</span></td><td class="mono">danger / danger-bg</td><td class="cr num"></td><td class="flag"></td></tr>
+            <tr data-fg="--border-focus" data-bg="--surface" data-min="3"><td><span class="cr-sample" style="color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border-focus)">Viền focus</span></td><td class="mono">border-focus / surface</td><td class="cr num"></td><td class="flag"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHỮ ============ -->
+  <section class="ds" id="chu">
+    <h2>Chữ</h2>
+    <p class="lead">Manrope, một họ chữ. Thứ bậc: tên trang 20 › tiêu đề khối 18 › tên thẻ 16 › chữ nội dung 14.</p>
+    <div class="card">
+      <div class="type-row"><span class="meta mono">2xl · 24 · 600</span><p class="num" style="font-size:1.5rem;line-height:2rem;font-weight:600">128.450.000 đ</p></div>
+      <div class="type-row"><span class="meta mono">xl · 20 · 700 · tên trang</span><p style="font-size:1.25rem;line-height:1.75rem;font-weight:700">Hiệu suất bài quảng cáo</p></div>
+      <div class="type-row"><span class="meta mono">lg · 18 · 600 · tiêu đề khối</span><p style="font-size:1.125rem;line-height:1.75rem;font-weight:600">Bài cần xử lý hôm nay</p></div>
+      <div class="type-row"><span class="meta mono">base · 16 · 600 · tên thẻ</span><p style="font-size:1rem;line-height:1.5rem;font-weight:600">Chi phí 7 ngày theo trang</p></div>
+      <div class="type-row"><span class="meta mono">sm · 14 · 400 · nội dung</span><p>Bài chạy ba ngày mà ROAS dưới 1,0 thì nên tắt, giữ ngân sách cho những bài đang có lời.</p></div>
+      <div class="type-row"><span class="meta mono">sm · 14 · 500 · nút, nhãn</span><p style="font-weight:500">Tên nhóm theo dõi</p></div>
+      <div class="type-row"><span class="meta mono">xs · 12 · 400 · chữ phụ</span><p style="font-size:0.75rem;line-height:1rem;color:var(--muted)">Cập nhật 09:42 · số liệu từ Meta Ads Manager</p></div>
+    </div>
+  </section>
+
+  <!-- ============ NHỊP ============ -->
+  <section class="ds" id="nhip">
+    <h2>Khoảng cách, bo góc, viền, bóng</h2>
+    <p class="lead">Thang khoảng cách 4–40px. Bo theo chiều cao: dưới 40px bo 8, từ 40px bo 12, card và modal 16.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3 class="sub-h">Khoảng cách</h3>
+        <div class="space-row"><span class="mono">4</span><div class="space-bar" style="width:4px"></div></div>
+        <div class="space-row"><span class="mono">8</span><div class="space-bar" style="width:8px"></div></div>
+        <div class="space-row"><span class="mono">12</span><div class="space-bar" style="width:12px"></div></div>
+        <div class="space-row"><span class="mono">16</span><div class="space-bar" style="width:16px"></div></div>
+        <div class="space-row"><span class="mono">20</span><div class="space-bar" style="width:20px"></div></div>
+        <div class="space-row"><span class="mono">24</span><div class="space-bar" style="width:24px"></div></div>
+        <div class="space-row"><span class="mono">32</span><div class="space-bar" style="width:32px"></div></div>
+        <div class="space-row"><span class="mono">40</span><div class="space-bar" style="width:40px"></div></div>
+      </div>
+      <div class="card">
+        <h3 class="sub-h">Bo góc</h3>
+        <div class="grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div><span class="state-label">8 · dưới 40px</span><div class="shape mono" style="border-radius:0.5rem">8</div></div>
+          <div><span class="state-label">12 · nút, ô</span><div class="shape mono" style="border-radius:0.75rem">12</div></div>
+          <div><span class="state-label">16 · card</span><div class="shape mono" style="border-radius:1rem">16</div></div>
+          <div><span class="state-label">Tròn · badge</span><div class="shape mono" style="border-radius:9999px">full</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="sub-h">Hai vai viền</h3>
+        <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div><span class="state-label">--border · card, đường chia</span><div class="line-box" style="border:1px solid var(--border)"></div></div>
+          <div><span class="state-label">--border-strong · ô nhập, nút</span><div class="line-box" style="border:1px solid var(--border-strong)"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="sub-h">Bóng, chỉ cho lớp nổi</h3>
+        <div class="lift-stage grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div><span class="state-label">Dropdown, toast</span><div class="lift" style="box-shadow:var(--elevation-popover)">popover</div></div>
+          <div><span class="state-label">Modal</span><div class="lift" style="box-shadow:var(--elevation-modal);background:var(--surface)">modal</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NÚT ============ -->
+  <section class="ds" id="nut">
+    <h2>Nút</h2>
+    <p class="lead">Nút viền là mặc định. Nút chính (màu nhấn) chỉ một chỗ trên một khu, cho việc chính duy nhất.</p>
+    <div class="card">
+      <h3 class="sub-h">Bốn dạng, nút xoá, nút chỉ icon</h3>
+      <div class="states">
+        <div><span class="state-label">Viền · mặc định</span><button class="btn btn--outline" type="button"><svg class="icon"><use href="#i-download"/></svg>Xuất báo cáo</button></div>
+        <div><span class="state-label">Chính</span><button class="btn btn--primary" type="button"><svg class="icon"><use href="#i-plus"/></svg>Tạo bài quảng cáo</button></div>
+        <div><span class="state-label">Phụ</span><button class="btn btn--secondary" type="button">Huỷ</button></div>
+        <div><span class="state-label">Ghost</span><button class="btn btn--ghost" type="button">Bỏ qua</button></div>
+        <div><span class="state-label">Nguy hiểm</span><button class="btn btn--danger" type="button"><svg class="icon"><use href="#i-trash"/></svg>Xoá bài</button></div>
+        <div><span class="state-label">Chỉ icon</span><button class="btn btn--outline btn--icon" type="button" aria-label="Thêm thao tác"><svg class="icon"><use href="#i-more"/></svg></button></div>
+      </div>
+
+      <h3 class="sub-h">Trạng thái</h3>
+      <div class="states">
+        <div><span class="state-label">Thường</span><button class="btn btn--primary" type="button">Lưu thay đổi</button></div>
+        <div inert data-demo-state="hover"><span class="state-label">Rê</span><button class="btn btn--primary" type="button">Lưu thay đổi</button></div>
+        <div inert data-demo-state="disabled"><span class="state-label">Khoá</span><button class="btn btn--primary" type="button" disabled>Lưu thay đổi</button></div>
+        <div inert data-demo-state="loading"><span class="state-label">Đang xử lý</span><button class="btn btn--primary" type="button" aria-busy="true" aria-disabled="true"><svg class="icon spin"><use href="#i-loader"/></svg>Đồng bộ Meta</button></div>
+      </div>
+      <div class="states" style="margin-top:1.25rem">
+        <div><span class="state-label">Thường</span><button class="btn btn--outline" type="button"><svg class="icon"><use href="#i-download"/></svg>Xuất báo cáo</button></div>
+        <div inert data-demo-state="hover"><span class="state-label">Rê</span><button class="btn btn--outline" type="button"><svg class="icon"><use href="#i-download"/></svg>Xuất báo cáo</button></div>
+        <div inert data-demo-state="disabled"><span class="state-label">Khoá</span><button class="btn btn--outline" type="button" disabled><svg class="icon"><use href="#i-download"/></svg>Xuất báo cáo</button></div>
+        <div inert data-demo-state="hover"><span class="state-label">Nguy hiểm · rê</span><button class="btn btn--danger" type="button"><svg class="icon"><use href="#i-trash"/></svg>Xoá bài</button></div>
+        <div inert data-demo-state="wrap"><span class="state-label">Nhãn dài, khung hẹp</span><div class="narrow"><button class="btn btn--outline" type="button">Tắt toàn bộ bài lỗ hôm nay</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BADGE ============ -->
+  <section class="ds" id="badge">
+    <h2>Badge trạng thái</h2>
+    <p class="lead">Một bảng ánh xạ cho mọi màn. Hai trạng thái cùng tông xám thì tách bằng icon.</p>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="plain">
+          <thead><tr><th>Trạng thái bài</th><th>Tông</th><th>Nghĩa</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge--success"><svg class="icon icon--sm"><use href="#i-circle-play"/></svg>Đang chạy</span></td><td>Xanh lá</td><td style="color:var(--muted)">Đang tiêu tiền và đang ổn</td></tr>
+            <tr><td><span class="badge badge--warning"><svg class="icon icon--sm"><use href="#i-circle-pause"/></svg>Tạm dừng</span></td><td>Hổ phách</td><td style="color:var(--muted)">Cần người xem lại: bật lại hay tắt hẳn</td></tr>
+            <tr><td><span class="badge badge--neutral"><svg class="icon icon--sm"><use href="#i-circle-dot"/></svg>Đang xét duyệt</span></td><td>Xám</td><td style="color:var(--muted)">Meta đang duyệt, đội không phải làm gì</td></tr>
+            <tr><td><span class="badge badge--neutral"><svg class="icon icon--sm"><use href="#i-circle"/></svg>Nháp</span></td><td>Xám</td><td style="color:var(--muted)">Chưa đăng</td></tr>
+            <tr><td><span class="badge badge--error"><svg class="icon icon--sm"><use href="#i-circle-x"/></svg>Bị từ chối</span></td><td>Đỏ</td><td style="color:var(--muted)">Meta từ chối, phải sửa nội dung mới chạy lại được</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Ô NHẬP ============ -->
+  <section class="ds" id="o-nhap">
+    <h2>Ô nhập</h2>
+    <p class="lead">Cao 40px (44px ở màn hẹp), nhãn luôn nằm trên ô, ô để trơn không icon.</p>
+    <div class="card">
+      <div class="grid grid-2" style="row-gap:1.25rem;column-gap:1.5rem">
+        <div>
+          <span class="state-label">Thường</span>
+          <div class="field">
+            <label class="field__label" for="f1">Tên nhóm theo dõi</label>
+            <input class="input" id="f1" type="text">
+            <p class="field__hint">Ví dụ: Serum B5 tháng 11</p>
+          </div>
+        </div>
+        <div inert data-demo-state="focus">
+          <span class="state-label">Đang gõ</span>
+          <div class="field">
+            <label class="field__label" for="f2">Tên nhóm theo dõi</label>
+            <input class="input" id="f2" type="text" value="Serum B5 tháng 11">
+            <p class="field__hint"></p>
+          </div>
+        </div>
+        <div inert data-demo-state="error">
+          <span class="state-label">Lỗi</span>
+          <div class="field">
+            <label class="field__label" for="f3">Ngân sách ngày <span class="req">*</span></label>
+            <input class="input num" id="f3" type="text" value="500k" aria-invalid="true" aria-describedby="f3-err">
+            <p class="field__hint field__hint--error" id="f3-err">Ngân sách chỉ gồm chữ số, ví dụ 500000</p>
+          </div>
+        </div>
+        <div inert data-demo-state="disabled">
+          <span class="state-label">Khoá</span>
+          <div class="field">
+            <label class="field__label" for="f4">Trang Facebook</label>
+            <input class="input" id="f4" type="text" value="Mavis Official" disabled>
+            <p class="field__hint">Trang gắn với tài khoản quảng cáo, không đổi được</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARD ============ -->
+  <section class="ds" id="card">
+    <h2>Card</h2>
+    <p class="lead">Viền tóc, bo 16, không bóng. Nút của card nằm góc phải tiêu đề.</p>
+    <div class="grid grid-3">
+      <div>
+        <span class="state-label">Chỉ tiêu đề</span>
+        <section class="card">
+          <header class="card__head"><h3 class="card__title">Chi phí 7 ngày</h3></header>
+          <div class="card__body">
+            <p class="num" style="margin:0;font-size:1.5rem;line-height:2rem;font-weight:600">128.450.000 đ</p>
+            <p style="margin:0.25rem 0 0;color:var(--muted)">Tăng <span class="num" style="color:var(--foreground)">12%</span> so với 7 ngày trước</p>
+          </div>
+        </section>
+      </div>
+      <div>
+        <span class="state-label">Có nút</span>
+        <section class="card">
+          <header class="card__head card__head--action"><h3 class="card__title">ROAS theo trang</h3><button class="btn btn--outline" type="button"><svg class="icon"><use href="#i-download"/></svg>Xuất</button></header>
+          <div class="card__body" style="color:var(--muted)">Mavis Official dẫn đầu với ROAS <span class="num" style="color:var(--foreground)">3,1</span>. Tbest Beauty chưa có đơn nào trong 7 ngày.</div>
+        </section>
+      </div>
+      <div>
+        <span class="state-label">Tiêu đề dài</span>
+        <section class="card">
+          <header class="card__head card__head--action"><h3 class="card__title">Bài quảng cáo chi nhiều nhưng chưa ra đơn trong 3 ngày gần nhất</h3><button class="btn btn--outline btn--icon" type="button" aria-label="Thêm thao tác"><svg class="icon"><use href="#i-more"/></svg></button></header>
+          <div class="card__body num" style="color:var(--muted)">0 bài</div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DÒNG DANH SÁCH ============ -->
+  <section class="ds" id="dong">
+    <h2>Dòng danh sách</h2>
+    <p class="lead">Dòng bo 12, cách nhau 4px. Rê vào hiện nút phụ; tên dài cắt bằng dấu ba chấm.</p>
+    <div class="grid grid-2">
+      <div>
+        <span class="state-label">Thường · rê vào từng dòng để thấy nút</span>
+        <section class="card card--list">
+          <header class="card__head"><h3 class="card__title">Bài cần xử lý hôm nay</h3></header>
+          <div class="card__body">
+            <ul class="rows">
+              <li class="row">
+                <div class="row__main"><p class="row__title">VD_Mavis_SerumB5_0110_v3</p><p class="row__meta">Mavis Official · chi <span class="num">2.340.000 đ</span> · ROAS <span class="num">0,8</span></p></div>
+                <div class="row__side"><span class="badge badge--warning"><svg class="icon icon--sm"><use href="#i-circle-pause"/></svg>Tạm dừng</span><button class="btn btn--ghost btn--icon btn--sm row__hidden" type="button" aria-label="Thao tác với bài"><svg class="icon"><use href="#i-more"/></svg></button></div>
+              </li>
+              <li class="row">
+                <div class="row__main"><p class="row__title">Video_Review_KemChongNang_KOL_Thuy_HaNoi_quay_lai_lan_2_ban_dai_khong_cat</p><p class="row__meta">Tbest Beauty · chi <span class="num">12.450.000 đ</span> · ROAS <span class="num">3,1</span></p></div>
+                <div class="row__side"><span class="badge badge--success"><svg class="icon icon--sm"><use href="#i-circle-play"/></svg>Đang chạy</span><button class="btn btn--ghost btn--icon btn--sm row__hidden" type="button" aria-label="Thao tác với bài"><svg class="icon"><use href="#i-more"/></svg></button></div>
+              </li>
+              <li class="row">
+                <div class="row__main"><p class="row__title">Carousel_Combo_Toc_1510</p><p class="row__meta">Mavis Official · chi <span class="num">0 đ</span> · chưa có đơn</p></div>
+                <div class="row__side"><span class="badge badge--neutral"><svg class="icon icon--sm"><use href="#i-circle-dot"/></svg>Đang xét duyệt</span><button class="btn btn--ghost btn--icon btn--sm row__hidden" type="button" aria-label="Thao tác với bài"><svg class="icon"><use href="#i-more"/></svg></button></div>
+              </li>
+              <li class="row">
+                <div class="row__main"><p class="row__title">Anh_Sale_1111_v1</p><p class="row__meta">Tbest Beauty · chi <span class="num">860.000 đ</span> · ROAS <span class="num">1,4</span></p></div>
+                <div class="row__side"><span class="badge badge--error"><svg class="icon icon--sm"><use href="#i-circle-x"/></svg>Bị từ chối</span><button class="btn btn--ghost btn--icon btn--sm row__hidden" type="button" aria-label="Thao tác với bài"><svg class="icon"><use href="#i-more"/></svg></button></div>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+      <div inert data-demo-state="hover">
+        <span class="state-label">Rê</span>
+        <section class="card card--list">
+          <header class="card__head"><h3 class="card__title">Bài cần xử lý hôm nay</h3></header>
+          <div class="card__body">
+            <ul class="rows">
+              <li class="row">
+                <div class="row__main"><p class="row__title">VD_Mavis_SerumB5_0110_v3</p><p class="row__meta">Mavis Official · chi <span class="num">2.340.000 đ</span> · ROAS <span class="num">0,8</span></p></div>
+                <div class="row__side"><span class="badge badge--warning"><svg class="icon icon--sm"><use href="#i-circle-pause"/></svg>Tạm dừng</span><button class="btn btn--ghost btn--icon btn--sm row__hidden" type="button" aria-label="Thao tác với bài"><svg class="icon"><use href="#i-more"/></svg></button></div>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODAL ============ -->
+  <section class="ds" id="modal">
+    <h2>Modal</h2>
+    <p class="lead">Rộng tối đa 448px, nút bên phải. Hộp có ô nhập thì bấm ra ngoài không đóng.</p>
+    <div class="grid grid-2">
+      <div inert data-demo-state="open">
+        <span class="state-label">Hộp xác nhận nguy hiểm</span>
+        <div class="demo-frame">
+          <div class="backdrop">
+            <div class="dialog" role="alertdialog" aria-labelledby="d1-t" aria-describedby="d1-d">
+              <div class="dialog__grid">
+                <div class="dialog__icon dialog__icon--danger"><svg class="icon icon--md"><use href="#i-trash"/></svg></div>
+                <h3 class="dialog__title" id="d1-t">Xoá bài quảng cáo?</h3>
+                <div class="dialog__body"><p class="dialog__desc" id="d1-d"><strong>VD_Mavis_SerumB5_0110_v3</strong> cùng số liệu 14 ngày sẽ bị xoá khỏi Hub. Bài trên Meta không bị ảnh hưởng.</p></div>
+              </div>
+              <div class="dialog__foot">
+                <button class="btn btn--secondary btn--form" type="button">Huỷ</button>
+                <button class="btn btn--danger btn--form" type="button">Xoá bài</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div inert data-demo-state="open">
+        <span class="state-label">Modal có form</span>
+        <div class="demo-frame">
+          <div class="backdrop">
+            <form class="dialog" role="dialog" aria-labelledby="d2-t" onsubmit="return false">
+              <div class="dialog__head">
+                <h3 class="dialog__title" id="d2-t">Tạo nhóm theo dõi</h3>
+                <p class="dialog__desc" style="margin-top:0.5rem">Gom các bài cùng sản phẩm để xem chi phí và ROAS chung.</p>
+              </div>
+              <button class="btn btn--ghost btn--icon dialog__close" type="button" aria-label="Đóng"><svg class="icon"><use href="#i-x"/></svg></button>
+              <div class="dialog__form">
+                <div class="field">
+                  <label class="field__label" for="d2-a">Tên nhóm</label>
+                  <input class="input" id="d2-a" type="text" value="Serum B5 tháng 11">
+                </div>
+                <div class="field">
+                  <label class="field__label" for="d2-b">Ngưỡng ROAS cảnh báo</label>
+                  <input class="input num" id="d2-b" type="text" value="1,2">
+                </div>
+              </div>
+              <div class="dialog__foot">
+                <button class="btn btn--secondary btn--form" type="button">Huỷ</button>
+                <button class="btn btn--primary btn--form" type="submit">Tạo nhóm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RỖNG ============ -->
+  <section class="ds" id="rong">
+    <h2>Trạng thái rỗng</h2>
+    <p class="lead">Một dòng chữ mờ ở chỗ đáng lẽ có dữ liệu. Rỗng vì đang lọc thì kèm lối ra.</p>
+    <div class="grid grid-3">
+      <div>
+        <span class="state-label">Rỗng</span>
+        <section class="card"><header class="card__head"><h3 class="card__title">Bài cần xử lý hôm nay</h3></header><div class="card__body"><p class="empty">Hôm nay chưa có bài nào cần xử lý</p></div></section>
+      </div>
+      <div>
+        <span class="state-label">Rỗng do lọc</span>
+        <section class="card"><header class="card__head"><h3 class="card__title">Bài quảng cáo</h3></header><div class="card__body"><p class="empty">Không có bài nào khớp <q>Serum B12</q>. Thử từ khoá khác. <button class="link-quiet" type="button">Xoá tìm kiếm</button></p></div></section>
+      </div>
+      <div>
+        <span class="state-label">Lỗi tải</span>
+        <section class="card"><header class="card__head"><h3 class="card__title">Chi phí 7 ngày</h3></header><div class="card__body">
+          <div class="load-error" role="alert">
+            <div><p class="load-error__title">Không tải được số liệu Meta Ads</p><p class="load-error__why">Mã truy cập Meta đã hết hạn</p></div>
+            <button class="btn btn--outline" type="button"><svg class="icon"><use href="#i-rotate"/></svg>Thử lại</button>
+          </div>
+        </div></section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+// Ghi mã của từng token cạnh ô màu, và đo tương phản thật từ token đang nạp (đổi hướng màu là số tự đổi).
+(() => {
+  const WHY = {
+    d: "Khuyên dùng. Nền than ấm, chữ trắng ngà, nút cam #FF8A3D với chữ nâu đậm trên nút, quầng cam dịu ở góc trang. Ấm, có năng lượng mà không gắt. Badge \"Tạm dừng\" chuyển sang vàng để không lẫn với cam.",
+    e: "Nền than ấm, nút chính màu trắng ngà. Cam chỉ xuất hiện ở link, biểu đồ và quầng nền. Sang và tiết chế nhất, số liệu nổi hơn nút.",
+    f: "Nền than ấm, nút cam đào #FFB48A (cam pha trắng). Dịu mắt nhất trong ba hướng cam, hợp nếu thấy cam D hơi chói.",
+    b: "Nền than lạnh, nút gần trắng, để so với các hướng cam.",
+    goc: "Bản trước: nền đêm tím, nút tím đậm #6200D9, để so.",
+  };
+  const html = document.documentElement;
+  const root = getComputedStyle(html);
+  const read = (name) => root.getPropertyValue(name).trim();
+
+  const probe = document.createElement("span");
+  probe.style.display = "none";
+  document.body.append(probe);
+  const toRgba = (value) => {
+    probe.style.color = "";
+    probe.style.color = value;
+    const m = getComputedStyle(probe).color.match(/[\d.]+/g).map(Number);
+    if (getComputedStyle(probe).color.startsWith("color(srgb")) return [m[0] * 255, m[1] * 255, m[2] * 255, m[3] ?? 1];
+    return [m[0], m[1], m[2], m[3] ?? 1];
+  };
+  const over = (top, under) => top.slice(0, 3).map((v, i) => v * top[3] + under[i] * (1 - top[3])).concat(1);
+  const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+
+  const render = () => {
+    document.querySelectorAll("[data-var]").forEach((el) => { el.textContent = read(el.dataset.var); });
+    document.querySelectorAll("tr[data-fg]").forEach((row) => {
+      const base = toRgba(read(row.dataset.on || "--background"));
+      const bg = over(toRgba(read(row.dataset.bg)), base);
+      const fg = over(toRgba(read(row.dataset.fg)), bg);
+      const value = ratio(fg, bg);
+      const min = Number(row.dataset.min);
+      row.querySelector(".cr").textContent = value.toFixed(2).replace(".", ",") + " : 1";
+      row.querySelector(".flag").innerHTML = value < min ? `<span class="cr-fail">Dưới ${String(min).replace(".", ",")} : 1</span>` : "";
+    });
+  };
+
+  const setHuong = (huong) => {
+    if (huong === "goc") delete html.dataset.huong; else html.dataset.huong = huong;
+    document.querySelectorAll(".picker__opt").forEach((btn) => btn.setAttribute("aria-checked", String(btn.dataset.huong === huong)));
+    document.getElementById("huong-why").textContent = WHY[huong];
+    try { const url = new URL(location.href); url.searchParams.set("huong", huong); history.replaceState(null, "", url); } catch (e) { /* file:// cũ */ }
+    render();
+  };
+  document.querySelectorAll(".picker__opt").forEach((btn) => btn.addEventListener("click", () => setHuong(btn.dataset.huong)));
+  const start = new URLSearchParams(location.search).get("huong");
+  setHuong(WHY[start] ? start : "d");
+})();
+</script>
+</body>
+</html>

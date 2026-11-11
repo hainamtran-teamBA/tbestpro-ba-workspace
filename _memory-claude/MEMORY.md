@@ -1,0 +1,9 @@
+- [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA, bộ skill cũ đang sửa theo BABOK, nơi lưu tri thức
+- [Dự án WMS Kho 7](project-wms-kho7.md) — demo Gani 2 WMS, trạng thái khảo sát và bước tiếp theo
+- [Bám trọng tâm](feedback-bam-trong-tam.md) — một dự án, một việc, ra tài liệu cụ thể; tránh lan man nhiều nhánh
+- [Danh mục 3 dự án (PM)](project-portfolio-du-an.md) — Du-an/ trong workspace: Kho, FB Ads, SMS; cách cập nhật
+- [Không tự mở rộng](feedback-khong-tu-mo-rong.md) — chỉ điền bên/dữ liệu người dùng đã làm việc thật; hỏi trước khi thêm hay tạo file
+- [Đọc tài liệu trước khi hỏi](feedback-doc-tai-lieu-truoc.md) — đọc kiến trúc OS, PDF hướng dẫn, đề án, thử Tizi trước khi hỏi hay đề xuất
+- [Định dạng Google Doc chuẩn](feedback-dinh-dang-google-doc.md) — Arial, H1 17pt, dòng ghi chú xám 9pt, mục đánh số 13pt, bảng viền #bbb đầu bảng nền #eee
+- [Nhật ký công việc trên Notion](reference-nhat-ky-notion.md) — trang riêng tư, mỗi ngày một mục, cuối buổi ghi thêm
+- [Hiện skill đang dùng](feedback-hien-skill-dang-dung.md) — cuối mỗi câu trả lời ghi skill/agent đã dùng, hoặc ghi "không dùng skill"

@@ -1,0 +1,274 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Quy trình FB Ads As-Is</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one vertical swimlane map, lanes = actors, read top to bottom */
+:root{
+  --bg:#f6f7f8; --surface:#ffffff; --fg:#1d2329; --muted:#5f6b76; --line:#7c8792; --rule:#dde2e6;
+  --lane-a:#fbfcfc; --lane-b:#f1f4f6; --band:#e6ebef;
+  --c-content:#7653b3; --c-fb:#2a62a6; --c-kh:#a8701a; --c-sales:#11786b; --c-tizi:#566170;
+  --good:#2f8a4a; --bad:#c2453a;
+  --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181c; --surface:#1d2329; --fg:#e7ebee; --muted:#9aa6b1; --line:#8b97a3; --rule:#2e363d;
+  --lane-a:#181d22; --lane-b:#1c2228; --band:#252c33;
+  --c-content:#b296e6; --c-fb:#78a9e8; --c-kh:#e0aa52; --c-sales:#4fc4b2; --c-tizi:#a3adba;
+  --good:#5cc27a; --bad:#ef7b70; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181c; --surface:#1d2329; --fg:#e7ebee; --muted:#9aa6b1; --line:#8b97a3; --rule:#2e363d;
+  --lane-a:#181d22; --lane-b:#1c2228; --band:#252c33;
+  --c-content:#b296e6; --c-fb:#78a9e8; --c-kh:#e0aa52; --c-sales:#4fc4b2; --c-tizi:#a3adba;
+  --good:#5cc27a; --bad:#ef7b70; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55}
+.wrap{max-width:1360px;margin:0 auto;padding-inline:20px;padding-block:28px 48px}
+h1{font-size:clamp(1.5rem,2.6vw,2rem);font-weight:700;margin:0 0 4px;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 14px;font-size:.92rem}
+.lead{max-width:68ch;margin:0 0 18px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:22px;height:14px;border-radius:4px;border:1.5px solid var(--line);background:var(--surface);display:inline-block}
+.sw.dash{border-style:dashed}
+.sw.good{border-color:var(--good);border-width:2.2px}.sw.bad{border-color:var(--bad);border-width:2.2px}
+.dm{width:12px;height:12px;border:1.5px solid var(--line);transform:rotate(45deg);display:inline-block;margin:0 3px}
+.dm.p{position:relative}.ln{width:26px;border-top:1.5px solid var(--line);display:inline-block}.ln.d{border-top-style:dashed}
+.actors{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.8rem;padding:2px 9px;border-radius:999px;border:1.5px solid currentColor;font-weight:600}
+figure{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.scroll{overflow-x:auto}
+.flow{display:block;width:100%;min-width:1000px;height:auto;font-family:var(--sans)}
+figcaption{padding:12px 16px;border-top:1px solid var(--rule);color:var(--muted);font-size:.86rem}
+.lane{fill:var(--lane-a)}.lane.alt{fill:var(--lane-b)}
+.sep{stroke:var(--rule);stroke-width:1}
+.lh{fill-opacity:.14}.lh-content{fill:var(--c-content)}.lh-fb{fill:var(--c-fb)}.lh-kh{fill:var(--c-kh)}.lh-sales{fill:var(--c-sales)}.lh-tizi{fill:var(--c-tizi)}
+.lht{fill:var(--fg);font-size:14px;font-weight:700}
+.lrep{fill:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.band{fill:var(--band)}.bandt{fill:var(--fg);font-size:11.5px;font-weight:700;letter-spacing:.08em}
+.bx rect{fill:var(--surface);stroke-width:1.6}
+.b-content rect{stroke:var(--c-content)}.b-fb rect{stroke:var(--c-fb)}.b-kh rect{stroke:var(--c-kh)}.b-sales rect{stroke:var(--c-sales)}.b-tizi rect{stroke:var(--c-tizi)}
+.bx.unsure rect{stroke-dasharray:5 4}
+.bx.good rect{stroke:var(--good);stroke-width:2.4}.bx.bad rect{stroke:var(--bad);stroke-width:2.4}
+.bt{fill:var(--fg);font-size:12.5px;font-weight:600}
+.btag{fill:var(--muted);font-size:10.5px}
+.ar{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linejoin:round}
+.ar.dash{stroke-dasharray:5 4}
+.ahp{fill:var(--line)}
+.al{fill:var(--muted);font-size:10.5px;font-style:italic}
+.dia{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.dia.par{fill:var(--band)}
+.plus{fill:var(--fg);font-size:18px;font-weight:700}
+.dl{fill:var(--fg);font-size:11.5px;font-weight:600}
+.start{fill:var(--c-fb)}
+.note{fill:var(--muted);font-size:10.5px;font-style:italic}
+.check{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.check section{min-width:0}
+.check h2{font-size:1rem;margin:0 0 6px}
+.check ol,.check ul{margin:0;padding-left:1.2em}
+.check li{margin:0 0 4px}
+</style>
+<div class="wrap">
+<h1>Quy trình làm việc FB Ads</h1>
+<p class="sub">Hiện trạng (As-Is) · tổng hợp từ khảo sát team Alpha và Evo · tháng 10/2026</p>
+<p class="lead">Mỗi cột là một bên tham gia, mỗi ô nằm trong cột của người làm việc đó. Đọc từ trên xuống: giai đoạn 1 là lúc team FB Ads chuẩn bị và lên quảng cáo, giai đoạn 2 là lúc quảng cáo chạy, khách đặt đơn và Sales xử lý đơn.</p>
+<div class="legend">
+  <span class="actors"><span class="chip" style="color:var(--c-content)">Team Content</span><span class="chip" style="color:var(--c-fb)">Team FB Ads</span><span class="chip" style="color:var(--c-kh)">Khách hàng</span><span class="chip" style="color:var(--c-sales)">Sales / CS</span><span class="chip" style="color:var(--c-tizi)">Tizi</span></span>
+  <span><i class="sw"></i>Việc cần làm (dòng nhỏ: công cụ / ghi chú)</span>
+  <span><i class="dm"></i>Rẽ nhánh, chọn 1 hướng</span>
+  <span><i class="dm" style="background:var(--band)"></i>“+”: làm song song, thứ tự tùy</span>
+  <span><i class="sw dash"></i>Bước cần xác nhận lại</span>
+  <span><i class="ln d"></i>Trao đổi thông tin / dữ liệu</span>
+  <span><i class="sw good"></i>/<i class="sw bad"></i>Kết quả cuối của đơn</span>
+</div>
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 1330 2020" role="img" aria-label="Sơ đồ swimlane quy trình FB Ads hiện tại: Team Content, Team FB Ads, Khách hàng, Sales/CS và Tizi, từ lên idea đến giao thành công hoặc hoàn đơn" class="flow">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahp" d="M0,0L10,5L0,10z"/></marker></defs>
+<rect class="lane " x="0" y="0" width="170" height="2020"/>
+<rect class="lane alt" x="170" y="0" width="490" height="2020"/>
+<rect class="lane " x="660" y="0" width="190" height="2020"/>
+<rect class="lane alt" x="850" y="0" width="260" height="2020"/>
+<rect class="lane " x="1110" y="0" width="220" height="2020"/>
+<rect class="lh lh-content" x="0" y="0" width="170" height="44"/><text class="lht" x="85.0" y="27" text-anchor="middle">Team Content</text>
+<text class="lrep" x="85.0" y="982" text-anchor="middle">Team Content</text>
+<rect class="lh lh-fb" x="170" y="0" width="490" height="44"/><text class="lht" x="415.0" y="27" text-anchor="middle">Team FB Ads</text>
+<text class="lrep" x="300" y="982" text-anchor="middle">Team FB Ads</text>
+<rect class="lh lh-kh" x="660" y="0" width="190" height="44"/><text class="lht" x="755.0" y="27" text-anchor="middle">Khách hàng</text>
+<text class="lrep" x="755.0" y="982" text-anchor="middle">Khách hàng</text>
+<rect class="lh lh-sales" x="850" y="0" width="260" height="44"/><text class="lht" x="980.0" y="27" text-anchor="middle">Sales / CS</text>
+<text class="lrep" x="980.0" y="982" text-anchor="middle">Sales / CS</text>
+<rect class="lh lh-tizi" x="1110" y="0" width="220" height="44"/><text class="lht" x="1220.0" y="27" text-anchor="middle">Tizi (hệ thống)</text>
+<text class="lrep" x="1220.0" y="982" text-anchor="middle">Tizi (hệ thống)</text>
+<line class="sep" x1="170" y1="0" x2="170" y2="2020"/>
+<line class="sep" x1="660" y1="0" x2="660" y2="2020"/>
+<line class="sep" x1="850" y1="0" x2="850" y2="2020"/>
+<line class="sep" x1="1110" y1="0" x2="1110" y2="2020"/>
+<rect class="band" x="0" y="52" width="1330" height="28"/><text class="bandt" x="16" y="71">GIAI ĐOẠN 1 · CHUẨN BỊ VÀ LÊN QUẢNG CÁO</text>
+<rect class="band" x="0" y="930" width="1330" height="28"/><text class="bandt" x="16" y="949">GIAI ĐOẠN 2 · VẬN HÀNH VÀ XỬ LÝ ĐƠN</text>
+<circle class="start" cx="415" cy="110" r="10"/><text class="note" x="433" y="114">Bắt đầu</text>
+<polyline class="ar" points="415,120 415,146" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,194 415,224" marker-end="url(#ah)"/>
+<polyline class="ar" points="389,250 85,250 85,306" marker-end="url(#ah)"/>
+<text class="al" x="250" y="242" text-anchor="middle">book</text>
+<polyline class="ar" points="415,276 415,306" marker-end="url(#ah)"/>
+<text class="al" x="423" y="294" text-anchor="start">tự viết</text>
+<polyline class="ar" points="415,354 415,386" marker-end="url(#ah)"/>
+<polyline class="ar" points="85,354 85,410 342,410" marker-end="url(#ah)"/>
+<text class="al" x="230" y="402" text-anchor="middle">bàn giao content</text>
+<polyline class="ar" points="415,434 415,464" marker-end="url(#ah)"/>
+<polyline class="ar" points="389,490 260,490 260,546" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,516 415,546" marker-end="url(#ah)"/>
+<polyline class="ar" points="441,490 570,490 570,546" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,594 415,626" marker-end="url(#ah)"/>
+<polyline class="ar" points="570,594 570,626" marker-end="url(#ah)"/>
+<polyline class="ar" points="643,650 1147,650" marker-end="url(#ah)"/>
+<text class="al" x="895" y="642" text-anchor="middle">nhập link Ladipage làm base URL</text>
+<polyline class="ar" points="1220,674 1220,730 643,730" marker-end="url(#ah)"/>
+<text class="al" x="895" y="722" text-anchor="middle">trả MKT link + mã API</text>
+<polyline class="ar" points="570,754 570,810 441,810" marker-end="url(#ah)"/>
+<polyline class="ar" points="260,594 260,810 389,810" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,674 415,784" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,836 415,866" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,914 415,984" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,1036 415,1066" marker-end="url(#ah)"/>
+<polyline class="ar" points="441,1010 755,1010 755,1056" marker-end="url(#ah)"/>
+<text class="al" x="620" y="1002" text-anchor="middle">quảng cáo hiển thị</text>
+<polyline class="ar" points="415,1114 415,1146" marker-end="url(#ah)"/>
+<polyline class="ar" points="415,1194 415,1226" marker-end="url(#ah)"/>
+<polyline class="ar" points="755,1104 755,1134" marker-end="url(#ah)"/>
+<polyline class="ar" points="729,1160 570,1160 570,1216" marker-end="url(#ah)"/>
+<text class="al" x="665" y="1152" text-anchor="middle">nhắn page</text>
+<polyline class="ar" points="755,1186 755,1216" marker-end="url(#ah)"/>
+<text class="al" x="763" y="1204" text-anchor="start">bấm link</text>
+<polyline class="ar" points="828,1240 1220,1240 1220,1296" marker-end="url(#ah)"/>
+<text class="al" x="1010" y="1232" text-anchor="middle">gửi form đặt hàng</text>
+<polyline class="ar" points="570,1264 570,1296" marker-end="url(#ah)"/>
+<polyline class="ar" points="643,1320 907,1320" marker-end="url(#ah)"/>
+<text class="al" x="755" y="1312" text-anchor="middle">chia lead</text>
+<polyline class="ar" points="1053,1320 1147,1320" marker-end="url(#ah)"/>
+<text class="al" x="1100" y="1312" text-anchor="middle">tạo đơn</text>
+<polyline class="ar" points="1220,1344 1220,1400 1053,1400" marker-end="url(#ah)"/>
+<text class="al" x="1130" y="1392" text-anchor="middle">đơn hiện lên</text>
+<polyline class="ar" points="980,1424 980,1454" marker-end="url(#ah)"/>
+<polyline class="ar" points="1006,1480 1220,1480 1220,1536" marker-end="url(#ah)"/>
+<text class="al" x="1110" y="1472" text-anchor="middle">có → hủy</text>
+<polyline class="ar" points="980,1506 980,1536" marker-end="url(#ah)"/>
+<text class="al" x="988" y="1524" text-anchor="start">không</text>
+<polyline class="ar dash" points="907,1560 828,1560" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<text class="al" x="867" y="1552" text-anchor="middle">gọi điện</text>
+<polyline class="ar" points="980,1584 980,1614" marker-end="url(#ah)"/>
+<polyline class="ar" points="1006,1640 1220,1640 1220,1584" marker-end="url(#ah)"/>
+<text class="al" x="1110" y="1632" text-anchor="middle">không</text>
+<polyline class="ar" points="980,1666 980,1696" marker-end="url(#ah)"/>
+<text class="al" x="988" y="1684" text-anchor="start">có</text>
+<polyline class="ar" points="1053,1720 1147,1720" marker-end="url(#ah)"/>
+<polyline class="ar" points="1220,1744 1220,1774" marker-end="url(#ah)"/>
+<polyline class="ar" points="1220,1826 1220,1856" marker-end="url(#ah)"/>
+<text class="al" x="1228" y="1844" text-anchor="start">có</text>
+<polyline class="ar" points="1246,1800 1316,1800 1316,1960 1293,1960" marker-end="url(#ah)"/>
+<text class="al" x="1280" y="1792" text-anchor="middle">không</text>
+<polyline class="ar dash" points="1147,1960 1130,1960 1130,1880" marker-end="url(#ah)"/>
+<polyline class="ar dash" points="1147,1880 260,1880 260,1170 342,1170" marker-end="url(#ah)"/>
+<text class="al" x="680" y="1872" text-anchor="middle">số đơn, doanh thu, hoàn → đối chiếu tay mỗi ngày</text>
+<polygon class="dia" points="415,224 441,250 415,276 389,250"/>
+<text class="dl" x="449" y="254">Tự viết hay book?</text>
+<polygon class="dia par" points="415,464 441,490 415,516 389,490"/>
+<text class="plus" x="415" y="496" text-anchor="middle">+</text>
+<text class="dl" x="449" y="480">song song, thứ tự tùy</text>
+<polygon class="dia par" points="415,784 441,810 415,836 389,810"/>
+<text class="plus" x="415" y="816" text-anchor="middle">+</text>
+<text class="dl" x="449" y="834">đủ cả 3 nhánh</text>
+<polygon class="dia par" points="415,984 441,1010 415,1036 389,1010"/>
+<text class="plus" x="415" y="1016" text-anchor="middle">+</text>
+<polygon class="dia" points="755,1134 781,1160 755,1186 729,1160"/>
+<text class="dl" x="789" y="1164">Kênh đặt?</text>
+<polygon class="dia" points="980,1454 1006,1480 980,1506 954,1480"/>
+<text class="dl" x="946" y="1484" text-anchor="end">Trùng / rác?</text>
+<polygon class="dia" points="980,1614 1006,1640 980,1666 954,1640"/>
+<text class="dl" x="946" y="1644" text-anchor="end">Khách đồng ý?</text>
+<polygon class="dia" points="1220,1774 1246,1800 1220,1826 1194,1800"/>
+<text class="dl" x="1186" y="1804" text-anchor="end">Giao được?</text>
+<g class="bx b-fb "><rect x="342" y="146" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="167" text-anchor="middle">Lên idea</text><text class="btag" x="415" y="183" text-anchor="middle">tự lên / theo leader</text></g>
+<g class="bx b-fb "><rect x="342" y="306" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="334" text-anchor="middle">Tự viết content</text></g>
+<g class="bx b-content "><rect x="12" y="306" width="146" height="48" rx="7"/>
+<text class="bt" x="85" y="327" text-anchor="middle">Viết content</text><text class="btag" x="85" y="343" text-anchor="middle">theo booking</text></g>
+<g class="bx b-fb "><rect x="342" y="386" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="407" text-anchor="middle">Chuẩn bị media</text><text class="btag" x="415" y="423" text-anchor="middle">video / ảnh</text></g>
+<g class="bx b-fb "><rect x="187" y="546" width="146" height="48" rx="7"/>
+<text class="bt" x="260" y="567" text-anchor="middle">Lên bài</text><text class="btag" x="260" y="583" text-anchor="middle">trên Page FB</text></g>
+<g class="bx b-fb "><rect x="342" y="546" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="567" text-anchor="middle">Tạo camp</text><text class="btag" x="415" y="583" text-anchor="middle">Ads Manager</text></g>
+<g class="bx b-fb "><rect x="497" y="546" width="146" height="48" rx="7"/>
+<text class="bt" x="570" y="567" text-anchor="middle">Xuất bản Ladipage</text><text class="btag" x="570" y="583" text-anchor="middle">Ladipage</text></g>
+<g class="bx b-fb "><rect x="342" y="626" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="647" text-anchor="middle">Set ad</text><text class="btag" x="415" y="663" text-anchor="middle">nhóm QC + quảng cáo</text></g>
+<g class="bx b-fb "><rect x="497" y="626" width="146" height="48" rx="7"/>
+<text class="bt" x="570" y="647" text-anchor="middle">Tạo MKT link</text><text class="btag" x="570" y="663" text-anchor="middle">trên Tizi</text></g>
+<g class="bx b-tizi "><rect x="1147" y="626" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="647" text-anchor="middle">Sinh MKT link + API</text><text class="btag" x="1220" y="663" text-anchor="middle">cho form đặt hàng</text></g>
+<g class="bx b-fb "><rect x="497" y="706" width="146" height="48" rx="7"/>
+<text class="bt" x="570" y="727" text-anchor="middle">Dán API Tizi</text><text class="btag" x="570" y="743" text-anchor="middle">vào form Ladipage</text></g>
+<g class="bx b-fb "><rect x="342" y="866" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="887" text-anchor="middle">Gắn MKT link vào ad</text><text class="btag" x="415" y="903" text-anchor="middle">bật chạy · Ads Manager</text></g>
+<g class="bx b-fb "><rect x="342" y="1066" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="1087" text-anchor="middle">Care ads</text><text class="btag" x="415" y="1103" text-anchor="middle">CPM, CPC, kết quả</text></g>
+<g class="bx b-fb "><rect x="342" y="1146" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="1167" text-anchor="middle">Đối chiếu với Tizi</text><text class="btag" x="415" y="1183" text-anchor="middle">cập nhật báo cáo sheet</text></g>
+<g class="bx b-fb "><rect x="342" y="1226" width="146" height="48" rx="7"/>
+<text class="bt" x="415" y="1247" text-anchor="middle">Quyết định</text><text class="btag" x="415" y="1263" text-anchor="middle">tăng NS · nhân bản · tắt</text></g>
+<g class="bx b-kh "><rect x="682" y="1056" width="146" height="48" rx="7"/>
+<text class="bt" x="755" y="1084" text-anchor="middle">Thấy quảng cáo</text></g>
+<g class="bx b-fb "><rect x="497" y="1216" width="146" height="48" rx="7"/>
+<text class="bt" x="570" y="1237" text-anchor="middle">Trả lời chat</text><text class="btag" x="570" y="1253" text-anchor="middle">xin tên, SĐT, địa chỉ</text></g>
+<g class="bx b-kh "><rect x="682" y="1216" width="146" height="48" rx="7"/>
+<text class="bt" x="755" y="1237" text-anchor="middle">Vào Ladipage</text><text class="btag" x="755" y="1253" text-anchor="middle">điền form đặt hàng</text></g>
+<g class="bx b-fb "><rect x="497" y="1296" width="146" height="48" rx="7"/>
+<text class="bt" x="570" y="1317" text-anchor="middle">Lưu lead vào sheet</text><text class="btag" x="570" y="1333" text-anchor="middle">chia vòng tròn cho Sales</text></g>
+<g class="bx b-sales unsure"><rect x="907" y="1296" width="146" height="48" rx="7"/>
+<text class="bt" x="980" y="1317" text-anchor="middle">Nhận lead, tạo đơn</text><text class="btag" x="980" y="1333" text-anchor="middle">cần xác nhận</text></g>
+<g class="bx b-tizi "><rect x="1147" y="1296" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="1317" text-anchor="middle">Đơn mới</text><text class="btag" x="1220" y="1333" text-anchor="middle">kèm mã MKT / UTM</text></g>
+<g class="bx b-sales "><rect x="907" y="1376" width="146" height="48" rx="7"/>
+<text class="bt" x="980" y="1397" text-anchor="middle">Check đơn</text><text class="btag" x="980" y="1413" text-anchor="middle">trên Tizi</text></g>
+<g class="bx b-sales "><rect x="907" y="1536" width="146" height="48" rx="7"/>
+<text class="bt" x="980" y="1557" text-anchor="middle">Gọi confirm</text><text class="btag" x="980" y="1573" text-anchor="middle">xác nhận đơn, địa chỉ</text></g>
+<g class="bx b-kh "><rect x="682" y="1536" width="146" height="48" rx="7"/>
+<text class="bt" x="755" y="1557" text-anchor="middle">Nghe máy</text><text class="btag" x="755" y="1573" text-anchor="middle">đồng ý / từ chối</text></g>
+<g class="bx b-tizi "><rect x="1147" y="1536" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="1557" text-anchor="middle">Hủy đơn</text><text class="btag" x="1220" y="1573" text-anchor="middle">ghi lý do</text></g>
+<g class="bx b-sales "><rect x="907" y="1696" width="146" height="48" rx="7"/>
+<text class="bt" x="980" y="1724" text-anchor="middle">Chốt đơn</text></g>
+<g class="bx b-tizi "><rect x="1147" y="1696" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="1717" text-anchor="middle">Giao vận chuyển</text><text class="btag" x="1220" y="1733" text-anchor="middle">đơn vị vận chuyển</text></g>
+<g class="bx b-tizi good"><rect x="1147" y="1856" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="1877" text-anchor="middle">Giao thành công</text><text class="btag" x="1220" y="1893" text-anchor="middle">doanh thu thật</text></g>
+<g class="bx b-tizi bad"><rect x="1147" y="1936" width="146" height="48" rx="7"/>
+<text class="bt" x="1220" y="1957" text-anchor="middle">Hoàn đơn</text><text class="btag" x="1220" y="1973" text-anchor="middle">mất phí 2 chiều</text></g>
+<text class="note" x="415" y="1292" text-anchor="middle">nhân bản → lặp lại từ Tạo camp</text>
+</svg>
+</div>
+<figcaption>Đơn đi theo 2 đường (chat page hoặc form Ladipage) rồi cùng về Tizi; Sales check, gọi xác nhận, chốt hoặc hủy. Song song đó, team FB Ads care ads và đối chiếu tay số liệu camp với Tizi để quyết định tăng ngân sách, nhân bản hay tắt.</figcaption>
+</figure>
+<div class="check">
+<section>
+<h2>Điểm cần xác nhận với trưởng phòng</h2>
+<ol>
+<li>Đơn từ chat page: sau khi lead được chia vòng tròn, Sales tự tạo đơn trên Tizi hay ai khác tạo (ô nét đứt)?</li>
+<li>Thứ tự thực tế giữa Lên bài, Tạo camp và chuẩn bị Ladipage ở từng team.</li>
+<li>Ai cập nhật trạng thái giao thành công / hoàn trên Tizi, và cập nhật sau bao lâu.</li>
+</ol>
+</section>
+<section>
+<h2>Điểm “đau” nhìn thấy trên sơ đồ</h2>
+<ul>
+<li>Đường nét đứt dưới cùng: đối chiếu đơn, doanh thu, hoàn với camp đang làm tay mỗi ngày.</li>
+<li>Nhánh chat page: lead đi qua Google Sheet trước khi vào Tizi, dữ liệu chat không được lưu.</li>
+<li>Gọi confirm là chốt chặn duy nhất cho địa chỉ sai, nguyên nhân của hoàn đơn.</li>
+</ul>
+</section>
+</div>
+</div>
+
+</body></html>

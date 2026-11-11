@@ -1,0 +1,156 @@
+{
+  "name": "FB Ads - Test Graph API (video + bai viet)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Bam de chay thu",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 200]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "access_token",
+              "value": "DAN_TOKEN_VAO_DAY",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "ad_account_id",
+              "value": "act_DAN_MA_TAI_KHOAN_QC",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "page_post_id",
+              "value": "MA_PAGE_MA_BAI",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 200]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Config').first().json.ad_account_id }}/ads",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "name,creative{body,title,video_id,thumbnail_url,effective_object_story_id}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('Config').first().json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Duong 1 - Lay danh sach QC",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 100],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const first = $input.first().json;\nconst ads = first.data || [];\nconst out = ads\n  .filter(a => a.creative && a.creative.video_id)\n  .map(a => ({ json: { ad_name: a.name, video_id: a.creative.video_id } }));\nif (out.length === 0) {\n  return [{ json: { ghi_chu: 'Khong co quang cao nao co video_id (hoac API tra loi). Xem node truoc.', phan_hoi: first } }];\n}\nreturn out;"
+      },
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Loc ra video_id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 100]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v21.0/{{ $json.video_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "source,length,permalink_url"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('Config').first().json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "Lay link video (source)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 100],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Config').first().json.page_post_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "message,created_time,permalink_url,attachments"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('Config').first().json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Duong 2 - Lay noi dung bai",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 320],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Bam de chay thu": {
+      "main": [[{ "node": "Config", "type": "main", "index": 0 }]]
+    },
+    "Config": {
+      "main": [
+        [
+          { "node": "Duong 1 - Lay danh sach QC", "type": "main", "index": 0 },
+          { "node": "Duong 2 - Lay noi dung bai", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Duong 1 - Lay danh sach QC": {
+      "main": [[{ "node": "Loc ra video_id", "type": "main", "index": 0 }]]
+    },
+    "Loc ra video_id": {
+      "main": [[{ "node": "Lay link video (source)", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

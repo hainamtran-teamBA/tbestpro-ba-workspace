@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dữ liệu kéo được từ 4 nguồn video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Bố cục: đầu trang có chú giải 4 mức → ma trận "cần gì × nguồn nào" (điểm nhấn của trang)
+   → chi tiết từng nguồn theo tab (trường dữ liệu, luồng n8n, giới hạn) → khuôn sheet chung → nguồn tra cứu.
+   Màu: giấy xám lạnh, mực xanh rêu đậm; 4 mức lấy dữ liệu mã hóa bằng cả hình (chấm đặc, nửa, vòng, gạch) lẫn màu. */
+:root{
+  --paper:#f5f6f4;
+  --sheet:#ffffff;
+  --ink:#16201d;
+  --soft:#56635e;
+  --rule:#dde2df;
+  --pine:#1f5c4d;      /* API chính thức, nhấn */
+  --pine-tint:#e3efe9;
+  --amber:#a8590b;     /* bên thứ ba */
+  --amber-tint:#fbefdf;
+  --slate:#4d5b66;     /* làm tay */
+  --none:#b7bfbb;      /* không có */
+  --code-bg:#eef1ef;
+  --ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--ui);-webkit-font-smoothing:antialiased}
+a{color:var(--pine);text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.84em;background:var(--code-bg);padding:1px 5px;border-radius:4px;white-space:nowrap}
+:focus-visible{outline:2px solid var(--pine);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left))}
+
+/* Đầu trang */
+header{padding:56px 0 32px}
+h1{margin:0;font-size:clamp(32px,4.6vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:700;max-width:16ch;text-wrap:balance}
+.intro{margin:18px 0 0;max-width:62ch;font-size:18px;color:var(--soft)}
+.intro b{color:var(--ink);font-weight:600}
+.key{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:28px;font-size:15px}
+.key span{display:inline-flex;align-items:center;gap:9px}
+
+/* Ký hiệu 4 mức */
+.m{display:inline-block;width:14px;height:14px;border-radius:50%;flex:none}
+.m.api{background:var(--pine)}
+.m.third{background:linear-gradient(90deg,var(--amber) 50%,transparent 50%);box-shadow:inset 0 0 0 2px var(--amber)}
+.m.hand{box-shadow:inset 0 0 0 2px var(--slate)}
+.m.no{width:14px;height:2px;border-radius:1px;background:var(--none)}
+
+h2{margin:0 0 6px;font-size:26px;letter-spacing:-.015em;line-height:1.25}
+.lede{margin:0 0 22px;color:var(--soft);max-width:66ch}
+section{padding:40px 0}
+
+/* Ma trận */
+.matrix{background:var(--sheet);border:1px solid var(--rule);border-radius:16px;overflow-x:auto}
+.matrix table{border-collapse:collapse;width:100%;min-width:820px}
+.matrix th,.matrix td{padding:14px 16px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.matrix thead th{font-size:15px;font-weight:600;background:#fafbfa;border-bottom:1px solid var(--rule)}
+.matrix thead th small{display:block;font-weight:400;color:var(--soft);font-size:13px}
+.matrix tbody th{font-weight:600;width:22%}
+.matrix tbody th small{display:block;font-weight:400;color:var(--soft);font-size:13px}
+.matrix tbody tr:last-child>*{border-bottom:0}
+.cell{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.45}
+.cell .m{margin-top:4px}
+.cell.no{color:var(--soft)}
+.matrix tr.verdict th,.matrix tr.verdict td{background:var(--pine-tint);font-weight:600}
+.matrix tr.verdict td{font-size:14px}
+
+/* Tab nguồn */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.tabs button{font:600 15px var(--ui);color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:44px;transition:background .18s,border-color .18s,color .18s}
+.tabs button:hover{border-color:var(--pine)}
+.tabs button[aria-selected="true"]{background:var(--pine);border-color:var(--pine);color:#fff}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:16px;padding:28px;display:grid;gap:28px}
+.panel[hidden]{display:none}
+.sum{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;align-items:start}
+.sum p{margin:0;font-size:17px;max-width:58ch}
+.routes{display:grid;gap:10px}
+.route{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:#f8f9f8;font-size:14.5px;line-height:1.45}
+.route .m{margin-top:4px}
+.route b{display:block;font-size:15px}
+h3{margin:0 0 12px;font-size:18px;letter-spacing:-.01em}
+
+.fields{overflow-x:auto;border:1px solid var(--rule);border-radius:12px}
+.fields table{border-collapse:collapse;width:100%;min-width:720px;font-size:14.5px}
+.fields th,.fields td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+.fields thead th{font-weight:600;font-size:14px;color:var(--soft);background:#fafbfa}
+.fields tbody tr:last-child td{border-bottom:0}
+.fields td:first-child{font-weight:600}
+.how{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+
+/* Luồng n8n */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;row-gap:10px}
+.node{background:#f8f9f8;border:1px solid var(--rule);border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.35;max-width:210px}
+.node b{display:block;font-size:14.5px}
+.node span{color:var(--soft);font-size:13px}
+.node.ai{border-color:var(--pine);background:var(--pine-tint)}
+.node.human{border-style:dashed}
+.join{width:26px;align-self:center;height:2px;background:var(--rule);position:relative;flex:none}
+.join::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:#aab3ae}
+.alt{margin:14px 0 0;font-size:14.5px;color:var(--soft)}
+
+.limits{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+
+/* Khuôn sheet chung */
+.schema{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:16px}
+.schema table{border-collapse:collapse;width:100%;min-width:860px;font-size:14.5px}
+.schema th,.schema td{padding:11px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:middle}
+.schema thead th{font-weight:600;font-size:14px;background:#fafbfa}
+.schema td.c{text-align:center}
+.schema tbody tr:last-child td{border-bottom:0}
+.who{font-size:13px;color:var(--soft)}
+
+footer{padding:36px 0 64px;border-top:1px solid var(--rule);margin-top:24px;font-size:14px;color:var(--soft)}
+footer ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+
+@media(max-width:820px){
+  .sum{grid-template-columns:minmax(0,1fr)}
+  .panel{padding:20px}
+  .join{width:2px;height:16px;align-self:flex-start;margin-left:24px}
+  .join::after{right:-4px;top:auto;bottom:-6px;border-left-color:transparent;border-top-color:#aab3ae}
+  .flow{flex-direction:column}
+  .node{max-width:none}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.tabs button{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1>Dữ liệu kéo được từ 4 nguồn video</h1>
+  <p class="intro">Căn cứ để dựng workflow n8n kéo video viral và quảng cáo giảm cân ở Thái Lan, Malaysia, Indonesia. <b>Chỉ YouTube Shorts kéo tự động được bằng API chính thức.</b> Ba nguồn còn lại cần công cụ thu thập bên thứ ba hoặc người dán link.</p>
+  <div class="key" aria-label="Chú giải">
+    <span><i class="m api"></i>API chính thức</span>
+    <span><i class="m third"></i>Công cụ bên thứ ba (rủi ro điều khoản, có phí)</span>
+    <span><i class="m hand"></i>Người xem và dán tay</span>
+    <span><i class="m no"></i>Không lấy được</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="ma-tran" aria-labelledby="h-matran">
+  <h2 id="h-matran">Cần gì, lấy ở đâu</h2>
+  <p class="lede">Mỗi hàng là một dữ liệu bước lọc và phân tích cần. Mỗi ô ghi cách lấy tốt nhất hiện có cho nguồn đó.</p>
+  <div class="matrix"><table>
+    <thead><tr><th>Dữ liệu cần</th><th>YouTube Shorts<small>Video viral</small></th><th>Meta Ad Library<small>Quảng cáo đang chạy</small></th><th>TikTok<small>Video và Top Ads</small></th><th>Facebook Reels<small>Video viral</small></th></tr></thead>
+    <tbody>
+      <tr><th>Tìm theo từ khóa<small>Bước 1</small></th>
+        <td><div class="cell"><i class="m api"></i><span>Có, lọc theo nước và ngày đăng</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Trên web, chọn nước</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; hoặc tìm tay trên app</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Tìm tay trên app</span></div></td></tr>
+      <tr><th>Lượt xem<small>Tiêu chí trên 300.000</small></th>
+        <td><div class="cell"><i class="m api"></i><code>viewCount</code></div></td>
+        <td><div class="cell no"><i class="m no"></i><span>Không có. Thay bằng số ngày chạy</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; xem tay trên app</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Xem tay; bên thứ ba</span></div></td></tr>
+      <tr><th>Số follow của kênh<small>Tiêu chí dưới 200.000</small></th>
+        <td><div class="cell"><i class="m api"></i><code>subscriberCount</code></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Mở trang Page để xem</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; xem tay</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Mở trang Page để xem</span></div></td></tr>
+      <tr><th>Ngày đăng hoặc ngày chạy<small>Tiêu chí 90 ngày</small></th>
+        <td><div class="cell"><i class="m api"></i><code>publishedAt</code></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Dòng "Bắt đầu chạy từ" trên web</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; xem tay</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Xem tay</span></div></td></tr>
+      <tr><th>Quốc gia<small>Ưu tiên TH, MY, ID</small></th>
+        <td><div class="cell"><i class="m api"></i><span>Lọc <code>regionCode</code>; nước của kênh không phải lúc nào cũng có</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Chọn nước khi tìm</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Creative Center lọc theo khu vực</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Đoán theo ngôn ngữ</span></div></td></tr>
+      <tr><th>Nội dung chữ<small>Caption, tiêu đề</small></th>
+        <td><div class="cell"><i class="m api"></i><code>title</code>, <code>description</code></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Chép từ web; bên thứ ba</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; chép tay</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Chép tay; bên thứ ba</span></div></td></tr>
+      <tr><th>Bình luận<small>Insight hỏi mua, hỏi cách</small></th>
+        <td><div class="cell"><i class="m api"></i><code>commentThreads</code></div></td>
+        <td><div class="cell no"><i class="m no"></i><span>Thư viện không hiện bình luận</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Bên thứ ba; đọc tay</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Đọc tay</span></div></td></tr>
+      <tr><th>Video để AI phân tích<small>Bước 3</small></th>
+        <td><div class="cell"><i class="m api"></i><span>Đưa link thẳng cho Gemini, không cần tải</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Tải file rồi đưa lên Gemini</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Tải file rồi đưa lên Gemini</span></div></td>
+        <td><div class="cell"><i class="m hand"></i><span>Tải file rồi đưa lên Gemini</span></div></td></tr>
+      <tr class="verdict"><th>Tự động hoàn toàn được không</th>
+        <td><div class="cell"><i class="m api"></i><span>Được</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Chỉ qua bên thứ ba</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Chỉ qua bên thứ ba</span></div></td>
+        <td><div class="cell"><i class="m third"></i><span>Chỉ qua bên thứ ba</span></div></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="chi-tiet" aria-labelledby="h-chitiet">
+  <h2 id="h-chitiet">Chi tiết từng nguồn</h2>
+  <p class="lede">Trường dữ liệu, tên gốc để map trong n8n, luồng gợi ý và giới hạn cần biết trước khi dựng.</p>
+
+  <div class="tabs" role="tablist" aria-label="Nguồn">
+    <button role="tab" id="t-yt" aria-controls="p-yt" aria-selected="true">YouTube Shorts</button>
+    <button role="tab" id="t-ad" aria-controls="p-ad" aria-selected="false" tabindex="-1">Meta Ad Library</button>
+    <button role="tab" id="t-tt" aria-controls="p-tt" aria-selected="false" tabindex="-1">TikTok</button>
+    <button role="tab" id="t-fb" aria-controls="p-fb" aria-selected="false" tabindex="-1">Facebook Reels</button>
+  </div>
+
+  <!-- YouTube -->
+  <div class="panel" role="tabpanel" id="p-yt" aria-labelledby="t-yt">
+    <div class="sum">
+      <p>Nguồn duy nhất kéo tự động trọn vẹn bằng API chính thức. Chỉ cần một API key Google, miễn phí. Đủ dữ liệu cho cả 6 tiêu chí lọc, trừ "có phải nội dung trước – sau", phần này để AI xem video.</p>
+      <div class="routes">
+        <div class="route"><i class="m api"></i><div><b>YouTube Data API v3</b>API key từ Google Cloud Console</div></div>
+        <div class="route"><i class="m api"></i><div><b>Gemini API</b>Nhận link YouTube công khai để phân tích video</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Trường dữ liệu</h3>
+      <div class="fields"><table>
+        <thead><tr><th>Dữ liệu</th><th>Tên gốc</th><th>Lệnh gọi</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Mã video, link</td><td><code>id.videoId</code></td><td><code>search.list</code></td><td>Link = youtube.com/shorts/ + mã</td></tr>
+          <tr><td>Tiêu đề, mô tả</td><td><code>snippet.title</code>, <code>snippet.description</code></td><td><code>search.list</code></td><td>Ngôn ngữ gốc của video</td></tr>
+          <tr><td>Ngày đăng</td><td><code>snippet.publishedAt</code></td><td><code>search.list</code></td><td>Lọc sẵn bằng <code>publishedAfter</code></td></tr>
+          <tr><td>Kênh</td><td><code>snippet.channelId</code>, <code>channelTitle</code></td><td><code>search.list</code></td><td></td></tr>
+          <tr><td>Lượt xem, thích, bình luận</td><td><code>statistics.viewCount</code>, <code>likeCount</code>, <code>commentCount</code></td><td><code>videos.list</code></td><td>Kênh có thể ẩn lượt thích</td></tr>
+          <tr><td>Thời lượng</td><td><code>contentDetails.duration</code></td><td><code>videos.list</code></td><td>Dạng ISO 8601, ví dụ PT45S</td></tr>
+          <tr><td>Follow kênh</td><td><code>statistics.subscriberCount</code></td><td><code>channels.list</code></td><td>Làm tròn; kênh có thể ẩn</td></tr>
+          <tr><td>Nước của kênh</td><td><code>snippet.country</code></td><td><code>channels.list</code></td><td>Chủ kênh tự khai, hay trống</td></tr>
+          <tr><td>Bình luận</td><td><code>snippet.topLevelComment.snippet.textDisplay</code></td><td><code>commentThreads.list</code></td><td>Lấy 20–50 bình luận đầu là đủ đọc insight</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h3>Luồng n8n gợi ý</h3>
+      <div class="flow">
+        <div class="node"><b>Schedule Trigger</b><span>Mỗi sáng 7h</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets</b><span>Đọc bộ từ khóa theo nước</span></div><i class="join"></i>
+        <div class="node"><b>HTTP Request</b><span>search.list, Shorts, 90 ngày</span></div><i class="join"></i>
+        <div class="node"><b>HTTP Request</b><span>videos.list và channels.list</span></div><i class="join"></i>
+        <div class="node"><b>Code</b><span>Lọc lượt xem, follow, ngày</span></div><i class="join"></i>
+        <div class="node ai"><b>Gemini</b><span>Trước – sau, hook, mạch kể</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets</b><span>Ghi vào sheet chung</span></div>
+      </div>
+    </div>
+    <div>
+      <h3>Giới hạn</h3>
+      <ul class="limits">
+        <li>Mặc định 10.000 điểm mỗi ngày. Một lần tìm tốn 100 điểm, các lệnh khác khoảng 1 điểm, nên khoảng 90 lần tìm mỗi ngày.</li>
+        <li>API không có bộ lọc riêng cho Shorts. <code>videoDuration=short</code> lấy video dưới 4 phút, cần lọc thêm theo thời lượng.</li>
+        <li>Không tải file video qua API. Gemini đọc thẳng link nên không cần tải.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Ad Library -->
+  <div class="panel" role="tabpanel" id="p-ad" aria-labelledby="t-ad" hidden>
+    <div class="sum">
+      <p>Có API nhưng không dùng được cho thị trường của mình: ngoài EU, API chỉ trả quảng cáo chính trị, xã hội. Đã gọi thử ngày 09/11/2026 bằng token dự án và bị từ chối (mã lỗi 10). Trang web vẫn xem được mọi quảng cáo đang chạy, nhưng không có lượt xem hay chi tiêu.</p>
+      <div class="routes">
+        <div class="route"><i class="m hand"></i><div><b>Xem trên web</b>Chọn nước, gõ từ khóa, dán link vào sheet</div></div>
+        <div class="route"><i class="m third"></i><div><b>Công cụ thu thập bên thứ ba</b>Lấy dữ liệu đang hiện trên web theo lịch</div></div>
+        <div class="route"><i class="m no"></i><div><b>Ad Library API</b>Không trả quảng cáo bán hàng ở Đông Nam Á</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Trường dữ liệu (hiện trên web)</h3>
+      <div class="fields"><table>
+        <thead><tr><th>Dữ liệu</th><th>Tên gốc trong API</th><th>Lấy qua</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Mã quảng cáo</td><td><code>id</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Dòng "Library ID"</td></tr>
+          <tr><td>Tên Page</td><td><code>page_name</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td></td></tr>
+          <tr><td>Nội dung chữ</td><td><code>ad_creative_bodies</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td></td></tr>
+          <tr><td>Ngày bắt đầu chạy</td><td><code>ad_delivery_start_time</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Thay cho lượt xem: chạy càng lâu càng đáng xem [giả định]</td></tr>
+          <tr><td>Số phiên bản cùng nội dung</td><td>Không có trong API</td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Dòng "X quảng cáo dùng nội dung này"</td></tr>
+          <tr><td>Nền tảng chạy</td><td><code>publisher_platforms</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Facebook, Instagram, Messenger</td></tr>
+          <tr><td>Link trang đích</td><td><code>ad_creative_link_captions</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Biết đối thủ bán ở đâu</td></tr>
+          <tr><td>Video, ảnh</td><td><code>ad_snapshot_url</code></td><td><span class="how"><i class="m hand"></i>Web</span></td><td>Tải về để Gemini phân tích</td></tr>
+          <tr><td>Chi tiêu, lượt hiển thị</td><td><code>spend</code>, <code>impressions</code></td><td><span class="how"><i class="m no"></i>Không có</span></td><td>Chỉ có với quảng cáo chính trị</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h3>Luồng n8n gợi ý</h3>
+      <div class="flow">
+        <div class="node human"><b>Người dán link</b><span>Vào sheet chung</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets Trigger</b><span>Khi có dòng mới</span></div><i class="join"></i>
+        <div class="node"><b>Code</b><span>Tính số ngày đã chạy</span></div><i class="join"></i>
+        <div class="node ai"><b>Gemini</b><span>Phân tích video đã tải</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets</b><span>Ghi kết quả</span></div>
+      </div>
+      <p class="alt">Nếu dùng bên thứ ba: thay hai ô đầu bằng Schedule Trigger và HTTP Request gọi dịch vụ thu thập.</p>
+    </div>
+    <div>
+      <h3>Giới hạn</h3>
+      <ul class="limits">
+        <li>Không có lượt xem, chi tiêu: chỉ đoán độ hiệu quả qua số ngày chạy và số phiên bản.</li>
+        <li>Thu thập tự động trang web của Meta có rủi ro vi phạm điều khoản; cần công ty quyết.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TikTok -->
+  <div class="panel" role="tabpanel" id="p-tt" aria-labelledby="t-tt" hidden>
+    <div class="sum">
+      <p>Hai API chính thức đều không dành cho công ty: Research API chỉ cho nhà nghiên cứu học thuật, Commercial Content API chủ yếu là quảng cáo ở EU. Creative Center xem miễn phí quảng cáo nổi bật theo khu vực nhưng không có API.</p>
+      <div class="routes">
+        <div class="route"><i class="m hand"></i><div><b>Creative Center Top Ads</b>Lọc khu vực, ngành hàng; đăng nhập để xem đủ</div></div>
+        <div class="route"><i class="m hand"></i><div><b>Tìm trong app</b>Lọc theo ngày đăng, xem lượt xem và follow</div></div>
+        <div class="route"><i class="m third"></i><div><b>Công cụ thu thập bên thứ ba</b>Video, chỉ số tương tác, thông tin kênh</div></div>
+        <div class="route"><i class="m no"></i><div><b>Research API</b>Công ty không đăng ký được</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Trường dữ liệu</h3>
+      <div class="fields"><table>
+        <thead><tr><th>Dữ liệu</th><th>Tên gốc (Research API, để tham khảo)</th><th>Lấy qua</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Link video</td><td><code>id</code></td><td><span class="how"><i class="m hand"></i>App, web</span></td><td></td></tr>
+          <tr><td>Caption, hashtag</td><td><code>video_description</code>, <code>hashtag_names</code></td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Ngày đăng</td><td><code>create_time</code></td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Lượt xem, thích, bình luận, chia sẻ</td><td><code>view_count</code>, <code>like_count</code>, <code>comment_count</code>, <code>share_count</code></td><td><span class="how"><i class="m hand"></i>App</span></td><td>Bên thứ ba thường có đủ [cần kiểm theo dịch vụ]</td></tr>
+          <tr><td>Follow kênh</td><td>Thuộc thông tin người dùng</td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Khu vực</td><td><code>region_code</code></td><td><span class="how"><i class="m hand"></i>Creative Center</span></td><td>App không ghi nước của video</td></tr>
+          <tr><td>Quảng cáo nổi bật</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>Creative Center</span></td><td>Chưa đăng nhập chỉ thấy 5 quảng cáo</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h3>Luồng n8n gợi ý</h3>
+      <div class="flow">
+        <div class="node human"><b>Người dán link</b><span>Kèm lượt xem, follow</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets Trigger</b><span>Khi có dòng mới</span></div><i class="join"></i>
+        <div class="node"><b>Code</b><span>Lọc 6 tiêu chí</span></div><i class="join"></i>
+        <div class="node ai"><b>Gemini</b><span>Phân tích video đã tải</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets</b><span>Ghi kết quả</span></div>
+      </div>
+      <p class="alt">Nếu dùng bên thứ ba: Schedule Trigger và HTTP Request thay cho người dán link; các bước sau giữ nguyên.</p>
+    </div>
+    <div>
+      <h3>Giới hạn</h3>
+      <ul class="limits">
+        <li>Video TikTok phải tải file mới phân tích được; chỉ dùng nội bộ, không đăng lại.</li>
+        <li>Các dịch vụ thu thập bên thứ ba hay hỏng khi TikTok đổi giao diện.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Facebook Reels -->
+  <div class="panel" role="tabpanel" id="p-fb" aria-labelledby="t-fb" hidden>
+    <div class="sum">
+      <p>Không có API tìm kiếm Reels của người khác. Graph API chỉ đọc được Page mình quản lý; đọc nội dung công khai của Page khác cần Meta duyệt tính năng riêng và rất hạn chế.</p>
+      <div class="routes">
+        <div class="route"><i class="m hand"></i><div><b>Tìm trong app</b>Tab Reels hoặc Video, mở Page để xem số liệu</div></div>
+        <div class="route"><i class="m third"></i><div><b>Công cụ thu thập bên thứ ba</b>Theo Page hoặc theo từ khóa</div></div>
+        <div class="route"><i class="m no"></i><div><b>Graph API</b>Chỉ Page của công ty</div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Trường dữ liệu</h3>
+      <div class="fields"><table>
+        <thead><tr><th>Dữ liệu</th><th>Tên gốc</th><th>Lấy qua</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Link Reel</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Lượt xem</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>App</span></td><td>Hiện dưới Reel</td></tr>
+          <tr><td>Cảm xúc, bình luận, chia sẻ</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Follow của Page</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>App</span></td><td>Mở trang Page</td></tr>
+          <tr><td>Ngày đăng, caption</td><td>Không có API</td><td><span class="how"><i class="m hand"></i>App</span></td><td></td></tr>
+          <tr><td>Nước</td><td>Không có</td><td><span class="how"><i class="m no"></i>Không</span></td><td>Đoán theo ngôn ngữ, Page</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h3>Luồng n8n gợi ý</h3>
+      <div class="flow">
+        <div class="node human"><b>Người dán link</b><span>Kèm lượt xem, follow</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets Trigger</b><span>Khi có dòng mới</span></div><i class="join"></i>
+        <div class="node"><b>Code</b><span>Lọc 6 tiêu chí</span></div><i class="join"></i>
+        <div class="node ai"><b>Gemini</b><span>Phân tích video đã tải</span></div><i class="join"></i>
+        <div class="node"><b>Google Sheets</b><span>Ghi kết quả</span></div>
+      </div>
+    </div>
+    <div>
+      <h3>Giới hạn</h3>
+      <ul class="limits">
+        <li>Không lọc được theo nước; dễ lẫn kênh Philippines cần loại.</li>
+        <li>Nếu đã có danh sách Page mẫu thì theo dõi theo Page nhanh hơn tìm từ khóa.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sheet" aria-labelledby="h-sheet">
+  <h2 id="h-sheet">Khuôn sheet chung</h2>
+  <p class="lede">Mọi nguồn đổ về một sheet với cùng cột, để bước lọc và phân tích chạy một lần cho tất cả. Ô đánh dấu là nguồn đó điền được cột này.</p>
+  <div class="schema"><table>
+    <thead><tr><th>Cột</th><th>Ai điền</th><th class="c">YouTube</th><th class="c">Ad Library</th><th class="c">TikTok</th><th class="c">Reels</th></tr></thead>
+    <tbody>
+      <tr><td><code>link</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>nguon</code>, <code>nuoc</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>ngay_dang</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>luot_xem</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m no"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>so_ngay_chay</code></td><td class="who">Workflow tính</td><td class="c"><i class="m no"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m no"></i></td><td class="c"><i class="m no"></i></td></tr>
+      <tr><td><code>follow_kenh</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>noi_dung</code></td><td class="who">Workflow hoặc người dán</td><td class="c"><i class="m api"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td><td class="c"><i class="m hand"></i></td></tr>
+      <tr><td><code>dat_hay_loai</code>, <code>ly_do</code></td><td class="who">Agent lọc</td><td class="c" colspan="4">Cả 4 nguồn</td></tr>
+      <tr><td><code>hook</code>, <code>mach_ke</code>, <code>chan_dung</code>, <code>insight</code></td><td class="who">Agent phân tích (Gemini)</td><td class="c" colspan="4">Cả 4 nguồn</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  Rà ngày 09/11/2026. Quyền truy cập của các nền tảng thay đổi thường xuyên, cần kiểm lại trước khi dựng.
+  <ul>
+    <li>Chính thức: <a href="https://developers.google.com/youtube/v3" target="_blank" rel="noopener">YouTube Data API v3</a>, <a href="https://ai.google.dev/gemini-api/docs/video-understanding" target="_blank" rel="noopener">Gemini video</a>, <a href="https://www.facebook.com/ads/library/api" target="_blank" rel="noopener">Meta Ad Library API</a>, <a href="https://developers.tiktok.com/" target="_blank" rel="noopener">TikTok for Developers</a>, <a href="https://ads.tiktok.com/business/creativecenter/inspiration/topads/pc/en" target="_blank" rel="noopener">TikTok Creative Center</a></li>
+    <li>Bên thứ ba: <a href="https://www.shortsintel.com/guides/meta-ad-library-api" target="_blank" rel="noopener">Phạm vi Ad Library API ngoài EU</a>, <a href="https://www.relevantaudience.com/tiktok-ads/what-is-tiktok-creative-center/" target="_blank" rel="noopener">Giới hạn Creative Center</a></li>
+    <li>Dữ liệu dự án: gọi thử Meta Ad Library API bằng token hệ thống ngày 09/11/2026, lỗi mã 10</li>
+  </ul>
+</footer>
+
+<script>
+// Tab nguồn: bấm hoặc dùng phím mũi tên trái/phải
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function show(t){
+  tabs.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute('aria-controls')).hidden=!on;});
+}
+tabs.forEach((t,i)=>{
+  t.addEventListener('click',()=>show(t));
+  t.addEventListener('keydown',e=>{
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+    const n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];show(n);n.focus();
+  });
+});
+</script>
+</body>
+</html>

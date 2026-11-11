@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WORKNOTE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand"><span class="bars"><i></i><i></i><i></i></span> WORKNOTE</div>
+      <nav>
+        <a href="#/" data-nav="overview" id="nav-overview"></a>
+        <a href="#/reports" data-nav="reports" id="nav-reports"></a>
+        <button type="button" id="nav-create" class="navbtn"></button>
+      </nav>
+      <div class="side-foot"><span class="navbtn disabled" id="nav-settings"></span></div>
+    </aside>
+    <div class="main">
+      <header class="top">
+        <div>
+          <div class="hello-small">Chào mừng trở lại,</div>
+          <div class="hello" id="hello">Bạn</div>
+          <div class="hello-date" id="hello-date"></div>
+        </div>
+        <div class="top-right">
+          <span class="bell" id="bell"></span>
+          <button type="button" class="user" id="user-chip"></button>
+        </div>
+      </header>
+      <main id="view"></main>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
