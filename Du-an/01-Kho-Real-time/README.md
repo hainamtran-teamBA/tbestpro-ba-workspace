@@ -22,7 +22,7 @@
 Sếp (chỉ đạo) · Logistics và chứng từ XNK (1 người) · Mua hàng nội địa (2) · Quản lý kho PH và nhân viên Kho 7 · Kế toán · Sale Ganico/CEO · Anh An (IT) · Đội QC thuê ngoài · Nhà cung cấp giải pháp.
 
 ## 5. Đã có
-- Kiến thức: `hieu-nghiep-vu/references/` (`kho-wms.md` mục 7-10, `kho-7-gani-2-wms.md`, `truy-vet-lo-ca-phe.md`, `thuc-te-cong-ty.md`).
+- Kiến thức: `tri-thuc/` (`kho-wms.md` mục 7-10, `kho-7-gani-2-wms.md`, `truy-vet-lo-ca-phe.md`, `thuc-te-cong-ty.md`).
 - As-Is Kho 7 (chỉ để đọc): `docx/Kho7_Luong_hien_tai_AsIs.docx`; bản tóm tắt Google Docs [Kho 7 - Quy trình hiện tại và câu hỏi cho các bên giải pháp](https://docs.google.com/document/d/1Mdb9ZkNYCnsrOvpSBw6_AEPnB1aQBcVJceayNRUJHPQ/edit).
 - Brief gửi các bên (2026-11-03): [Kho 7 - Thông tin gửi bên giải pháp](https://docs.google.com/document/d/1wxE1d_zHSwe4EOrXj9PuygnTEgl2dvCHF0WyL_IhtbI/edit).
 - Bảng so sánh giải pháp RFID/QR, nội bộ (2026-11-04): `Du-an/01-Kho-Real-time/Kho7_So_sanh_giai_phap_RFID.xlsx` (6 tab: hướng dẫn, danh sách, kỹ thuật, chấm điểm, chi phí 3 năm, tóm tắt).

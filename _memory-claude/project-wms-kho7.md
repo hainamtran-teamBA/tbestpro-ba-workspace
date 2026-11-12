@@ -10,7 +10,7 @@ metadata:
 
 Từ 2026-10-26: sếp yêu cầu số hóa kho cà phê (Kho 7, Ganico) bằng barcode/RFID vì kho đang thủ công qua Viber, lo thất thoát. Người dùng đã thiết kế demo "Gani 2 WMS" (file `Gani 2 WMS.html`, sổ tay `Sổ tay WMS Version 1.0.pdf`) giao anh An (trưởng IT) code; sơ đồ phân quyền: `Ganico2_so_do_phan_quyen_va_quy_trinh (1).pdf`. Người dùng nhận ra mình chốt barcode trước khi khảo sát giải pháp, nên đang quay lại khảo sát thị trường và cách doanh nghiệp khác vận hành. Chưa có số liệu thất thoát (cần đo bằng kiểm kê thử).
 
-Ghi chú chi tiết (điểm cần làm rõ trong demo: 3 ngưỡng độ ẩm khác nhau, dung sai cân, mức truy vết lô/pallet/bao, FIFO chưa chốt) nằm ở `hieu-nghiep-vu/references/kho-7-gani-2-wms.md`.
+Ghi chú chi tiết (điểm cần làm rõ trong demo: 3 ngưỡng độ ẩm khác nhau, dung sai cân, mức truy vết lô/pallet/bao, FIFO chưa chốt) nằm ở `tri-thuc/kho-7-gani-2-wms.md`.
 
 **2026-11-04:** Kho 7 đang ở **bước 2 (học thị trường)**. Đã có brief gửi các bên và phiếu đi demo kèm thang chấm (link trong `Du-an/01-Kho-Real-time/README.md`). Việc tiếp theo: đi demo, chấm điểm, và đo baseline thất thoát (kiểm kê đối chiếu) song song.
 

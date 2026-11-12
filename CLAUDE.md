@@ -15,9 +15,9 @@
 ## Tri thức ở đâu
 | Hỏi về | Đọc |
 |---|---|
-| Công ty: mô hình, hệ thống, tổ chức, thuật ngữ | `.claude/skills/hieu-nghiep-vu/references/thuc-te-cong-ty.md` |
-| Kho, Kho 7, Nextwaves | `.claude/skills/hieu-nghiep-vu/references/kho-wms.md`, `kho-7-gani-2-wms.md` |
-| Luồng đơn hàng, kiến trúc Tbestpro OS | `.claude/skills/hieu-nghiep-vu/references/ban-do-luong-don-hang.md`, `kien-truc-tbestpro-os.md` |
+| Công ty: mô hình, hệ thống, tổ chức, thuật ngữ | `tri-thuc/thuc-te-cong-ty.md` |
+| Kho, Kho 7, Nextwaves | `tri-thuc/kho-wms.md`, `tri-thuc/kho-7-gani-2-wms.md` |
+| Luồng đơn hàng, kiến trúc Tbestpro OS | `tri-thuc/ban-do-luong-don-hang.md`, `tri-thuc/kien-truc-tbestpro-os.md` |
 | Một dự án cụ thể | `Du-an/<dự án>/README.md` (và `CLAUDE.md` của dự án nếu có) |
 | Tài liệu gốc | `pdf/`, `docx/` (chỉ đọc khi cần) |
 
@@ -36,7 +36,7 @@
 - Trang demo, giao diện (front end tĩnh): xuất ra link Cloudflare Pages thay cho localhost. Dữ liệu nội bộ thì bật trang đăng nhập có mã hóa.
 
 ## Đội agent
-- Cuộc chat chính: trao đổi, hỏi ngược, đưa phương án, chốt và thiết kế (dùng các skill khảo sát, tư vấn, thiết kế quy trình, viết PRD).
+- Cuộc chat chính: trao đổi, hỏi ngược, đưa phương án, chốt và thiết kế (skill `grilling` khi cần hỏi kỹ; giao diện dùng `frontend-design`, `ui-ux-pro-max`, `evon:ui-ux`).
 - Agent `phan-bien`: đọc và phản biện tài liệu trước khi gửi sếp; chỉ đọc, không sửa.
 - **Hỏi trước khi gọi agent:** nói 1 câu sẽ giao việc gì cho agent nào, chờ người dùng đồng ý. Việc nhỏ tự làm được thì đề xuất tự làm.
 
