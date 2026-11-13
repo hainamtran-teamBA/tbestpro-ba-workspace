@@ -10,3 +10,4 @@
 - [Đồng bộ hai máy](project-dong-bo-hai-may.md) — GitHub riêng tư + Notion + Drive; "chốt buổi" / "làm tiếp"
 - [Link xem ngoài Tbestpro](feedback-link-xem-ngoai-tbestpro.md) — link trang làm ra phải mở được bằng tài khoản khác; claude.ai công ty bị khóa chia sẻ ngoài
 - [Trình duyệt chạy ngầm](feedback-trinh-duyet-chay-ngam.md) — Playwright mặc định headless; mở cửa sổ chỉ khi người dùng muốn xem demo
+- [Trang quản lý dự án](project-trang-quan-ly-du-an.md) — trang web tĩnh trong repo thay Docs/Sheets; khung dự án 8 mục, PlantUML + D2 + mindmap thẻ

@@ -2,6 +2,16 @@
 
 > Mỗi mục: ngày, việc/quyết định, bằng chứng/nguồn, việc tiếp theo. Mới nhất ở trên.
 
+## 2026-11-13
+- Đọc bản mẫu "Đặc tả UC-02 Nhập kho" (HTML, 10/11): khung tốt; nội dung UC-02 cần cập nhật theo quyết định 11–12/11 (pallet, trừ bì, cân theo lượt chia đều, một container một lô).
+- Chốt hướng làm **trang web quản lý dự án** riêng (memory `project-trang-quan-ly-du-an`). Thử 4 công cụ vẽ sơ đồ: chọn PlantUML (activity chia làn, use case, trạng thái), D2 (sơ đồ ngữ cảnh), mindmap dạng thẻ tự vẽ; bỏ bpmn-js.
+
+## 2026-11-12
+- Chạy thử 2 lần trên tài khoản test Nextwaves: tạo 4 vai trò, 4 tài khoản; nhập, xuất, xé bao, kiểm kê, đảo phiếu theo từng vai trò. Kết quả: `tri-thuc/kho-7-gani-2-wms.md` mục 11.
+- Chốt: mua thiết bị Nextwaves, tự tích hợp vào Ganico v2 qua SDK mã nguồn mở; phần mềm Nextwaves dùng tạm. Sản phẩm không gán kg; một container một lô; chia đều kg theo SKU; không trừ bì; chưa cần ăng-ten. [Người dùng nói]
+- Soạn tin nhắn gửi anh Thanh Giang (Nextwaves) về phần xử lý dữ liệu kg.
+- Tiếp theo: chốt 5 câu còn treo (mục 11); cập nhật UC-02 theo khung mới.
+
 ## 2026-11-11
 - Chốt luồng cân + QR cho Kho 7 (grilling 6 vòng): kg cả bì, cân 10–12 bao/lượt cả khi nhập và xuất, ngưỡng −0,5%/+0,1%, FIFO, QR trước, RFID sau cho kiểm kê. Chi tiết: `kho-7-gani-2-wms.md` mục 10. [Người dùng nói]
 - Sửa dữ kiện sai: kho **không dùng pallet**; bỏ cân 150 kg. [Người dùng nói]

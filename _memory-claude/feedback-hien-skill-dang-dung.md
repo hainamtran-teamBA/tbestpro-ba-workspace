@@ -12,3 +12,5 @@ metadata:
 
 **Why:** người dùng đang học tư duy Enterprise BA qua bộ skill, cần thấy kỹ thuật/skill nào được dùng ở mỗi bước; trước đó tôi trả lời nhiều lượt mà không dùng skill nào và không nói ra.
 **How to apply:** cuối mỗi câu trả lời thêm một dòng `🧰 Skill: <tên skill> · Agent: <tên agent>`; không dùng thì ghi thẳng "không dùng skill (trả lời trực tiếp)". Câu hỏi có skill phù hợp (khảo sát, tư vấn, thiết kế To-Be…) thì nên gọi skill đó thay vì trả lời tay. Liên quan [[user-po-ba-tbestpro]].
+
+2026-11-13 (máy công ty): người dùng sợ không biết đang có skill gì. Thêm: **trước mỗi việc lớn nói một câu sẽ dùng skill/agent nào và vì sao**; nhiều việc độc lập (tra cứu, chạy thử) thì dùng `dispatching-parallel-agents` giao song song. Sẽ có trang "Bộ công cụ" trên trang web quản lý dự án.

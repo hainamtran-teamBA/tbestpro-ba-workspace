@@ -15,5 +15,7 @@ Từ 2026-11-11, thư mục làm việc là một kho git (nhánh main), sẽ đ
 
 **How to apply:**
 - "chốt buổi": ghi nhật ký Notion ([[reference-nhat-ky-notion]]), rồi **liệt kê từng file sẽ đẩy (đường dẫn, mới hay sửa, nội dung 1 dòng) và chờ người dùng xác nhận** mới commit và push (người dùng dặn 2026-11-11). File cần đọc trước thì chép ra chỗ người dùng mở được.
-- "làm tiếp": pull, đọc nhật ký Notion, nối tiếp việc dở.
+- "làm tiếp": **trước khi pull, tóm tắt những gì mới** (commit nào, file nào, nội dung chính), rồi pull hết (không kéo từng phần), đọc nhật ký Notion, xem `cai-dat-may.md` có gì máy này chưa cài thì báo.
+- **Ba lớp (chốt 2026-11-13):** Notion = nhật ký tóm tắt mỗi buổi; GitHub = chỉ thứ dùng lâu dài (quyết định, đặc tả, template, dự án, memory quan trọng, danh sách cài đặt `cai-dat-may.md`); mỗi máy tự giữ phần mềm và skill đã cài. Không đẩy đoạn chat, file thử, ảnh chạy thử, phần mềm.
+- Máy công ty **không clone repo**: Claude sửa ở bản sao tạm, chỉ đẩy file đã duyệt; memory của máy công ty gộp vào `_memory-claude/` khi chốt buổi.
 - Ở máy mới: lối tắt memory phải trỏ đúng tên thư mục dự án của máy đó (tên theo đường dẫn workspace).

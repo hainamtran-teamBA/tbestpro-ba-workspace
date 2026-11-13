@@ -188,3 +188,21 @@ Tài liệu chi tiết (luồng, thiết bị, phương án dự phòng): [Số 
 4. Xem lại ở đâu: phiếu nhập có hiện **danh sách lượt cân và kg từng bao** không? Tổng so với số dự kiến và phần chênh lệch hiện thế nào, có cảnh báo khi vượt ngưỡng (−0,5% / +0,1%) không?
 5. Khi xuất: kg cân lúc xuất có hiện **cạnh kg lúc nhập** của cùng bao không? Hao hụt xem ở báo cáo nào?
 6. Dữ liệu lượt cân và kg từng bao có **xuất ra Excel hoặc lấy qua API** được không?
+
+## 11. Cập nhật 12–13/11/2026: thiết bị, luồng cân, chạy thử phân quyền [người dùng chốt; chạy thử trên tài khoản test Nextwaves]
+**Đã chốt**
+- **Mua thiết bị Nextwaves, tự tích hợp vào Ganico v2.** Nextwaves có SDK mã nguồn mở (MIT) cho súng NHR-10 (Bluetooth: web, Flutter, Android) và đầu đọc để bàn NRN (USB): https://github.com/Nextwaves-Industries/nextwaves-sdk . Phần mềm Nextwaves (được tặng) **dùng tạm**. Chưa có SDK cho đầu đọc cố định NR155.
+- **Sản phẩm không gán sẵn kg.** Nhập: mở phiếu, chọn SKU, đưa thẻ qua đầu đọc để bàn (phiếu hiện đủ số bao, kg trống), treo thẻ, cân theo lượt (**số bao mỗi lượt tùy ý**), tổng kg **chia đều theo từng SKU**. **Không trừ bì.**
+- **Một container = một lô** (mã lô công ty tạo, nhà cung cấp in). Container nhiều lô thì làm từng lô riêng, không trộn lô trên một lượt cân.
+- **Không lắp ăng-ten cạnh bàn cân**; kiểm soát bằng dung sai tổng kg (đang bàn: hụt tối đa 0,5%, dư tối đa 0,1%). Ngưỡng không bắt được sót 1 bao khi một SKU có hơn khoảng 200 bao → QL kho kiểm ngẫu nhiên.
+
+**Kết quả chạy thử phân quyền (12/11, 4 vai trò TEST-, đăng nhập từng vai trò)**
+- Bật "bắt buộc duyệt": tồn **chỉ đổi khi Kế toán bấm Hoàn tất**; NV kho, QL kho tự duyệt bị chặn (`SELF_APPROVAL_FORBIDDEN`); chỉ admin tự duyệt được (quyền dựng sẵn).
+- Quyền duyệt thật là `stock_request.confirm`. Đảo phiếu cần `confirm` + `stock.adjust`; ô lý do **không bắt buộc**.
+- Kiểm kê: khi bật duyệt chỉ còn "Chỉ chốt phiên"; QL kho chốt không cần `stock.reconcile.post`; Kế toán duyệt rồi tồn mới đổi.
+- Vai trò dựng sẵn `warehouse_staff` có thừa `stock_operation.validate`, `tag.inventory_adjust` → không dùng, tạo vai trò riêng.
+- Phần mềm chưa có: kg từng bao khi **nhận theo đơn mua** (chỉ ô tổng), **chặn FIFO** (chỉ sắp xếp), cân khi xuất, cột lô ở chi tiết phiếu xuất. Kg số lẻ chạy được khi đặt sản phẩm 3 chữ số lẻ (form tạo sản phẩm làm mất giá trị này, phải sửa lại).
+- API Nextwaves có upsert mã hàng, nhà cung cấp, đơn mua theo mã ngoài + webhook → nối Ganico v2 sau này.
+- Tài liệu (bản dở, 6/8 mục): https://claude.ai/artifact/UHWKgMUkmknpcXXYAQQt4K
+
+**Còn chờ chốt:** nhập theo đơn mua hay phiếu thường ghi số đơn mua; bỏ `tag.update` khỏi NV kho; kế toán kiểm lô khi duyệt xuất; mức dung sai cuối cùng; cân cho bao lẻ.
