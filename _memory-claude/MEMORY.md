@@ -8,3 +8,5 @@
 - [Nhật ký công việc trên Notion](reference-nhat-ky-notion.md) — trang riêng tư, mỗi ngày một mục, cuối buổi ghi thêm
 - [Hiện skill đang dùng](feedback-hien-skill-dang-dung.md) — cuối mỗi câu trả lời ghi skill/agent đã dùng, hoặc ghi "không dùng skill"
 - [Đồng bộ hai máy](project-dong-bo-hai-may.md) — GitHub riêng tư + Notion + Drive; "chốt buổi" / "làm tiếp"
+- [Link xem ngoài Tbestpro](feedback-link-xem-ngoai-tbestpro.md) — link trang làm ra phải mở được bằng tài khoản khác; claude.ai công ty bị khóa chia sẻ ngoài
+- [Trình duyệt chạy ngầm](feedback-trinh-duyet-chay-ngam.md) — Playwright mặc định headless; mở cửa sổ chỉ khi người dùng muốn xem demo

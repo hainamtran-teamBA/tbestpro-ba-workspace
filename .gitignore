@@ -37,3 +37,9 @@ Du-an/02-Facebook-Ads/Claude-CapCut/video-da-dung/
 
 # Kho của dev, tải riêng từ GitHub của dev
 Du-an/01-Kho-Real-time/kho-rfid/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# Bản đồ Graphify: mỗi máy tự chạy /graphify, không đẩy
+graphify-out/
+tri-thuc/graphify-out/
