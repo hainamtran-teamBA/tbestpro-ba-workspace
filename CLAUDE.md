@@ -20,34 +20,28 @@
 |---|---|
 | Câu hỏi nhỏ, rõ ràng | Làm luôn |
 | Việc lớn hoặc sửa giao diện, tài liệu đã chốt | Hỏi lại trước khi sửa: nhắc lại đề 1–2 câu, chờ xác nhận. Khi chưa rõ đề, dùng skill `grilling` (hỏi theo vòng, mỗi câu kèm đề xuất). Việc nhiều bước thì gợi ý bật Plan mode |
-| Có từ khóa về công ty (phòng ban, team, người, hệ thống, kho, dự án, chỉ số; xem mục Tổ chức và Thuật ngữ trong `thuc-te-cong-ty.md`) | Đọc file tri thức liên quan (mục dưới) trước khi trả lời |
+| Có từ khóa về công ty (phòng ban, team, người, hệ thống, kho, dự án, chỉ số; xem mục Tổ chức và Thuật ngữ trong `thuc-te-cong-ty.md`) | Đọc file trong `reference/` liên quan (mục dưới) trước khi trả lời |
 
-## Tri thức ở đâu
+## Tri thức ở đâu (`reference/`)
 | Hỏi về | Đọc |
 |---|---|
-| Công ty: mô hình, hệ thống, tổ chức, thuật ngữ | `tri-thuc/thuc-te-cong-ty.md` |
-| Kho, Kho 7, Nextwaves | `tri-thuc/kho-wms.md`, `tri-thuc/kho-7-gani-2-wms.md` |
-| Luồng đơn hàng, kiến trúc Tbestpro OS | `tri-thuc/ban-do-luong-don-hang.md`, `tri-thuc/kien-truc-tbestpro-os.md` |
+| Công ty: mô hình, hệ thống, tổ chức, thuật ngữ | `reference/thuc-te-cong-ty.md` |
+| Kho, Kho 7, Nextwaves | `reference/kho-wms.md`, `reference/kho-7-gani-2-wms.md` |
+| Luồng đơn hàng, kiến trúc Tbestpro OS | `reference/ban-do-luong-don-hang.md`, `reference/kien-truc-tbestpro-os.md` |
 | Một dự án cụ thể | `Du-an/<dự án>/README.md` (và `CLAUDE.md` của dự án nếu có) |
-| Tài liệu gốc | `pdf/`, `docx/` (chỉ đọc khi cần) |
+| Tài liệu gốc | `tai-lieu-goc/` (pdf, docx, anh, excel; chỉ đọc khi cần) |
 
-**Ghi tri thức mới:** chỉ ghi vào file tri thức khi người dùng **đã chốt** (kèm ngày, nguồn). Đang bàn, chưa chốt thì không ghi. Memory chỉ ghi trạng thái dự án và cách làm việc.
-
-## Quy tắc làm việc
-- Thay đổi giao diện thì làm bản thử ở link riêng trước; bản chính chỉ cập nhật khi người dùng duyệt.
-- Không bịa số liệu. Số nào cũng ghi nguồn hoặc ghi rõ là ước tính, giả định.
-- Không xóa file, không xóa file trên Drive, không đẩy ra ngoài (Cloudflare, chia sẻ link) khi chưa được yêu cầu.
-- Tài liệu của người dùng đã tự sửa thì giữ nguyên phần họ sửa.
-
-## Tài liệu đầu ra
-- Tài liệu để đọc, gửi sếp: Google Docs (tạo qua Google Drive). Chưa có kết nối Google Docs nên không sửa được file đã tạo; muốn sửa thì tạo bản mới hoặc người dùng tự sửa.
-- Tài liệu cho sếp và cho dev tách thành 2 bản.
-- Báo cáo dự án: không đưa nhân sự, mốc thời gian; công ty tự làm, không nhắc nhà cung cấp giải pháp.
-- Trang demo, giao diện (front end tĩnh): xuất ra link Cloudflare Pages thay cho localhost. Dữ liệu nội bộ thì bật trang đăng nhập có mã hóa.
+## Quy tắc chi tiết (`.claude/rules/`, tự nạp)
+- `tai-lieu-dau-ra.md`: Google Docs, bản sếp và bản dev, không bịa số, giữ phần người dùng tự sửa.
+- `tri-thuc.md`: khi nào được ghi vào `reference/`.
+- `hai-may.md`: GitHub, Notion, chốt buổi, làm tiếp, chỗ để file.
+- `giao-dien.md`: trang HTML, bản thử, Cloudflare, Playwright (nạp khi làm file `.html` hoặc `site/`).
+- Chung: không xóa file, không xóa trên Drive, không đẩy ra ngoài (Cloudflare, chia sẻ link) khi chưa được yêu cầu.
 
 ## Đội agent
 - Cuộc chat chính: trao đổi, hỏi ngược, đưa phương án, chốt và thiết kế (skill `grilling` khi cần hỏi kỹ; giao diện dùng `frontend-design`, `ui-ux-pro-max`, `evon:ui-ux`).
-- Agent `phan-bien`: đọc và phản biện tài liệu trước khi gửi sếp; chỉ đọc, không sửa.
+- Agent nằm ở `.claude/agents/` (theo máy, không đẩy GitHub). `phan-bien`: đọc và phản biện tài liệu trước khi gửi sếp; chỉ đọc, không sửa.
+- Nhiều việc độc lập (tra cứu, chạy thử) thì giao song song theo skill `dispatching-parallel-agents`; trước khi báo xong thì tự kiểm theo `verification-before-completion`.
 - **Hỏi trước khi gọi agent:** nói 1 câu sẽ giao việc gì cho agent nào, chờ người dùng đồng ý. Việc nhỏ tự làm được thì đề xuất tự làm.
 
 | Người dùng nói | Đề xuất giao cho |
@@ -55,4 +49,6 @@
 | "tìm hiểu", "nghiên cứu", "các bên làm thế nào" | `nghien-cuu` |
 | "phản biện", "soi lỗi", "review" | `phan-bien` |
 | "kiểm định skill" | `kiem-dinh-skill` |
+| "viết đặc tả", "user story", "chia ticket" (đề đã chốt) | `viet-yeu-cau` |
+| "làm trang", "dựng giao diện", "bản demo" (nội dung đã chốt) | `giao-dien` |
 | Cần trao đổi, chốt dần | Cuộc chat chính + skill |

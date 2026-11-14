@@ -5,14 +5,16 @@ Kho riêng tư của Trần Hải Nam (PO/BA). Dùng để làm việc trên 2 m
 ## Có gì trong kho
 | Thư mục / file | Nội dung |
 |---|---|
-| `CLAUDE.md` | Quy tắc làm việc cho Claude |
-| `Du-an/` | Các dự án; mỗi dự án có `README.md`, `lo-trinh.md`, `nhat-ky.md` |
-| `.claude/skills/` | Bộ skill BA (khảo sát, tư vấn, To-Be, PRD...) và kho tri thức công ty (`hieu-nghiep-vu/references/`) |
+| `CLAUDE.md` | Cách làm việc với Claude (đọc đầu tiên mỗi phiên) |
+| `.claude/rules/` | Quy tắc chi tiết, Claude tự nạp (tài liệu đầu ra, tri thức, hai máy, giao diện) |
+| `Du-an/` | 4 dự án; mỗi dự án có `README.md`, `lo-trinh.md`, `nhat-ky.md`, `bao-cao/` (trang HTML) |
+| `reference/` | Kho tri thức công ty (tổ chức, kho, luồng đơn, kiến trúc) |
+| `cai-dat-may.md` | Danh sách phần mềm, skill, agent đã cài ở từng máy (skill không đẩy GitHub) |
 | `_memory-claude/` | Trí nhớ của Claude (trạng thái dự án, cách làm việc) |
-| Các file `.html` ở gốc | Báo cáo, đề xuất đã làm |
 
 ## Không có trong kho (cố ý)
-- **PDF, Word, Excel, ảnh, video** (`pdf/`, `docx/`, `image/`...): để trên Google Drive, cần file nào thì tải file đó.
+- **PDF, Word, Excel, ảnh, video** (`tai-lieu-goc/`: pdf, docx, anh, excel): để trên Google Drive, cần file nào thì tải file đó.
+- **Skill, agent** (`.claude/skills/`, `.claude/agents/`): mỗi máy tự cài, danh sách ở `cai-dat-may.md`.
 - **`.env`** (token): không bao giờ đẩy lên; tạo lại ở từng máy.
 - **`Du-an/01-Kho-Real-time/kho-rfid`**: kho của dev, tải riêng từ GitHub của dev.
 

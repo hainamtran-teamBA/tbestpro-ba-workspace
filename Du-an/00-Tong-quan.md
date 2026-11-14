@@ -49,4 +49,4 @@ Quy tắc chung: **agent đề xuất, người duyệt, hệ thống ghi**; s�
 | 4 | Có gửi tin bán thêm không, cho nhóm khách nào; pháp lý | Sếp, pháp lý | SMS |
 
 ## 7. Quy ước thư mục
-Mỗi dự án có 3 file: `README.md` (mục tiêu, phạm vi, trạng thái, rủi ro, câu hỏi mở), `lo-trinh.md` (giai đoạn, cổng, việc theo tuần), `nhat-ky.md` (quyết định, họp, bằng chứng). Tri thức nghiệp vụ nằm ở `tri-thuc/`. Khi bạn nói "cập nhật dự án X", tôi ghi nhật ký và trạng thái.
+Mỗi dự án có 3 file: `README.md` (mục tiêu, phạm vi, trạng thái, rủi ro, câu hỏi mở), `lo-trinh.md` (giai đoạn, cổng, việc theo tuần), `nhat-ky.md` (quyết định, họp, bằng chứng). Tri thức nghiệp vụ nằm ở `reference/`. Khi bạn nói "cập nhật dự án X", tôi ghi nhật ký và trạng thái.

@@ -5,9 +5,7 @@
 *.key
 
 # Tài liệu gốc, nặng: để trên Google Drive, cần thì tải về
-pdf/
-docx/
-image/
+tai-lieu-goc/
 *.pdf
 *.docx
 *.doc
@@ -42,4 +40,10 @@ Du-an/01-Kho-Real-time/kho-rfid/
 
 # Bản đồ Graphify: mỗi máy tự chạy /graphify, không đẩy
 graphify-out/
-tri-thuc/graphify-out/
+**/graphify-out/
+
+# Skill, agent: mỗi máy tự giữ, danh sách ở cai-dat-may.md
+.claude/skills/
+.claude/luu-tru-skill/
+.claude/agents/
+.playwright/

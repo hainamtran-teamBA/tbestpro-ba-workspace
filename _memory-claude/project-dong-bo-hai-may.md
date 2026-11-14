@@ -19,3 +19,5 @@ Từ 2026-11-11, thư mục làm việc là một kho git (nhánh main), sẽ đ
 - **Ba lớp (chốt 2026-11-13):** Notion = nhật ký tóm tắt mỗi buổi; GitHub = chỉ thứ dùng lâu dài (quyết định, đặc tả, template, dự án, memory quan trọng, danh sách cài đặt `cai-dat-may.md`); mỗi máy tự giữ phần mềm và skill đã cài. Không đẩy đoạn chat, file thử, ảnh chạy thử, phần mềm.
 - Máy công ty **không clone repo**: Claude sửa ở bản sao tạm, chỉ đẩy file đã duyệt; memory của máy công ty gộp vào `_memory-claude/` khi chốt buổi.
 - Ở máy mới: lối tắt memory phải trỏ đúng tên thư mục dự án của máy đó (tên theo đường dẫn workspace).
+
+**Cập nhật 2026-11-14:** quy tắc hai máy chuyển thành `.claude/rules/hai-may.md` (nguồn chính). Notion = nhật ký + link; GitHub = cấu trúc thư mục, CLAUDE.md, rules, reference, Du-an, memory, cai-dat-may.md; mỗi máy tự giữ skill, agent, phần mềm, tài liệu gốc. `tri-thuc/` đổi tên thành `reference/`: trang `site/` ở máy công ty nếu đọc `tri-thuc/` thì phải đổi đường dẫn.

@@ -1,4 +1,4 @@
-- [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA; skill BA đã cất (2026-11-12), tri thức ở tri-thuc/
+- [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA; skill BA đã cất (2026-11-12), tri thức ở reference/
 - [Dự án WMS Kho 7](project-wms-kho7.md) — demo Gani 2 WMS, trạng thái khảo sát và bước tiếp theo
 - [Bám trọng tâm](feedback-bam-trong-tam.md) — một dự án, một việc, ra tài liệu cụ thể; tránh lan man nhiều nhánh
 - [Danh mục 3 dự án (PM)](project-portfolio-du-an.md) — Du-an/ trong workspace: Kho, FB Ads, SMS; cách cập nhật

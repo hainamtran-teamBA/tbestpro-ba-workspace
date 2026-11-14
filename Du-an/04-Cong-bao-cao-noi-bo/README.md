@@ -10,7 +10,7 @@ Báo cáo công việc hiện nay gửi **qua tin nhắn nhóm**: dễ trôi, kh
 Một nơi tập trung để cả đội **nộp báo cáo, đính kèm file, và sếp xem, tìm, phản hồi**, thay cho Excel và tin nhắn.
 
 ## 2b. Bản chạy thử
-Thư mục `app/`: giao diện bám prototype **WORKNOTE** (ảnh trong `image/`). Chạy bằng `node server.js`, xem `app/README.md`. Phạm vi đã chốt với người dùng: **Tổng quan + hộp thoại Tạo báo cáo + đính kèm file + phản hồi; ai cũng xem được (chưa phân quyền); trạng thái giữ như prototype**.
+Thư mục `app/`: giao diện bám prototype **WORKNOTE** (ảnh trong `tai-lieu-goc/anh/`). Chạy bằng `node server.js`, xem `app/README.md`. Phạm vi đã chốt với người dùng: **Tổng quan + hộp thoại Tạo báo cáo + đính kèm file + phản hồi; ai cũng xem được (chưa phân quyền); trạng thái giữ như prototype**.
 
 ## 3. Phạm vi MVP
 | Có | Chưa làm |
