@@ -17,3 +17,9 @@ Từ 2026-11-13 (grilling, máy công ty): làm **một trang web riêng** quả
 
 **Why:** người dùng muốn một chỗ duy nhất, trực quan, cho mọi dự án; artifact gắn tài khoản nên không làm bản gốc được (xem [[feedback-link-xem-ngoai-tbestpro]]).
 **How to apply:** bước tiếp theo là `/to-spec` hoặc `/prototype` cho trang; dự án đầu tiên đưa vào là Kho 7 với UC-02 cập nhật. Liên quan [[project-wms-kho7]], [[project-dong-bo-hai-may]].
+
+**2026-11-13 (đã dựng, máy công ty):** trang nằm ở `site/` (mở thẳng `site/index.html`, không cần máy chủ; đã thử bản sao ở thư mục khác vẫn chạy; font Google cần mạng, mất mạng thì dùng font máy). Dữ liệu: `site/data/projects/<id>/project.js` (+ `uc/UC-xx.js`), nạp qua `data/manifest.js`.
+- Bấm dự án → **hồ sơ 2 nhánh**: "Tài liệu đặc tả" (bản đồ nghiệp vụ nằm trong đây) và "Tài liệu liên quan" (link Google Docs/Sheets, PDF trên Drive ghi `type: "pdf"`, trang Claude). Cây tài liệu bên trái, có ô lọc tìm cả trong quyết định, câu hỏi, thuật ngữ.
+- Trang tổng quan dự án phải gói trong **một màn hình**, không cuộn dài. Trường `next` = việc tiếp theo.
+- Người dùng **không thích cây UC ở thanh bên**: UC chỉ hiện bằng nút UC-xx trên tổng quan và nút UC trước/sau.
+- Đã rà UI/UX bằng 3 agent, sửa mức cao + trung bình; còn mức thấp (tab UC chưa ghi vào địa chỉ, nút "Chép" nhỏ, chữ mồ côi).

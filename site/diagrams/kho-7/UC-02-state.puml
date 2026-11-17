@@ -1,0 +1,21 @@
+' UC-02 Nhập theo đơn mua: các trạng thái của phiếu nhập.
+' Sửa xong chạy build-diagrams để ra file .svg cùng tên.
+@startuml
+!include ../theme.puml
+hide empty description
+
+state "Nháp" as Nhap
+state "Đã gửi" as DaGui
+state "Đã duyệt" as DaDuyet
+state "Hoàn tất" as HoanTat
+state "Hủy" as Huy
+
+[*] --> Nhap
+Nhap --> DaGui : gửi duyệt
+DaGui --> Nhap : trả lại
+DaGui --> DaDuyet : kế toán duyệt
+DaDuyet --> HoanTat : ghi tồn
+Nhap --> Huy : hủy
+HoanTat --> [*]
+Huy --> [*]
+@enduml

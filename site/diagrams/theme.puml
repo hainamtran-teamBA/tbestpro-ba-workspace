@@ -1,0 +1,57 @@
+' Giao diện sáng dùng chung cho mọi sơ đồ của trang web (màu khớp styles.css, chủ đề sáng).
+' Sơ đồ không gọi file này trực tiếp: mỗi sơ đồ gọi  !include ../theme.puml  và build-diagrams chép theme-dark.puml / theme-light.puml thành theme.puml cho từng lượt vẽ.
+' File này không có @startuml nên build-diagrams bỏ qua, không vẽ riêng.
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam defaultFontColor #1E293B
+skinparam shadowing false
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam ArrowFontSize 11
+skinparam swimlane {
+  BorderColor #DCE3EC
+  BorderThickness 1
+  TitleFontColor #0F766E
+  TitleFontSize 13
+  TitleFontStyle bold
+  Width same
+}
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #94A3B8
+  BorderThickness 1
+  FontColor #1E293B
+  RoundCorner 14
+  StartColor #1E293B
+  EndColor #0F766E
+  BarColor #64748B
+  DiamondBackgroundColor #FEF6E4
+  DiamondBorderColor #D97706
+  DiamondFontColor #7C4A03
+}
+skinparam state {
+  BackgroundColor #F8FAFC
+  BorderColor #0F766E
+  BorderThickness 1.2
+  FontColor #1E293B
+  FontSize 13
+  RoundCorner 14
+  StartColor #1E293B
+  EndColor #0F766E
+  ArrowColor #64748B
+  ArrowFontColor #475569
+}
+skinparam note {
+  BackgroundColor #FDEDED
+  BorderColor #DC2626
+  FontColor #7F1D1D
+}
+' Bước của hệ thống (<<sys>>) và bước ngoại lệ (<<err>>)
+<style>
+activityDiagram {
+  .sys { BackgroundColor #EAF6F3; LineColor #0F766E }
+  .err { BackgroundColor #FDEDED; LineColor #DC2626 }
+}
+</style>

@@ -1,0 +1,57 @@
+' UC-02 Nhập theo đơn mua: sơ đồ hoạt động (swimlane theo vai trò).
+' Sửa xong chạy build-diagrams để ra file .svg cùng tên.
+@startuml
+!include ../theme.puml
+|Mua hàng|
+|NV kho|
+|Hệ thống|
+|QL kho|
+|Kế toán|
+|Mua hàng|
+start
+:Tạo đơn mua
+(SKU, số bao, kg dự kiến);
+|NV kho|
+:Container về:
+mở phiếu nhập theo đơn;
+repeat
+  :Chọn SKU;
+  :Đưa thẻ qua đầu đọc để bàn;
+  |Hệ thống|
+  :Ghi nhận N mã thẻ,
+  kg để trống; <<sys>>
+  |NV kho|
+  :Treo thẻ lên bao;
+  repeat
+    :Đặt bao lên cân
+    (số bao tùy ý, cùng SKU);
+    |Hệ thống|
+    :Đọc kg từ cân,
+    cộng dồn lượt; <<sys>>
+    |NV kho|
+  repeat while (Còn bao chưa cân?) is (Có)
+  -> Không;
+repeat while (Còn SKU khác?) is (Có)
+-> Không;
+|Hệ thống|
+:Chia đều tổng kg
+cho các thẻ theo SKU; <<sys>>
+if (Trong dung sai?) then (Có)
+else (Không)
+  |QL kho|
+  :Giải trình chênh lệch; <<err>>
+endif
+|NV kho|
+:Gửi duyệt;
+|Kế toán|
+:Đối chiếu số bao, lô, kg;
+if (Duyệt?) then (Có)
+  :Hoàn tất: tồn tăng; <<sys>>
+  stop
+else (Không)
+  :Trả lại kèm lý do;
+  |NV kho|
+  :Sửa phiếu, gửi lại;
+  stop
+endif
+@enduml
