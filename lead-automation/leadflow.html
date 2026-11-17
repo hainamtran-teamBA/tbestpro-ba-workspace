@@ -1,0 +1,927 @@
+<title>LeadFlow B2B</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+<style>
+/* Layout: sidebar điều hướng dạng bảng nổi + vùng làm việc; dưới 860px sidebar thành thanh tab ngang. */
+:root {
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#EDF2F0; --line:#D9E2DE;
+  --ink:#12201C; --muted:#56675F; --faint:#85948E;
+  --accent:#0C7A63; --accent-ink:#FFFFFF; --accent-soft:#DAEFE8;
+  --ok:#1D8549; --ok-ink:#FFFFFF; --ok-soft:#DFF2E6;
+  --warn:#A86200; --warn-soft:#FAEDD6;
+  --bad:#BE3328; --bad-soft:#FAE1DE;
+  --info:#2B58C9; --info-soft:#E2E9FA;
+  --ai:#7347C8; --ai-soft:#ECE5FA;
+  --shadow:0 1px 2px rgba(16,32,28,.06), 0 4px 16px rgba(16,32,28,.05);
+  --f-body:'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0D1412; --surface:#141D1A; --surface-2:#1A2522; --line:#283531;
+  --ink:#E4EDEA; --muted:#9AABA4; --faint:#6D7E78;
+  --accent:#3DBE9C; --accent-ink:#05241C; --accent-soft:#143A30;
+  --ok:#4BC27E; --ok-ink:#06240F; --ok-soft:#14301F;
+  --warn:#EFA63A; --warn-soft:#3A2A10;
+  --bad:#F07569; --bad-soft:#3D1C18;
+  --info:#7B9DF4; --info-soft:#19264A;
+  --ai:#B096F2; --ai-soft:#2A2044;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg:#0D1412; --surface:#141D1A; --surface-2:#1A2522; --line:#283531;
+  --ink:#E4EDEA; --muted:#9AABA4; --faint:#6D7E78;
+  --accent:#3DBE9C; --accent-ink:#05241C; --accent-soft:#143A30;
+  --ok:#4BC27E; --ok-ink:#06240F; --ok-soft:#14301F;
+  --warn:#EFA63A; --warn-soft:#3A2A10;
+  --bad:#F07569; --bad-soft:#3D1C18;
+  --info:#7B9DF4; --info-soft:#19264A;
+  --ai:#B096F2; --ai-soft:#2A2044;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font: 400 14px/1.55 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+code { font-family: var(--f-mono); font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.muted { color: var(--muted); } .faint { color: var(--faint); } .small { font-size: 12.5px; }
+
+.app { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 20px; max-width: 1400px; margin: 0 auto; align-items: start; }
+
+/* Sidebar */
+.side { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 14px; min-height: calc(100vh - 32px); }
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 4px 10px; border-bottom: 1px solid var(--line); }
+.brand-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 15px; flex-shrink: 0; }
+.brand b { display: block; font-size: 15px; letter-spacing: -.01em; }
+.brand span { font-size: 11.5px; color: var(--muted); }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav a { display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 10px; color: var(--muted); font-weight: 500; text-decoration: none; transition: background .15s, color .15s; white-space: nowrap; }
+.nav a svg { width: 16px; }
+.nav a:hover { background: var(--surface-2); color: var(--ink); }
+.nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.nav .pending { margin-left: auto; }
+.side-stats { margin-top: auto; background: var(--surface-2); border-radius: 12px; padding: 12px; display: grid; gap: 7px; font-size: 12.5px; }
+.side-stats div { display: flex; justify-content: space-between; color: var(--muted); }
+.side-stats b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Main */
+.main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+.head h1 { font-size: 22px; font-weight: 700; letter-spacing: -.015em; }
+.head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.head .right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+
+.page { display: flex; flex-direction: column; gap: 20px; animation: rise .25s ease-out; }
+.page[hidden] { display: none !important; }
+@keyframes rise { from { transform: translateY(5px); } to { transform: none; } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; min-width: 0; }
+.pad { padding: 20px; }
+.panel-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.panel-head h2, .h2 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.h2 svg { color: var(--accent); }
+.panel-head .right { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.cols.rev { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Form */
+.search-row { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 12px; align-items: end; }
+.field label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
+.input { width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 9px 12px; font: inherit; transition: border-color .15s, box-shadow .15s; }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea.input { resize: vertical; line-height: 1.6; }
+select.input { cursor: pointer; }
+.hint { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; padding: 9px 16px; font: 600 14px/1.2 var(--f-body);
+  border: 1px solid transparent; cursor: pointer; transition: background .15s, border-color .15s, filter .15s, transform .1s; white-space: nowrap; color: var(--ink); background: none; }
+.btn:active:not(:disabled) { transform: scale(.98); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover:not(:disabled) { filter: brightness(.93); }
+.btn-ok { background: var(--ok); color: var(--ok-ink); }
+.btn-ok:hover:not(:disabled) { filter: brightness(.93); }
+.btn-ghost { background: var(--surface); border-color: var(--line); }
+.btn-ghost:hover:not(:disabled) { background: var(--surface-2); }
+.btn-sm { padding: 6px 11px; font-size: 12.5px; border-radius: 8px; }
+.btn-tall { height: 42px; }
+.btn-full { width: 100%; }
+.btn:focus-visible, .nav a:focus-visible, .switch:focus-visible, .seg button:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fb { color: #1877F2; }
+.icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 0; background: none; color: var(--faint); cursor: pointer; }
+.icon-btn:hover { background: var(--bad-soft); color: var(--bad); }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; background: var(--surface-2); border-radius: 10px; }
+.seg button { border: 0; background: none; border-radius: 8px; padding: 7px; font: 600 13px var(--f-body); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--warn-soft); font-size: 13px; cursor: pointer; }
+.check input { margin-top: 3px; accent-color: var(--warn); }
+.check .k { color: var(--warn); font-weight: 600; }
+
+/* Badges & switches */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.b-ok { background: var(--ok-soft); color: var(--ok); } .b-warn { background: var(--warn-soft); color: var(--warn); }
+.b-bad { background: var(--bad-soft); color: var(--bad); } .b-info { background: var(--info-soft); color: var(--info); }
+.b-ai { background: var(--ai-soft); color: var(--ai); } .b-muted { background: var(--surface-2); color: var(--muted); }
+.b-accent { background: var(--accent-soft); color: var(--accent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+.switch { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--line); border: 0; cursor: pointer; flex-shrink: 0; transition: background .2s; padding: 0; }
+.switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: left .2s; }
+.switch[aria-checked="true"] { background: var(--ok); }
+.switch[aria-checked="true"]::after { left: 19px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 600; padding: 10px 14px; background: var(--surface-2); white-space: nowrap; }
+.tbl td { padding: 11px 14px; border-top: 1px solid var(--line); vertical-align: middle; }
+.tbl tbody tr { transition: background .12s; }
+.tbl tbody tr:hover td { background: var(--surface-2); }
+.tbl input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; }
+.name { font-weight: 600; }
+.sub { font-size: 12px; color: var(--faint); }
+.addr { color: var(--muted); min-width: 220px; }
+.star { color: #E3A008; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 3px 11px; font: 500 12.5px var(--f-body); cursor: pointer; transition: background .15s, color .15s; }
+.chip:hover { background: var(--surface-2); color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.empty { padding: 48px 16px; text-align: center; color: var(--muted); }
+.empty .ico { margin: 0 auto 12px; }
+
+/* Progress */
+.bar { height: 7px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.mini-bar { display: flex; align-items: center; gap: 8px; min-width: 130px; }
+.mini-bar .bar { flex: 1; height: 5px; }
+
+/* Tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.tile { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+.tile .lab { font-size: 12px; color: var(--muted); }
+.tile .val { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1.2; }
+.ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; background: var(--surface-2); color: var(--muted); }
+.ico.accent { background: var(--accent-soft); color: var(--accent); } .ico.ok { background: var(--ok-soft); color: var(--ok); }
+.ico.bad { background: var(--bad-soft); color: var(--bad); } .ico.info { background: var(--info-soft); color: var(--info); } .ico.ai { background: var(--ai-soft); color: var(--ai); }
+
+/* Gateways */
+.gw-list { display: grid; gap: 10px; }
+.gw { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
+.gw.sel { border-color: var(--accent); background: var(--accent-soft); }
+.gw .meta { flex: 1; min-width: 0; }
+.gw .meta b { display: block; font-size: 13.5px; font-weight: 600; }
+.sims { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.sims i { width: 6px; height: 10px; border-radius: 2px; background: var(--ok); display: inline-block; }
+.bubble-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 600; margin-bottom: 8px; }
+.bubble { background: var(--surface-2); border-radius: 16px 16px 16px 4px; padding: 12px 14px; white-space: pre-wrap; min-height: 64px; font-size: 13.5px; overflow-wrap: anywhere; }
+
+/* Notes */
+.note { display: flex; gap: 12px; padding: 13px 16px; border-radius: 12px; font-size: 13.5px; align-items: flex-start; }
+.note svg { margin-top: 3px; flex-shrink: 0; }
+.note-ai { background: var(--ai-soft); } .note-ai svg, .note-ai b { color: var(--ai); }
+.footnote { font-size: 12px; color: var(--faint); display: flex; gap: 6px; align-items: flex-start; margin: 12px 0 0; }
+
+/* AI */
+.insight { background: var(--surface-2); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+.insight .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.insight .grid div { background: var(--surface); border-radius: 9px; padding: 8px; text-align: center; }
+.insight .grid b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
+.insight .grid span { font-size: 11.5px; color: var(--muted); }
+.insight p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.draft { flex: 1; min-height: 240px; }
+.lib-item { display: flex; gap: 14px; padding: 14px 18px; border-top: 1px solid var(--line); align-items: flex-start; }
+.lib-item:first-child { border-top: 0; }
+.lib-item .txt { flex: 1; min-width: 0; font-size: 13.5px; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Automation */
+.builder { display: grid; grid-template-columns: 1fr auto 1fr auto; gap: 12px; align-items: end; }
+.builder .arrow { padding-bottom: 10px; color: var(--faint); font-size: 18px; }
+.rules { display: grid; gap: 10px; }
+.rule { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; transition: opacity .2s; }
+.rule.off { opacity: .55; }
+.rule .flow { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500; }
+.rule .flow .sub { width: 100%; font-weight: 400; }
+.log { display: grid; gap: 8px; max-height: 440px; overflow-y: auto; }
+.log-item { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; animation: rise .25s ease-out; }
+.log-item svg { margin-top: 3px; }
+
+/* Toast & modal */
+.toasts { position: fixed; z-index: 60; top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); display: grid; gap: 8px; width: 330px; max-width: calc(100vw - 32px); }
+.toast { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 13.5px; animation: slide .25s ease-out; transition: opacity .3s; }
+.toast svg { margin-top: 3px; flex-shrink: 0; }
+.t-ok svg { color: var(--ok); } .t-bad svg { color: var(--bad); } .t-info svg { color: var(--info); } .t-warn svg { color: var(--warn); }
+@keyframes slide { from { transform: translateX(30px); } to { transform: none; } }
+.modal { position: fixed; inset: 0; z-index: 50; background: rgba(8,16,14,.5); display: grid; place-items: center; padding: 16px; }
+.modal[hidden] { display: none !important; }
+.modal-box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; max-width: 440px; width: 100%; padding: 24px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+.modal-box h3 { font-size: 17px; }
+.modal-box p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+@media (max-width: 1060px) { .cols, .cols.rev { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .search-row, .builder { grid-template-columns: 1fr; }
+  .builder .arrow { display: none; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: static; min-height: 0; padding: 10px; gap: 8px; }
+  .brand { border-bottom: 0; padding-bottom: 0; }
+  .nav { flex-direction: row; overflow-x: auto; gap: 4px; }
+  .side-stats { display: none; }
+}
+@media (max-width: 480px) { .two { grid-template-columns: 1fr; } .head .right .badge { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-satellite-dish"></i></div>
+      <div><b>LeadFlow B2B</b><span>Lead · SMS · Email · AI</span></div>
+    </div>
+    <nav class="nav" aria-label="Module">
+      <a href="#quet" data-page="leads"><i class="fa-solid fa-magnifying-glass-location"></i>Tìm kiếm & Quét data</a>
+      <a href="#chien-dich" data-page="campaign"><i class="fa-solid fa-paper-plane"></i>Chiến dịch & Gateway</a>
+      <a href="#ai" data-page="ai"><i class="fa-solid fa-wand-magic-sparkles"></i>AI Agent<span id="pendingBadge" class="badge b-warn pending" hidden>1</span></a>
+      <a href="#tu-dong" data-page="automation"><i class="fa-solid fa-diagram-project"></i>Automation</a>
+    </nav>
+    <div class="side-stats">
+      <div><span>Lead đã lưu</span><b id="sbLeads">0</b></div>
+      <div><span>Đã đồng ý nhận tin</span><b id="sbConsent">0</b></div>
+      <div><span>Tin đã gửi hôm nay</span><b id="sbSent">0</b></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="head">
+      <div style="min-width:0">
+        <h1 id="pageTitle">Tìm kiếm & Quét dữ liệu</h1>
+        <p id="pageSub">Thu thập lead doanh nghiệp từ Google Maps</p>
+      </div>
+      <div class="right">
+        <span class="badge b-ok"><span class="dot"></span>3 gateway online</span>
+        <span class="badge b-muted">Bản demo · dữ liệu mô phỏng</span>
+        <div class="avatar">TB</div>
+      </div>
+    </header>
+
+    <!-- ============ MODULE 1 ============ -->
+    <section id="page-leads" class="page">
+      <div class="panel pad">
+        <div class="search-row">
+          <div class="field"><label for="kw">Từ khóa</label><input id="kw" class="input" placeholder="VD: coffee shop, đại lý, kho bãi" value="coffee shop"></div>
+          <div class="field"><label for="area">Khu vực</label><input id="area" class="input" placeholder="VD: Makati, Cebu City, Hà Nội" value="Philippines"></div>
+          <button id="scanBtn" class="btn btn-primary btn-tall"><i class="fa-solid fa-map-location-dot"></i>Quét dữ liệu Google Maps</button>
+          <button id="fbBtn" class="btn btn-ghost btn-tall"><i class="fa-brands fa-facebook fb"></i>Import từ Facebook</button>
+        </div>
+        <div id="scanProgress" hidden style="margin-top:18px">
+          <div class="hint" style="margin:0 0 8px"><span id="scanStep">Đang khởi tạo…</span><b id="scanPct" style="color:var(--accent)">0%</b></div>
+          <div class="bar"><div id="scanBar" style="width:0%"></div></div>
+        </div>
+        <p class="footnote"><i class="fa-solid fa-circle-info"></i><span>Engine: gosom/google-maps-scraper v1.18.1 (mã nguồn mở). Dữ liệu thật quét ngày 10/11/2026: quán cafe tại Philippines (khu vực “Philippines”, “Metro Manila”, “Makati”, “BGC Taguig”, “Quezon City”, “Cebu City”) và “kho bãi · Thủ Đức”. Từ khóa khác dùng dữ liệu mô phỏng.</span></p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Kết quả</h2>
+          <span id="resultCount" class="badge b-muted">0 doanh nghiệp</span>
+          <div id="cityChips" class="chips"></div>
+          <div class="right"><button id="saveSelBtn" class="btn btn-ok btn-sm" disabled><i class="fa-solid fa-floppy-disk"></i>Lưu vào tệp khách hàng</button></div>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:40px"><input type="checkbox" id="selAll" aria-label="Chọn tất cả"></th>
+              <th>Tên doanh nghiệp</th><th>Số điện thoại</th><th>Địa chỉ</th><th>Đánh giá</th><th>Trạng thái</th>
+              <th title="Telesale xác nhận khách đồng ý nhận tin quảng cáo">Đồng ý nhận tin</th>
+            </tr></thead>
+            <tbody id="resultBody"></tbody>
+          </table>
+        </div>
+        <div id="emptyResults" class="empty" hidden>
+          <div class="ico accent"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <b style="color:var(--ink)">Chưa có kết quả</b><br>Nhập từ khóa và khu vực rồi bấm “Quét dữ liệu Google Maps”.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MODULE 2 ============ -->
+    <section id="page-campaign" class="page" hidden>
+      <div class="tiles" id="campStats"></div>
+      <div class="cols">
+        <div class="panel pad stack">
+          <h2 class="h2"><i class="fa-solid fa-pen-to-square"></i>Soạn chiến dịch</h2>
+          <div class="field"><label for="cTitle">Tiêu đề chiến dịch</label><input id="cTitle" class="input" placeholder="VD: Chào dịch vụ kho vận tháng 11"></div>
+          <div class="two">
+            <div class="field"><label for="cSegment">Tệp khách hàng</label><select id="cSegment" class="input"></select></div>
+            <div class="field"><label>Kênh gửi</label>
+              <div class="seg" id="channelToggle">
+                <button data-ch="sms" aria-pressed="true"><i class="fa-solid fa-comment-sms"></i>SMS</button>
+                <button data-ch="email" aria-pressed="false"><i class="fa-solid fa-envelope"></i>Email</button>
+              </div></div>
+          </div>
+          <div class="field"><label for="cGateway" id="gwLabel">Gateway gửi tin</label><select id="cGateway" class="input"></select></div>
+          <div class="field">
+            <div class="hint" style="margin:0 0 6px;align-items:center"><label for="cContent" style="margin:0">Nội dung</label>
+              <select id="cTemplate" class="input" style="width:auto;padding:4px 8px;font-size:12.5px"></select></div>
+            <input id="cSubject" class="input" placeholder="Tiêu đề email" hidden style="margin-bottom:8px">
+            <textarea id="cContent" rows="5" class="input" placeholder="Nhập nội dung hoặc chọn mẫu AI đã duyệt. Dùng {ten} để chèn tên doanh nghiệp."></textarea>
+            <div class="hint"><span>Biến: <code>{ten}</code> <code>{khu_vuc}</code></span><span id="charCount">0 ký tự</span></div>
+          </div>
+          <label class="check" for="cConsent">
+            <input type="checkbox" id="cConsent" checked>
+            <span><b>Chỉ gửi cho lead đã đồng ý nhận tin</b> và tự thêm cú pháp từ chối (<span id="lawRef">NĐ 91/2020</span>). <span class="k" id="recipientInfo"></span></span>
+          </label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="testBtn" class="btn btn-ghost"><i class="fa-solid fa-vial"></i>Gửi Test</button>
+            <button id="launchBtn" class="btn btn-primary"><i class="fa-solid fa-rocket"></i>Khởi chạy chiến dịch</button>
+          </div>
+        </div>
+        <div class="panel pad stack">
+          <h2 class="h2"><i class="fa-solid fa-tower-broadcast"></i>Trạng thái gateway</h2>
+          <div id="gwList" class="gw-list"></div>
+          <div>
+            <div class="bubble-label">Xem trước tin nhắn</div>
+            <div id="preview" class="bubble">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Lịch sử gửi</h2></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Chiến dịch</th><th>Kênh</th><th>Gateway</th><th>Tiến độ</th><th>Thành công</th><th>Lỗi</th><th>Trạng thái</th><th>Thời gian</th></tr></thead>
+          <tbody id="historyBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ============ MODULE 3 ============ -->
+    <section id="page-ai" class="page" hidden>
+      <div class="note note-ai"><i class="fa-solid fa-user-shield"></i>
+        <span><b>Human-in-the-loop:</b> AI chỉ soạn bản nháp. Nội dung phải được người dùng duyệt mới xuất hiện trong danh sách mẫu của module Chiến dịch.</span></div>
+      <div class="cols rev">
+        <div class="panel pad stack">
+          <h2 class="h2"><i class="fa-solid fa-sliders"></i>Thiết lập</h2>
+          <div class="field"><label for="aiSegment">Tệp khách hàng</label><select id="aiSegment" class="input"></select></div>
+          <div class="two">
+            <div class="field"><label for="aiChannel">Kênh</label><select id="aiChannel" class="input"><option value="sms">SMS (ngắn)</option><option value="email">Email</option></select></div>
+            <div class="field"><label for="aiTone">Giọng văn</label><select id="aiTone" class="input"><option>Chuyên nghiệp</option><option>Thân thiện</option><option>Ngắn gọn, trực diện</option></select></div>
+          </div>
+          <div class="field"><label for="aiOffer">Sản phẩm / ưu đãi chào hàng</label><input id="aiOffer" class="input" value="dịch vụ kho vận & fulfillment, giảm 15% tháng đầu"></div>
+          <div id="aiInsight" class="insight"></div>
+          <button id="aiGenBtn" class="btn btn-primary btn-full"><i class="fa-solid fa-wand-magic-sparkles"></i>AI Soạn tin nhắn tự động</button>
+        </div>
+        <div class="panel pad stack">
+          <div style="display:flex;align-items:center;gap:10px"><h2 class="h2">Bản nháp AI</h2><span id="draftStatus" class="badge b-muted">Chưa có</span></div>
+          <textarea id="aiDraft" class="input draft" placeholder="Bấm “AI Soạn tin nhắn tự động” để tạo nội dung theo tệp khách hàng đã chọn." readonly></textarea>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="aiRegenBtn" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate"></i>Tạo lại</button>
+            <button id="aiEditBtn" class="btn btn-ghost" disabled><i class="fa-solid fa-pen"></i>Chỉnh sửa</button>
+            <button id="aiApproveBtn" class="btn btn-ok" style="margin-left:auto" disabled><i class="fa-solid fa-circle-check"></i>Duyệt & Lưu nội dung</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Thư viện nội dung đã duyệt</h2></div>
+        <div id="approvedList"></div>
+      </div>
+    </section>
+
+    <!-- ============ MODULE 4 ============ -->
+    <section id="page-automation" class="page" hidden>
+      <div class="panel pad stack">
+        <h2 class="h2"><i class="fa-solid fa-plus"></i>Tạo kịch bản mới</h2>
+        <div class="builder">
+          <div class="field"><label for="trigSel">Nếu (điều kiện)</label>
+            <select id="trigSel" class="input">
+              <option>Sau khi chốt đơn</option><option>Khách mua 30 ngày chưa quay lại</option>
+              <option>Lead mới được lưu từ Google Maps</option><option>Khách trả lời tin nhắn "QUAN TAM"</option><option>Đơn hàng giao thành công</option>
+            </select></div>
+          <div class="arrow"><i class="fa-solid fa-arrow-right-long"></i></div>
+          <div class="field"><label for="actSel">Thì (hành động)</label>
+            <select id="actSel" class="input">
+              <option>Gửi tin nhắn SMS cảm ơn & mã giảm giá</option><option>Gửi AI Reminder</option>
+              <option>Giao Telesale gọi xác nhận</option><option>Gửi email giới thiệu dịch vụ</option><option>Gửi khảo sát hài lòng</option>
+            </select></div>
+          <button id="addRuleBtn" class="btn btn-primary btn-tall"><i class="fa-solid fa-plus"></i>Thêm kịch bản</button>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="rules" id="ruleList"></div>
+        <div class="panel pad stack">
+          <div style="display:flex;align-items:center;gap:10px"><h2 class="h2">Nhật ký chạy</h2>
+            <button id="simBtn" class="btn btn-ghost btn-sm" style="margin-left:auto"><i class="fa-solid fa-play"></i>Mô phỏng sự kiện</button></div>
+          <div id="autoLog" class="log"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="ico info" style="width:44px;height:44px;font-size:20px"><i class="fa-brands fa-facebook fb"></i></div>
+    <h3 id="mTitle">Import lead từ Facebook</h3>
+    <p>Tính năng đang <b style="color:var(--ink)">chờ tích hợp công cụ bên thứ 3</b> (Facebook Lead Ads / form khách tự điền). Lead từ nguồn này đã đồng ý nhận tin nên dùng ngay được cho chiến dịch.</p>
+    <p class="small"><i class="fa-regular fa-clock"></i> Dự kiến triển khai sau khi chọn đối tác tích hợp.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="mClose">Đóng</button>
+      <button class="btn btn-primary" id="mNotify">Đăng ký nhận thông báo</button>
+    </div>
+  </div>
+</div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script>
+/* ===================== DỮ LIỆU ===================== */
+// Kết quả quét thật: gosom/google-maps-scraper, truy vấn "kho bãi Thủ Đức", 10/11/2026
+const REAL_KHO_THUDUC = [
+  ['Bãi giữ xe ô tô Khanh Lâm','+84 909 453 788','1 Số 8, Thủ Đức, Hồ Chí Minh',3.7,3,'khanhlamtrans.com'],
+  ['BÃI XE ĐỨC TRẮNG','+84 902 881 112','38 Đ. Số 3, KP 6, Thủ Đức, Hồ Chí Minh',5.0,20,''],
+  ['Kho xưởng Thủ Đức','+84 357 886 665','144 Linh Trung, Linh Xuân, Hồ Chí Minh',0,0,''],
+  ['CHO THUÊ KHO XƯỞNG THỦ ĐỨC','+84 917 810 512','23 Đường 12, KP2, Hiệp Bình, Hồ Chí Minh',5.0,1,''],
+  ['Bãi Xe Ô Tô Xe Máy Nhà Thiếu Nhi Thủ Đức','+84 933 202 299','281 Đ. Võ Văn Ngân, Thủ Đức, Hồ Chí Minh',5.0,2,'dichvugiuxe286.com'],
+  ['CHO THUÊ KHO XƯỞNG','+84 942 345 643','Võ Nguyên Giáp, Thủ Đức, Hồ Chí Minh',5.0,1,''],
+  ['Băng Keo - Dây Đai Thủ Đức Giá Xưởng','+84 906 825 068','27A Đ. 24, Hiệp Bình, Hồ Chí Minh',5.0,6,'anthanhdat.vn'],
+  ['Kho SOTRANS Thủ Đức','+84 28 3826 9729','Km 9 Võ Nguyên Giáp, Thủ Đức, Hồ Chí Minh',4.2,38,'sotrans.com.vn'],
+  ['Trung Tâm Dịch Vụ Kho Bãi Công Ty VIMEDIMEX','+84 974 760 826','36/212B Đ. Số 12, Thủ Đức, Hồ Chí Minh',5.0,1,'vimeleasing.vn'],
+  ['Trung Tâm Kho vận và Phân Phối Phía Nam','+84 28 6252 6555','Hẻm 6 Đặng Văn Bi, Thủ Đức, Hồ Chí Minh',4.4,13,'vinamilk.com.vn'],
+];
+// Kết quả quét thật: 4 truy vấn quán cafe tại Philippines (Makati, Quezon City, BGC Taguig, Cebu City), 10/11/2026
+// [tên, SĐT, địa chỉ, điểm, số đánh giá, website, loại hình, khu vực]
+const REAL_PH = [["Elephant Grounds Manila - BGC","+63 999 887 1407","Lower Ground, Elephant Grounds Manila - BGC, One Bonifacio, High Street, Taguig, 1630 Metro Manila",4.2,963,"","Coffee shop","BGC Taguig"],["The Fat Seed Cafe + Roastery BGC","+63 927 007 9894","9th Avenue, corner 27th Street, Taguig, 1634 Metro Manila",4.5,1021,"fatseed.com.ph","Restaurant","BGC Taguig"],["Cooper\u0027s Coffee Haus - High Street South","+63 969 271 3319","GF, High Street South, Corporate Plaza, 26th street, 11th Ave, Taguig, 1635 Metro Manila",4.7,1075,"","Coffee shop","BGC Taguig"],["% Arabica Manila BGC Roastery","+63 917 109 1053","GF, % Arabica Manila BGC Roastery, Shangri-La at The Fort, 5th Ave, Taguig, 1634 Metro Manila",4.3,433,"arabica.com","Coffee shop","BGC Taguig"],["Common Man Coffee Roasters - BGC","","28th St, Taguig, Metro Manila",4.3,272,"","Cafe","BGC Taguig"],["Key Coffee Kissaten — BGC","+63 947 739 4347","G/F MITSUKOSHI BGC, 8th Ave, Corner 36th St, Taguig, 1630 Metro Manila",4.6,2978,"keycoffeeph.com","Restaurant","BGC Taguig"],["Weekday Coffee BGC","+63 928 520 4112","GSC Corporate Tower, Triangle Dr, Taguig, 1634 Metro Manila",5,33,"","Coffee shop","BGC Taguig"],["St. Louis Cafe BGC","+63 927 732 6895","Unit 104-A, Lower ground, C3, St. Louis Cafe BGC, Bonifacio High Street Central, Taguig, 1630 Metro Manila",4.6,675,"st-louis.com.au","Restaurant","BGC Taguig"],["Single Origin - Bonifacio High Street","+63 906 268 8902","C3, Single Origin - Bonifacio High Street, Bonifacio Highstreet, 7th Ave, Taguig, 1634 Metro Manila",4.2,1200,"singleoriginph.com","Cafe","BGC Taguig"],["Harlan Bridge, BGC","","BHS Central, 5th Ave, Bonifacio Global City, Taguig, 1635 Metro Manila",4.4,1240,"harlancoffee.com","Coffee shop","BGC Taguig"],["The Coffee Academics BGC","+63 2 7117 7127","Lobby, High Street South Corporate Plaza, 26th Street, cor 9th Ave, Taguig, Metro Manila",4.3,108,"shopee.ph","Cafe","BGC Taguig"],["The Corner Coffee Shop","+63 960 690 4809","Ground Floor, The Corner Coffee Shop, Market! Market!, AC-K2 Activity Center, Taguig, 1635",4.8,101,"","Coffee shop","BGC Taguig"],["Caravan Black Coffee Company","+63 917 122 8795","Seven NEO, 4th Ave, Taguig, 1634 Metro Manila",4.3,449,"","Cafe","BGC Taguig"],["Auro Chocolate Cafe - BGC Flagship","+63 917 113 3599","Unit 01, Ground Floor, Auro Chocolate Cafe - BGC Flagship, One Maridien Tower (U/C), 27th Street, Taguig, 1634 Metro Manila",4.3,699,"aurochocolate.com","Chocolate cafe","BGC Taguig"],["ANGKAN Coffee WCC","+63 995 543 9862","Taguig, 1630 Metro Manila",4.2,251,"","Coffee shop","BGC Taguig"],["Sunnies Cafe BGC","+63 2 7949 2251","Lane P, Taguig, Metro Manila",4,797,"","Cafe","BGC Taguig"],["Eric Kayser Cafe - BGC","+63 917 106 3106","Ground Floor, Eric Kayser Cafe - BGC, Abenson, Ascott Bonifacio Global City Manila, Crescent Park, E-Square Zone, Taguig, Metro Manila",4.9,27,"erickayser.ph","Coffee shop","BGC Taguig"],["Toby\u0027s Estate Coffee Roasters","+63 2 7617 5044","G/F, Toby\u0027s Estate Coffee Roasters, Shangri-la at the Fort, Bonifacio High Street, Post Proper Northside, Taguig, Metro Manila",4.2,536,"tobysestateph.com","Cafe","BGC Taguig"],["Cooper\u0027s","+63 967 220 8372","C3 29th St, Taguig, Metro Manila",4.5,285,"","Coffee shop","BGC Taguig"],["TOMORO COFFEE - Infinity BGC","+63 917 192 6446","G/F The Infinity Condominium, 26th and, 25th St, Taguig, 1214 Metro Manila",4.8,36,"","Coffee shop","BGC Taguig"],["Carbon Cafe","","Quezon Blvd, Cebu City, 6000 Cebu",4.7,62,"","Coffee shop","Cebu City"],["Stone \u0026 Pebble Cafe","","Center New Wing Capitol Site, 1F Base Line Dr, Cebu City, 6000 Cebu",4.6,327,"snpeats.com","Cafe","Cebu City"],["Sparrow Cafe Culture","+63 999 229 2433","IT Park V. Padriga St, Cebu City, 6000 Cebu",4.7,922,"","Cafe","Cebu City"],["Ess Cafe","","Pelaez St, Cebu City, 6000 Cebu",4.6,85,"","Coffee shop","Cebu City"],["Beaned Cafe - Cebu","","Sanciangko St, Cebu City, 6000 Cebu",5,32,"","Coffee shop","Cebu City"],["Cafe Talk Library","+63 32 410 7541","Escario Building, 731 N Escario St, Cebu City, 6000 Lalawigan ng Cebu",4.1,438,"","Coffee shop","Cebu City"],["Flinders Lane Cafe","+63 968 481 0522","Unit 10, Flinders Lane Cafe, St. Patrick\u0027s Square, R Aboitiz St, Cebu City, 6000 Cebu",4.6,136,"","Restaurant","Cebu City"],["Anthony’s Cafe","+63 920 576 7107","Pres. Quezon St, Cebu City, 6000 Cebu",4.4,401,"","Cafe","Cebu City"],["Tightrope Coffee","+63 32 346 9617","M. L. Quezon Avenue, F. Cabahug St, Cebu City, 6000 Cebu",4.5,427,"","Coffee shop","Cebu City"],["Commonly Uncommon Coffee","+63 927 529 8236","Crossroads Mall, Cebu City, 6000 Cebu",4.4,234,"","Coffee shop","Cebu City"],["Lorenzo\u0027s Cafe - Cebu City","+63 956 703 2324","Lorenzo\u0027s Cafe, Twin Garden Hotel Banilad, A. S. Fortuna St, Cebu City, 6000 Cebu",4.9,70,"","Coffee shop","Cebu City"],["Red\u0027s Cafe","","Unit 123, Raintree Mall, 528 F. Ramos St, Cebu City, 6000 Cebu",4.5,74,"","Coffee shop","Cebu City"],["Te\u0027Amo Cafe","+63 960 289 7413","2nd Floor, Te\u0027Amo Cafe, Hotel One, 91 Juana Osmeña St, Cebu City, 6000 Cebu",4.5,165,"teamocafeph.com","Cafe","Cebu City"],["Third Wave Coffee Cebu - Bloq Cafe","+63 906 538 3984","Bloq Residences Lobby Area, Cebu City, 6000 Cebu",4.6,85,"","Coffee shop","Cebu City"],["Good Cup Coffee Co.","+63 32 380 2362","F. Ramos St, Cebu City, 6000 Cebu",4.8,641,"goodcup.ph","Coffee roastery","Cebu City"],["Ta Kapi - Beans \u0026 Brews at The Median, IT Park, Cebu City","+63 962 083 4471","GF, Ta Kapi - Beans \u0026 Brews at The Median, IT Park, Cebu City, The Median Showroom, Calyx Center, W Geonzon St, Cebu City, 6000 Cebu",4.6,57,"","Coffee shop","Cebu City"],["Zero-x Cafe","","757 V Rama Ave, Cebu City, 6000 Cebu",4.4,212,"","Coffee shop","Cebu City"],["Drip And Draft","+63 932 113 2820","Streetscape, Paseo Saturnino, Cebu City, 6000 Cebu",4.4,229,"","Cafe","Cebu City"],["Tamp Cafe \u0026 Co. KASAMBAGAN","+63 919 096 5707","12 President Aguinaldo Street, Cebu City, 6000 Cebu",4.5,928,"tampcafe.com","Restaurant","Cebu City"],["Pancho Cafe Makati","+63 954 461 7691","Benavidez Street, Legazpi Village, Makati City, 2992 Metro Manila",4.6,963,"","Coffee shop","Makati"],["Bo\u0027s Coffee (Casa Gorordo)","","35 Eduardo Aboitiz St, Cebu City, 6000 Cebu",4.7,182,"","Coffee shop","Cebu City"],["Panco Cafe - Legazpi Makati","+63 943 256 9033","110 Don Carlos Palanca, Legazpi Village, Makati City, Metro Manila",4.8,2945,"pancocafe.com","Restaurant","Makati"],["dropthebean","+63 2 8556 6140","Erechem Building, 117 V.A. Rufino Street, corner Salcedo, Legaspi Village, Makati City, 1229 Metro Manila",4.8,1067,"dropthebean.com","Coffee shop","Makati"],["Odd Cafe | Salcedo","","Salcedo Village, 7th floor Finman Centre Building 131 Tordesillas, cor Bautista, Makati City, 1227 Metro Manila",4.7,859,"","Coffee shop","Makati"],["H Proper Coffee Roasters - Ayala Triangle Garden","+63 917 192 0873","Restaurant Arcade, Ayala Triangle Walkways, Makati City, Metro Manila",4.7,2130,"","Coffee shop","Makati"],["Sulok Coffee","+63 917 814 6449","3/F, Sulok Coffee, Salcedo One Center, 170 Salcedo, Makati City, Metro Manila",4.8,380,"","Coffee shop","Makati"],["Archduke Specialty Coffee • Kitchen","+63 954 230 3581","King\u0027s Court Building 1, Chino Roces Ave, Legazpi St, Makati City, 2129 Metro Manila",4.6,211,"archdukecoffee.com","Restaurant","Makati"],["Beselu Cafe","+63 945 233 8792","7850 Makati Ave, Makati City, 1210 Metro Manila",4.8,2128,"","Coffee shop","Makati"],["CHN CAFÉ MAKATI CITY","+63 953 692 5898","MJM Bldg, 650 J. P. Rizal St, Makati City, 1208 Metro Manila",4.8,286,"franchise.chncafe.ph","Coffee shop","Makati"],["MOMENT COFFEE","+63 917 126 1822","6762 Ayala Ave, Makati City, 1229 Metro Manila",4.6,461,"momentcoffee.ph","Coffee shop","Makati"],["Bad Cafe","+63 2 8353 2132","Unit 101-A, H258+2C8 Bad Cafe, Windsor Tower, 163 Legazpi St, Legazpi Village, Makati City, 1223 Metro Manila",4.4,497,"badcafe.com","Cafe","Makati"],["Satori Specialty Coffee","","2nd Floor, Satori Specialty Coffee, Baked Studios, Warehouse C, Yakal, Village, Makati City, 1203 Metro Manila",4.4,288,"","Coffee shop","Makati"],["Commune Café + Bar + Roastery","+63 919 859 5848","36 Polaris, Poblacion, Makati City, 1210 Metro Manila",4.4,1601,"commune.ph","Coffee shop","Makati"],["Good Sh*t Coffee","+63 954 468 7844","5872 Enriquez, Makati City, Metro Manila",4.5,398,"","Coffee shop","Makati"],["Yardstick Coffee","+63 2 8372 3891","Universal LMS Building, 106 Esteban, Makati City, Metro Manila",4.5,1458,"store.yardstickcoffee.com","Coffee shop","Makati"],["CAPHIN COFFEE SHOP - MAKATI","","1085c Chino Roces Ave, Makati City, 1205 Metro Manila",4.9,32,"","Coffee shop","Makati"],["Primal Brew Coffee + Roastery","","Unit G9, Primal Brew Coffee + Roastery, BSA Mansion, Jimenez, Makati City, 1229 Metro Manila",4.6,181,"primalbrewcoffee.com","Cafe","Makati"],["ALTO GROUNDS","","Unit 1, ALTO GROUNDS, Dela Rosa Carpark, 1 Dela Rosa Street, Legazpi Village, Makati City, 1229 Metro Manila",4.7,634,"altogroundscoffee.com","Coffee shop","Makati"],["Sourdough Cafe Perea Makati","+63 917 152 2233","Mayfair Mansion, 116 Perea, Legazpi Village, Makati City, 1229 Metro Manila",4.5,309,"","Cafe","Makati"],["GIFT Café","","Amaga Building, 237 Commonwealth Ave, District 5, Quezon City, 1118 Metro Manila",4.9,377,"","Coffee shop","Quezon City"],["Habitual Coffee Salcedo Village","+63 2 8833 9556","Paseo Heights, L.P. Leviste Street, Makati City, 1230 Metro Manila",4.2,436,"habitualcoffee.ph","Coffee shop","Makati"],["Cafe Roo QC","+63 917 102 5180","232 Tomas Morato Ave, Scout Borromeo St, South Triangle, Quezon City, 1103 Metro Manila",4.5,1414,"","Cafe","Quezon City"],["Kandle Cafe","+63 922 395 3179","1103, Kandle Cafe, 113 Mother Ignacia Ave, Diliman, Quezon City, 1103 Metro Manila",4.4,1185,"","Cafe","Quezon City"],["Foam Coffee Quezon Ave.","+63 927 383 4825","Abenson Bldg. Quezon Avenue, corner Scout Albano Ave, Quezon City, 1103 Metro Manila",4.7,1652,"","Coffee shop","Quezon City"],["Wicked Coffee","","69a Bignay, Project 2, Quezon City, 1102 Metro Manila",4.9,450,"wickedcoffee.cococart.co","Coffee shop","Quezon City"],["Cafe 408","","2F The Rock Lifestyle Hub, Holy Spirit Drive, Isidora Hills, corner Marcelino, Quezon City",4.6,224,"","Coffee shop","Quezon City"],["Caerus Specialty Coffee + Bistro","+63 917 722 3787","26A Sct. Torillo St, Diliman, Quezon City, 1103 Metro Manila",4.5,726,"caeruscoffee.com","Cafe","Quezon City"],["Cafe Guilt","+63 968 869 6050","35 Sct. Castor St, Diliman, Quezon City, Metro Manila",4.4,587,"","Cafe","Quezon City"],["BULAN Kitchen and Cafe","+63 917 677 0607","100-A, 100 Sct. Dr. Lazcano St, Diliman, Quezon City, 1103 Metro Manila",4.7,1526,"","Cafe","Quezon City"],["Chapter Coffee Roastery \u0026 Cafe","+63 936 951 0350","143 Maginhawa, Diliman, Quezon City, 1101 Metro Manila",4.7,706,"","Coffee shop","Quezon City"],["High Grounds Café","+63 2 8880 2037","67 Sct. Rallos St, Diliman, Quezon City, 1103 Metro Manila",4.5,2204,"","Internet cafe","Quezon City"],["Cafe I\u0027m Here","+63 2 8331 3274","68 Tomas Morato Ave, Diliman, Quezon City, Metro Manila",4.2,809,"","Cafe","Quezon City"],["Humble Beginnings Cafe","+63 960 392 2443","Topaz Building, Ground Floor, Kamias Rd, Quezon City",4.7,352,"","Coffee shop","Quezon City"],["Aegyo Cafe","","18 Sct. Rallos St, Diliman, Quezon City, 1103 Metro Manila",4.4,956,"","Cafe","Quezon City"],["Cara Cafe","","99 Xavierville Ave, Quezon City, Metro Manila",4.8,211,"","Coffee shop","Quezon City"],["Hisbeans Cafe Philippines","+63 2 8714 9140","116 Timog Ave, Sacred Heart, Diliman, Quezon City, 1103 Metro Manila",4.7,247,"","Coffee shop","Quezon City"],["CAFÉ OBRA","+63 917 146 1811","13 Pontiac St, West Fairview, Quezon City, 1118 Metro Manila",4.8,178,"","Cafe","Quezon City"],["Huguardo\u0027s Cafe","+63 920 533 0227","24 Luskot St, Quezon City, 1113 Metro Manila",4.6,330,"","Cafe","Quezon City"],["Better Half Cafe","+63 927 444 9150","IV Upper Ground, MJAB Building, 220 Tomas Morato Ave, Sacred Heart, Diliman, Quezon City, 1103 Metro Manila",4.5,153,"","Cafe","Quezon City"],["Cà Phê Xanh - Tomas Morato","","84 Sct. Fernandez St, Diliman, Quezon City, 1103 Metro Manila",4.7,483,"","Coffee shop","Quezon City"]];
+const PH_CITIES = ['Makati','BGC Taguig','Quezon City','Cebu City'];
+const PH_CITY_KEYS = { makati:'Makati', bgc:'BGC Taguig', taguig:'BGC Taguig', quezon:'Quezon City', cebu:'Cebu City' };
+const SUFFIX = ['Minh Phát','An Khang','Hoàng Gia','Phúc Lộc','Thành Đạt','Việt Hưng','Sao Mai','Kim Ngân','Đông Á','Tân Tiến','Hải Âu','Bình Minh','Ngọc Lan','Trường Sơn','Phương Nam','Gia Huy'];
+const STREETS = ['Nguyễn Trãi','Lê Lợi','Trần Hưng Đạo','Hai Bà Trưng','Lý Thường Kiệt','Phạm Văn Đồng','Cầu Giấy','Láng Hạ','Kim Mã','Hoàng Quốc Việt','Nguyễn Văn Linh','Võ Văn Kiệt'];
+
+const state = { leads: [], results: [], selected: new Set(), channel: 'sms', campaigns: [], approved: [], rules: [], sentToday: 0 };
+let uid = 1;
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = arr => arr[rnd(0,arr.length-1)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+const now = () => new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) + ' ' + new Date().toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
+const fakePhone = () => '+84 ' + pick(['90','91','93','94','96','97','98','88','86','35','38']) + rnd(1,9) + ' ' + rnd(100,999) + ' ' + rnd(100,999);
+const slug = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[^a-z0-9]+/g,'');
+
+// real = dữ liệu quét thật: không bịa email (lượt quét chưa bật -email)
+function makeLead(name, phone, address, rating, reviews, website, segment, area, consent=false, real=false) {
+  return { id: uid++, name, phone, address, rating, reviews, website, category: '',
+    email: real ? '' : website ? 'info@' + website : (Math.random() < .3 ? slug(name).slice(0,14) + '@gmail.com' : ''),
+    segment, area, consent, real,
+    market: (phone||'').startsWith('+63') || PH_CITIES.includes(area) ? 'PH' : 'VN' };
+}
+const realResults = seg => REAL_KHO_THUDUC.map(r=>makeLead(r[0],r[1],r[2],r[3],r[4],r[5],seg,'Thủ Đức',false,true));
+const phResults = (cities, kwLabel) => REAL_PH.filter(r=>cities.includes(r[7])).map(r=>{
+  const l = makeLead(r[0],r[1],r[2],r[3],r[4],r[5],`${kwLabel} · ${r[7]}`, r[7], false, true); l.category = r[6]; return l; });
+function phCitiesFor(area){
+  const a = slug(area);
+  if (/philippines|philippin|phil|^ph$/.test(a)) return PH_CITIES;
+  if (/metromanila|manila|ncr/.test(a)) return ['Makati','BGC Taguig','Quezon City'];
+  return [...new Set(Object.keys(PH_CITY_KEYS).filter(k=>a.includes(k)).map(k=>PH_CITY_KEYS[k]))];
+}
+const keyOf = r => r.phone || r.name;
+const segMarket = name => (segments()[name] || [])[0]?.market || 'VN';
+
+(function seed(){
+  const seg = 'Đại lý mỹ phẩm · Hà Nội';
+  for (let i=0;i<24;i++) state.leads.push(makeLead('Đại lý mỹ phẩm '+SUFFIX[i%16]+(i>=16?' '+(i-15):''), fakePhone(),
+    rnd(10,250)+' '+pick(STREETS)+', Hà Nội', rnd(35,50)/10, rnd(2,120), Math.random()<.4?slug(SUFFIX[i%16])+'.vn':'', seg, 'Hà Nội', i<15));
+  state.campaigns.push(
+    {id:uid++,title:'Tri ân đại lý Q4',channel:'sms',gateway:'Thiết bị Android 1 (Telesale)',total:15,sent:15,ok:15,fail:0,status:'Thành công',time:'09:12 08/11'},
+    {id:uid++,title:'Giới thiệu dòng sản phẩm mới',channel:'email',gateway:'SMTP công ty',total:9,sent:9,ok:9,fail:0,status:'Thành công',time:'14:30 07/11'},
+    {id:uid++,title:'Nhắc lịch nhập hàng',channel:'sms',gateway:'GSM Modem (Cụm 5 SIM)',total:15,sent:15,ok:11,fail:4,status:'Lỗi mạng',time:'16:05 06/11'});
+  state.approved.push({id:uid++,channel:'sms',segment:seg,text:'Chào {ten}, TBest gửi tặng đại lý mã NHAPHANG15 giảm 15% đơn sỉ đầu tiên tháng này. Nhắn "QUAN TAM" để được báo giá.',time:'09:00 08/11'});
+  state.rules.push(
+    {id:uid++,trigger:'Sau khi chốt đơn',action:'Gửi tin nhắn SMS cảm ơn & mã giảm giá',on:true,runs:128},
+    {id:uid++,trigger:'Khách mua 30 ngày chưa quay lại',action:'Gửi AI Reminder',on:true,runs:41},
+    {id:uid++,trigger:'Lead mới được lưu từ Google Maps',action:'Giao Telesale gọi xác nhận',on:false,runs:0});
+  state.results = phResults(PH_CITIES, 'Coffee shop');
+  state.selected = new Set(state.results.map(r=>r.id));
+  state.cityFilter = 'all';
+})();
+
+/* ===================== CHUNG ===================== */
+function toast(msg, type='success') {
+  const cfg = { success:['fa-circle-check','t-ok'], error:['fa-circle-xmark','t-bad'], info:['fa-circle-info','t-info'], warn:['fa-triangle-exclamation','t-warn'] }[type];
+  const el = document.createElement('div');
+  el.className = 'toast ' + cfg[1];
+  el.innerHTML = `<i class="fa-solid ${cfg[0]}"></i><div>${msg}</div>`;
+  $('toasts').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3400);
+}
+$('fbBtn').onclick = () => { $('modal').hidden = false; $('mClose').focus(); };
+$('mClose').onclick = () => $('modal').hidden = true;
+$('mNotify').onclick = () => { $('modal').hidden = true; toast('Đã ghi nhận yêu cầu tích hợp Facebook','info'); };
+$('modal').onclick = e => { if (e.target.id==='modal') $('modal').hidden = true; };
+document.addEventListener('keydown', e => { if (e.key==='Escape') $('modal').hidden = true; });
+
+const PAGES = {
+  leads:['quet','Tìm kiếm & Quét dữ liệu','Thu thập lead doanh nghiệp từ Google Maps'],
+  campaign:['chien-dich','Chiến dịch & SMS Gateway','Soạn, kiểm tra và khởi chạy chiến dịch SMS / Email'],
+  ai:['ai','AI Agent','Soạn thảo nội dung và phân tích tệp khách hàng'],
+  automation:['tu-dong','Automation','Kịch bản tự động hóa theo vòng đời đơn hàng'],
+};
+function show(page){
+  document.querySelectorAll('.page').forEach(p=>p.hidden = p.id !== 'page-'+page);
+  document.querySelectorAll('.nav a').forEach(a=>a.dataset.page===page ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'));
+  $('pageTitle').textContent = PAGES[page][1]; $('pageSub').textContent = PAGES[page][2];
+  if (page==='campaign') renderCampaign();
+  if (page==='ai') renderAI();
+  if (page==='automation') renderRules();
+}
+function go(page){ show(page); if (location.hash !== '#'+PAGES[page][0]) location.hash = PAGES[page][0]; }
+function fromHash(){ const h = location.hash.slice(1); return Object.keys(PAGES).find(k=>PAGES[k][0]===h) || 'leads'; }
+window.addEventListener('hashchange', ()=>show(fromHash()));
+
+function segments(){ const m = {}; state.leads.forEach(l=>{ (m[l.segment] ||= []).push(l); }); return m; }
+function updateSidebar(){
+  $('sbLeads').textContent = state.leads.length;
+  $('sbConsent').textContent = state.leads.filter(l=>l.consent).length;
+  $('sbSent').textContent = state.sentToday;
+}
+
+/* ===================== MODULE 1 ===================== */
+const isSaved = r => state.leads.some(l=>keyOf(l)===keyOf(r));
+const savedOf = r => state.leads.find(l=>keyOf(l)===keyOf(r));
+$('scanBtn').onclick = () => {
+  const kw = $('kw').value.trim(), area = $('area').value.trim();
+  if (!kw || !area) return toast('Nhập Từ khóa và Khu vực trước khi quét','warn');
+  const btn = $('scanBtn'); btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Đang quét…';
+  $('scanProgress').hidden = false;
+  const phCities = /cafe|coffee|caphe|kaffe/.test(slug(kw)) ? phCitiesFor(area) : [];
+  const isPH = phCities.length > 0;
+  const isReal = isPH || (slug(kw).includes('kho') && slug(area).includes('thuduc'));
+  const total = isPH ? REAL_PH.filter(r=>phCities.includes(r[7])).length : isReal ? REAL_KHO_THUDUC.length : rnd(12,20);
+  const steps = [[10,'Khởi tạo trình duyệt headless (Playwright)…'],[30,`Tìm “${kw}” tại ${area} trên Google Maps…`],
+                 [55,`Đã tìm thấy ${total} địa điểm, đang cuộn danh sách…`],[85,'Trích xuất chi tiết: SĐT, địa chỉ, website, đánh giá…'],[100,'Hoàn tất, đang lọc trùng với tệp đã lưu…']];
+  let i = 0;
+  const t = setInterval(()=>{
+    const [p,s] = steps[i];
+    $('scanBar').style.width = p+'%'; $('scanPct').textContent = p+'%'; $('scanStep').textContent = s;
+    if (++i === steps.length) {
+      clearInterval(t);
+      setTimeout(()=>{
+        const seg = cap(kw) + ' · ' + area;
+        state.cityFilter = 'all';
+        state.results = isPH ? phResults(phCities, cap(kw)) : isReal ? realResults(seg)
+          : Array.from({length:total},(_,k)=>makeLead(cap(kw)+' '+SUFFIX[k%16]+(k>=16?' '+(k-15):''), fakePhone(),
+              rnd(5,300)+' '+pick(STREETS)+', '+area, rnd(30,50)/10, rnd(0,200), Math.random()<.35?slug(SUFFIX[k%16])+slug(kw).slice(0,6)+'.vn':'', seg, area));
+        state.selected = new Set(state.results.filter(r=>!isSaved(r)).map(r=>r.id));
+        renderResults();
+        $('scanProgress').hidden = true; btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-map-location-dot"></i>Quét dữ liệu Google Maps';
+        const dup = state.results.filter(isSaved).length;
+        toast(`Quét xong: <b>${total}</b> doanh nghiệp${dup?`, ${dup} đã có trong tệp`:''}${isReal?' (dữ liệu thật)':''}`);
+      }, 400);
+    }
+  }, 550);
+};
+
+const visibleResults = () => state.cityFilter==='all' ? state.results : state.results.filter(r=>r.area===state.cityFilter);
+function renderChips(){
+  const areas = [...new Set(state.results.map(r=>r.area))];
+  if (areas.length < 2) { $('cityChips').innerHTML = ''; return; }
+  const chip = (val, label, n) => `<button class="chip" data-city="${esc(val)}" aria-pressed="${state.cityFilter===val}">${esc(label)} · ${n}</button>`;
+  $('cityChips').innerHTML = chip('all','Tất cả',state.results.length) + areas.map(a=>chip(a,a,state.results.filter(r=>r.area===a).length)).join('');
+  $('cityChips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ state.cityFilter = c.dataset.city; renderResults(); });
+}
+function renderResults(){
+  const rows = visibleResults();
+  $('emptyResults').hidden = state.results.length > 0;
+  const noPhone = rows.filter(r=>!r.phone).length;
+  $('resultCount').textContent = rows.length + ' doanh nghiệp' + (noPhone ? ` · ${noPhone} không có SĐT` : '');
+  renderChips();
+  $('resultBody').innerHTML = rows.map(r=>{
+    const saved = savedOf(r);
+    const sub = [r.category, r.website].filter(Boolean).join(' · ');
+    return `<tr>
+      <td><input type="checkbox" class="rowSel" data-id="${r.id}" aria-label="Chọn ${esc(r.name)}" ${state.selected.has(r.id)&&!saved?'checked':''} ${saved?'disabled':''}></td>
+      <td><div class="name">${esc(r.name)}</div>${sub?`<div class="sub">${esc(sub)}</div>`:''}</td>
+      <td class="num" style="white-space:nowrap">${r.phone ? esc(r.phone) : '<span class="faint" style="font-family:var(--f-body)">Không có SĐT</span>'}</td>
+      <td class="addr">${esc(r.address)}</td>
+      <td style="white-space:nowrap">${r.reviews?`<i class="fa-solid fa-star star"></i> <span class="num">${r.rating.toFixed(1)}</span> <span class="faint">(${r.reviews})</span>`:'<span class="faint">Chưa có</span>'}</td>
+      <td>${saved?'<span class="badge b-ok"><i class="fa-solid fa-check"></i>Đã lưu</span>':'<span class="badge b-muted">Chưa lưu</span>'}</td>
+      <td>${saved?`<button class="switch" role="switch" aria-checked="${saved.consent}" aria-label="Đồng ý nhận tin" data-consent="${saved.id}"></button>`:'<span class="sub">Lưu trước</span>'}</td>
+    </tr>`;}).join('');
+  $('resultBody').querySelectorAll('.rowSel').forEach(c=>c.onchange=()=>{ c.checked?state.selected.add(+c.dataset.id):state.selected.delete(+c.dataset.id); updateSaveBtn(); });
+  $('resultBody').querySelectorAll('[data-consent]').forEach(s=>s.onclick=()=>{
+    const l = state.leads.find(x=>x.id===+s.dataset.consent); l.consent=!l.consent; s.setAttribute('aria-checked', l.consent); updateSidebar();
+    toast(l.consent?`${esc(l.name)}: đã xác nhận đồng ý nhận tin`:`${esc(l.name)}: đã bỏ xác nhận`, l.consent?'success':'info');
+  });
+  const open = rows.filter(r=>!isSaved(r));
+  $('selAll').checked = open.length > 0 && open.every(r=>state.selected.has(r.id));
+  updateSaveBtn();
+}
+function updateSaveBtn(){
+  const n = visibleResults().filter(r=>state.selected.has(r.id) && !isSaved(r)).length;
+  $('saveSelBtn').disabled = n===0;
+  $('saveSelBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i>Lưu ${n||''} vào tệp khách hàng`;
+}
+$('selAll').onchange = e => { visibleResults().forEach(r=>{ if(!isSaved(r)) e.target.checked?state.selected.add(r.id):state.selected.delete(r.id); }); renderResults(); };
+$('saveSelBtn').onclick = () => {
+  const toSave = visibleResults().filter(r=>state.selected.has(r.id) && !isSaved(r));
+  state.leads.push(...toSave); toSave.forEach(r=>state.selected.delete(r.id)); renderResults(); updateSidebar();
+  const segs = [...new Set(toSave.map(l=>l.segment))];
+  toast(`Đã lưu <b>${toSave.length}</b> lead vào ${segs.length>1?`<b>${segs.length}</b> tệp theo khu vực`:`tệp “${esc(segs[0])}”`}. Bật “Đồng ý nhận tin” sau khi telesale gọi xác nhận.`);
+};
+
+/* ===================== MODULE 2 ===================== */
+const GATEWAYS = {
+  sms: [['Thiết bị Android 1 (Telesale)','fa-mobile-screen','Pin 82% · Viettel',.97],['Thiết bị Android 2','fa-mobile-screen','Pin 64% · Vinaphone',.95],['GSM Modem (Cụm 5 SIM)','fa-server','5/5 SIM hoạt động',.88],['SMS API Philippines (Semaphore)','fa-globe','Sender ID đã đăng ký · gửi nội địa +63',.98]],
+  email: [['SMTP công ty','fa-envelope','Giới hạn 500 thư/ngày',.98],['Amazon SES','fa-cloud','Đã xác thực tên miền',.99]],
+};
+function fillSegments(sel){
+  const segs = segments(), prev = sel.value;
+  sel.innerHTML = Object.entries(segs).reverse().map(([k,v])=>`<option value="${esc(k)}">${esc(k)} (${v.length})</option>`).join('');
+  if (prev && segs[prev]) sel.value = prev;
+}
+function renderCampaign(){
+  fillSegments($('cSegment'));
+  const gwPrev = $('cGateway').value;
+  $('cGateway').innerHTML = GATEWAYS[state.channel].map(g=>`<option>${g[0]}</option>`).join('');
+  if (GATEWAYS[state.channel].some(g=>g[0]===gwPrev)) $('cGateway').value = gwPrev;
+  else if (state.channel==='sms' && segMarket($('cSegment').value)==='PH') $('cGateway').value = 'SMS API Philippines (Semaphore)';
+  $('gwLabel').textContent = state.channel==='sms'?'Gateway gửi tin':'Máy chủ gửi email';
+  $('cSubject').hidden = state.channel!=='email';
+  const list = state.approved.filter(a=>a.channel===state.channel);
+  $('cTemplate').innerHTML = `<option value="">Chèn mẫu AI đã duyệt (${list.length})</option>` + list.map(a=>`<option value="${a.id}">${esc(a.text.slice(0,42))}…</option>`).join('');
+  renderGateways(); renderStats(); renderHistory(); updateRecipients(); updatePreview();
+}
+function renderGateways(){
+  $('gwList').innerHTML = GATEWAYS[state.channel].map(g=>`
+    <div class="gw ${g[0]===$('cGateway').value?'sel':''}">
+      <div class="ico"><i class="fa-solid ${g[1]}"></i></div>
+      <div class="meta"><b>${g[0]}</b><span class="sub">${g[2]}${g[0].includes('GSM')?'<span class="sims"><i></i><i></i><i></i><i></i><i></i></span>':''}</span></div>
+      <span class="badge b-ok"><span class="dot"></span>Online</span></div>`).join('');
+}
+$('cGateway').onchange = renderGateways;
+function renderStats(){
+  const sum = k => state.campaigns.reduce((s,c)=>s+c[k],0), sent = sum('sent'), ok = sum('ok');
+  const cards = [['Chiến dịch',state.campaigns.length,'fa-bullhorn','accent'],['Tin đã gửi',sent,'fa-paper-plane','info'],
+    ['Tỷ lệ thành công',(sent?Math.round(ok/sent*100):0)+'%','fa-circle-check','ok'],['Lỗi',sum('fail'),'fa-triangle-exclamation','bad']];
+  $('campStats').innerHTML = cards.map(c=>`<div class="panel tile"><div class="ico ${c[3]}"><i class="fa-solid ${c[2]}"></i></div><div><div class="lab">${c[0]}</div><div class="val">${c[1]}</div></div></div>`).join('');
+}
+const STATUS = { 'Đang gửi':'b-info', 'Thành công':'b-ok', 'Lỗi mạng':'b-bad' };
+function renderHistory(){
+  $('historyBody').innerHTML = state.campaigns.map(c=>`<tr>
+      <td class="name">${esc(c.title)}</td>
+      <td style="white-space:nowrap"><i class="fa-solid ${c.channel==='sms'?'fa-comment-sms':'fa-envelope'} faint"></i> ${c.channel.toUpperCase()}</td>
+      <td class="muted" style="white-space:nowrap">${esc(c.gateway)}</td>
+      <td><div class="mini-bar"><div class="bar"><div style="width:${Math.round(c.sent/c.total*100)}%"></div></div><span class="num faint">${c.sent}/${c.total}</span></div></td>
+      <td class="num" style="color:var(--ok)">${c.ok}</td><td class="num" style="color:var(--bad)">${c.fail}</td>
+      <td><span class="badge ${STATUS[c.status]}">${c.status==='Đang gửi'?'<i class="fa-solid fa-spinner fa-spin"></i>':''}${c.status}</span></td>
+      <td class="num faint" style="white-space:nowrap">${c.time}</td></tr>`).join('');
+}
+function recipients(){
+  const seg = segments()[$('cSegment').value] || [];
+  const list = state.channel==='email' ? seg.filter(l=>l.email) : seg.filter(l=>l.phone);
+  const consentOnly = $('cConsent').checked;
+  return { size: seg.length, all: list.length, list: consentOnly ? list.filter(l=>l.consent) : list, consentOnly, first: seg[0] };
+}
+function updateRecipients(){
+  const r = recipients(), ph = segMarket($('cSegment').value)==='PH';
+  $('lawRef').textContent = ph ? 'Data Privacy Act RA 10173, Philippines' : 'NĐ 91/2020';
+  $('recipientInfo').textContent = `Người nhận hợp lệ: ${r.list.length}/${r.size}` + (r.all<r.size ? ` (${r.size-r.all} lead không có ${state.channel==='email'?'email':'SĐT'})` : '') + '.';
+}
+const OPT_OUT = {
+  VN: { sms: '\nTu choi: soan TC gui 0909xxxxxx', email: '\n\n— Bạn nhận email này vì đã đồng ý nhận thông tin. Hủy đăng ký: [link]' },
+  PH: { sms: '\nReply STOP to opt out.', email: '\n\n— You received this because you agreed to hear from us. Unsubscribe: [link]' },
+};
+// Bảng ký tự GSM 03.38 (cơ bản + mở rộng); ký tự ngoài bảng làm tin chuyển sang Unicode 70 ký tự/SMS
+const GSM7 = "@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€";
+const fill = (text, lead) => text.replaceAll('{ten}', lead?.name || 'Quý khách').replaceAll('{khu_vuc}', lead?.area || '');
+function updatePreview(){
+  const txt = $('cContent').value, r = recipients(), mk = segMarket($('cSegment').value);
+  const full = txt ? fill(txt, r.list[0] || r.first) + ($('cConsent').checked ? OPT_OUT[mk][state.channel] : '') : '';
+  $('preview').textContent = full || 'Nội dung sẽ hiển thị ở đây, đã thay {ten} bằng tên lead đầu tiên trong tệp.';
+  $('preview').style.color = full ? '' : 'var(--faint)';
+  if (state.channel==='sms') {
+    const unicode = [...full].some(ch=>!GSM7.includes(ch)), per = unicode?70:160, parts = full ? Math.ceil(full.length/per) : 0;
+    $('charCount').innerHTML = `${full.length} ký tự · ${parts} SMS · ${unicode?'<span style="color:var(--warn)">Unicode (có dấu): 70 ký tự/SMS</span>':'GSM-7: 160 ký tự/SMS'}`;
+  } else $('charCount').textContent = `${txt.length} ký tự`;
+}
+document.querySelectorAll('#channelToggle button').forEach(b=>b.onclick=()=>{
+  state.channel = b.dataset.ch;
+  document.querySelectorAll('#channelToggle button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  renderCampaign();
+});
+$('cConsent').onchange = () => { updateRecipients(); updatePreview(); };
+$('cSegment').onchange = () => {
+  if (state.channel==='sms') {
+    const ph = segMarket($('cSegment').value)==='PH', cur = $('cGateway').value;
+    if (ph && !cur.includes('Philippines')) { $('cGateway').value = 'SMS API Philippines (Semaphore)'; toast('Tệp Philippines: chuyển sang gateway gửi nội địa +63 (SIM Việt Nam sẽ tính cước SMS quốc tế)','info'); }
+    if (!ph && cur.includes('Philippines')) $('cGateway').selectedIndex = 0;
+    renderGateways();
+  }
+  updateRecipients(); updatePreview();
+};
+$('cContent').oninput = updatePreview;
+$('cTemplate').onchange = e => {
+  const a = state.approved.find(x=>x.id===+e.target.value); if(!a) return;
+  $('cContent').value = a.text; updatePreview(); toast('Đã chèn mẫu nội dung đã duyệt','info');
+};
+$('testBtn').onclick = () => {
+  if (!$('cContent').value.trim()) return toast('Nhập nội dung trước khi gửi test','warn');
+  toast(`Đã gửi tin test qua <b>${esc($('cGateway').value)}</b> tới ${state.channel==='sms'?'máy quản lý 0909 *** 123':'hộp thư marketing nội bộ'}`, 'info');
+};
+$('launchBtn').onclick = () => {
+  const title = $('cTitle').value.trim(), txt = $('cContent').value.trim();
+  if (!title) return toast('Nhập tiêu đề chiến dịch','warn');
+  if (!txt) return toast('Nhập nội dung hoặc chọn mẫu AI đã duyệt','warn');
+  const r = recipients();
+  if (!r.list.length) return toast(r.consentOnly ? 'Tệp này chưa có lead nào <b>đồng ý nhận tin</b>. Cho telesale gọi xác nhận rồi bật ở module Quét data.' : 'Tệp không có người nhận phù hợp','error');
+  const gwName = $('cGateway').value, gw = GATEWAYS[state.channel].find(g=>g[0]===gwName);
+  const c = {id:uid++,title,channel:state.channel,gateway:gwName,total:r.list.length,sent:0,ok:0,fail:0,status:'Đang gửi',time:now()};
+  state.campaigns.unshift(c); renderStats(); renderHistory();
+  toast(`Đã khởi chạy “${esc(title)}” tới <b>${c.total}</b> người nhận`);
+  $('cTitle').value='';
+  const t = setInterval(()=>{
+    const n = Math.min(rnd(1,3), c.total-c.sent);
+    for (let i=0;i<n;i++) Math.random()<gw[3] ? c.ok++ : c.fail++;
+    c.sent += n; state.sentToday += n; updateSidebar();
+    if (c.sent>=c.total) {
+      clearInterval(t);
+      c.status = c.fail/c.total > .1 ? 'Lỗi mạng' : 'Thành công';
+      toast(c.status==='Thành công' ? `“${esc(c.title)}” hoàn tất: ${c.ok}/${c.total} thành công` : `“${esc(c.title)}”: ${c.fail} tin lỗi mạng, xếp hàng gửi lại qua gateway khác`, c.status==='Thành công'?'success':'error');
+    }
+    if (!$('page-campaign').hidden) { renderStats(); renderHistory(); }
+  }, 700);
+};
+
+/* ===================== MODULE 3 ===================== */
+function renderAI(){
+  fillSegments($('aiSegment'));
+  if (!offerEdited) $('aiOffer').value = OFFER_DEFAULT[segMarket($('aiSegment').value)];
+  renderInsight(); renderApproved();
+}
+function renderInsight(){
+  const seg = segments()[$('aiSegment').value] || [];
+  const withWeb = seg.filter(l=>l.website).length, withPhone = seg.filter(l=>l.phone).length, rated = seg.filter(l=>l.reviews), consent = seg.filter(l=>l.consent).length;
+  const avg = rated.length ? (rated.reduce((s,l)=>s+l.rating,0)/rated.length).toFixed(1) : '—';
+  const reviews = rated.reduce((s,l)=>s+l.reviews,0), ph = seg[0]?.market==='PH';
+  let tip = '';
+  if (seg.length) {
+    tip = `${consent}/${seg.length} lead đã đồng ý nhận tin. `;
+    tip += ph ? `Thị trường Philippines: AI soạn tiếng Anh; tin không dấu nên 160 ký tự/SMS (tiếng Việt có dấu chỉ 70). ${rated.length?`Quán có lượng khách lớn (TB ${Math.round(reviews/rated.length)} đánh giá/quán): nên chào hàng theo chuỗi/nhiều chi nhánh. `:''}${seg.some(l=>l.real)&&!seg.some(l=>l.email)?'Chưa có email: bật tùy chọn -email khi quét để lấy từ website.':''}`
+              : (withWeb<seg.length/2 ? 'Đa số chưa có website: nên ưu tiên SMS ngắn có lời kêu gọi phản hồi, telesale gọi trước.' : 'Nhiều đơn vị có website: có thể gửi email kèm báo giá chi tiết.');
+  } else tip = 'Chưa có lead trong tệp.';
+  $('aiInsight').innerHTML = `
+    <div class="bubble-label" style="margin:0"><i class="fa-solid fa-chart-simple"></i> AI phân tích tệp${ph?' · <span style="color:var(--info)">PH</span>':''}</div>
+    <div class="grid"><div><b>${seg.length}</b><span>Lead</span></div><div><b>${withPhone}</b><span>Có SĐT</span></div><div><b>${avg}</b><span>Đánh giá TB</span></div></div>
+    <p>${tip}</p>`;
+}
+const OFFER_DEFAULT = { VN: 'dịch vụ kho vận & fulfillment, giảm 15% tháng đầu', PH: 'premium coffee beans & café supplies, 10% off your first order' };
+let offerEdited = false;
+$('aiOffer').oninput = () => offerEdited = true;
+$('aiSegment').onchange = () => {
+  if (!offerEdited) $('aiOffer').value = OFFER_DEFAULT[segMarket($('aiSegment').value)];
+  renderInsight();
+};
+function genDraft(){
+  const segName = $('aiSegment').value || 'khách hàng', ch = $('aiChannel').value, tone = $('aiTone').value, offer = $('aiOffer').value || 'sản phẩm của chúng tôi';
+  const kind = segName.split('·')[0].trim().toLowerCase();
+  if (segMarket(segName)==='PH') {
+    if (ch==='sms') return {
+      'Chuyên nghiệp': `Hi {ten}, this is TBest. We supply ${offer} for cafés in {khu_vuc}. Reply YES and our team will send you a quote within 24 hours.`,
+      'Thân thiện': `Hey {ten}! TBest here. We've got ${offer} for coffee shops around {khu_vuc}. Reply YES and we'll send you a quote today!`,
+      'Ngắn gọn, trực diện': `{ten}: ${offer}. Reply YES for a quote within 24h. -TBest` }[tone];
+    return `Subject: ${cap(offer.split(',')[0])} for {ten} in {khu_vuc}
+
+Hi {ten} team,
+
+I'm reaching out from TBest. We work with cafés across Metro Manila and Cebu, supplying ${offer}.
+
+What we can offer {ten}:
+• Steady stock with scheduled weekly delivery
+• Batch and expiry tracking on every unit, so older stock is always used first
+• One account and one invoice for all your branches
+
+${tone==='Thân thiện'?'Would you be open to a quick 15-minute call this week?':'Could we schedule a 15-minute call this week to walk you through pricing and delivery options?'}
+
+Best regards,
+TBest Sales Team`;
+  }
+  if (ch==='sms') return {
+    'Chuyên nghiệp': `Kính gửi {ten}, TBest xin giới thiệu ${offer} dành cho các đơn vị ${kind} tại {khu_vuc}. Quý anh/chị phản hồi "QUAN TAM" để được tư vấn và báo giá trong 24h.`,
+    'Thân thiện': `Chào {ten}! TBest đang có ${offer} cho các anh chị ${kind} khu {khu_vuc}. Nhắn "QUAN TAM" để bên em gọi tư vấn nhanh nha!`,
+    'Ngắn gọn, trực diện': `{ten}: ${offer}. Nhan QUAN TAM de nhan bao gia trong 24h. TBest.` }[tone];
+  return `Tiêu đề: {ten} – giải pháp ${offer.split(',')[0]} cho ${kind} tại {khu_vuc}
+
+Kính gửi Ban quản lý {ten},
+
+Chúng tôi là TBest, đơn vị vận hành chuỗi kho TMĐT với hơn 2.000 đơn/ngày. Các đơn vị ${kind} tại {khu_vuc} thường gặp khó khăn về chi phí lưu kho và tốc độ giao hàng.
+
+Chúng tôi xin gửi tới Quý đơn vị ${offer}:
+• Quản lý tồn kho theo từng sản phẩm bằng RFID, báo cáo theo thời gian thực
+• Soát đơn tự động trước khi giao, giảm giao sai và thiếu
+• Hỗ trợ nhiều kho, nhiều thị trường
+
+${tone==='Thân thiện'?'Anh/chị có 15 phút trong tuần này để bên em gọi tư vấn không ạ?':'Rất mong được trao đổi 15 phút với Quý đơn vị trong tuần này để trình bày chi tiết.'}
+
+Trân trọng,
+Phòng Kinh doanh TBest`;
+}
+function setBtns(on){ ['aiRegenBtn','aiEditBtn','aiApproveBtn','aiGenBtn'].forEach(id=>$(id).disabled=!on); }
+function setStatus(cls, html){ $('draftStatus').className = 'badge '+cls; $('draftStatus').innerHTML = html; }
+function typeOut(text){
+  const ta = $('aiDraft'); ta.value=''; ta.readOnly=true; setBtns(false);
+  setStatus('b-ai','<i class="fa-solid fa-spinner fa-spin"></i>AI đang soạn…');
+  let i=0; const step = Math.max(2, Math.round(text.length/110));
+  const t = setInterval(()=>{ i+=step; ta.value = text.slice(0,i); ta.scrollTop=ta.scrollHeight;
+    if (i>=text.length){ clearInterval(t); setBtns(true); setStatus('b-warn','Chờ duyệt'); $('pendingBadge').hidden=false; }
+  }, 18);
+}
+$('aiGenBtn').onclick = () => { if(!$('aiSegment').value) return toast('Chưa có tệp khách hàng','warn'); typeOut(genDraft()); };
+$('aiRegenBtn').onclick = () => {
+  const tones=['Chuyên nghiệp','Thân thiện','Ngắn gọn, trực diện'], s=$('aiTone');
+  s.value = tones[(tones.indexOf(s.value)+1)%3]; typeOut(genDraft()); toast(`Tạo lại với giọng “${s.value}”`,'info');
+};
+$('aiEditBtn').onclick = () => { $('aiDraft').readOnly=false; $('aiDraft').focus(); toast('Sửa trực tiếp bản nháp rồi bấm Duyệt & Lưu','info'); };
+$('aiApproveBtn').onclick = () => {
+  const text = $('aiDraft').value.trim(); if(!text) return;
+  state.approved.unshift({id:uid++,channel:$('aiChannel').value,segment:$('aiSegment').value,text,time:now()});
+  $('aiDraft').readOnly=true; $('aiApproveBtn').disabled=true; $('aiEditBtn').disabled=true;
+  setStatus('b-ok','<i class="fa-solid fa-check"></i>Đã duyệt'); $('pendingBadge').hidden=true;
+  renderApproved(); toast('Đã duyệt & lưu. Nội dung dùng được trong module Chiến dịch.');
+};
+function renderApproved(){
+  $('approvedList').innerHTML = state.approved.length ? state.approved.map(a=>`
+    <div class="lib-item">
+      <div class="ico ok"><i class="fa-solid ${a.channel==='sms'?'fa-comment-sms':'fa-envelope'}"></i></div>
+      <div style="flex:1;min-width:0"><div class="txt">${esc(a.text)}</div><div class="sub" style="margin-top:4px">${esc(a.segment)} · Duyệt ${a.time}</div></div>
+      <button class="btn btn-ghost btn-sm" data-use="${a.id}"><i class="fa-solid fa-arrow-right"></i>Dùng</button>
+    </div>`).join('') : '<div class="empty">Chưa có nội dung nào được duyệt.</div>';
+  $('approvedList').querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>useTpl(+b.dataset.use));
+}
+function useTpl(id){
+  const a = state.approved.find(x=>x.id===id);
+  state.channel = a.channel;
+  document.querySelectorAll('#channelToggle button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.ch===a.channel));
+  go('campaign');
+  if (segments()[a.segment]) { $('cSegment').value = a.segment; $('cSegment').onchange(); }
+  $('cContent').value = a.text; updatePreview();
+  toast('Đã chuyển nội dung sang Chiến dịch','info');
+}
+
+/* ===================== MODULE 4 ===================== */
+function renderRules(){
+  $('ruleList').innerHTML = state.rules.length ? state.rules.map(r=>`
+    <div class="rule ${r.on?'':'off'}">
+      <div class="flow">
+        <span class="badge b-ai"><i class="fa-solid fa-code-branch"></i>NẾU</span>${esc(r.trigger)}
+        <i class="fa-solid fa-arrow-right faint"></i>
+        <span class="badge b-accent"><i class="fa-solid fa-bolt"></i>THÌ</span>${esc(r.action)}
+        ${r.action.includes('AI')?'<span class="badge b-warn"><i class="fa-solid fa-user-check"></i>Mẫu cần duyệt</span>':''}
+        <div class="sub">Đã chạy ${r.runs} lần</div>
+      </div>
+      <button class="switch" role="switch" aria-checked="${r.on}" aria-label="Bật kịch bản" data-toggle="${r.id}"></button>
+      <button class="icon-btn" aria-label="Xóa kịch bản" data-del="${r.id}"><i class="fa-regular fa-trash-can"></i></button>
+    </div>`).join('') : '<div class="panel empty">Chưa có kịch bản nào. Tạo kịch bản đầu tiên ở khung phía trên.</div>';
+  $('ruleList').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{ const r=state.rules.find(x=>x.id===+b.dataset.toggle); r.on=!r.on; renderRules(); toast(`Kịch bản đã ${r.on?'bật':'tắt'}`, r.on?'success':'info'); });
+  $('ruleList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ state.rules=state.rules.filter(x=>x.id!==+b.dataset.del); renderRules(); toast('Đã xóa kịch bản','info'); });
+}
+$('addRuleBtn').onclick = () => {
+  const trigger=$('trigSel').value, action=$('actSel').value;
+  if (state.rules.some(r=>r.trigger===trigger&&r.action===action)) return toast('Kịch bản này đã có trong danh sách','warn');
+  state.rules.push({id:uid++,trigger,action,on:true,runs:0}); renderRules(); toast('Đã thêm kịch bản tự động');
+};
+const EVENTS = { 'Sau khi chốt đơn':()=>`Đơn #DH${rnd(10000,99999)} của ${pick(SUFFIX)} đã chốt`, 'Khách mua 30 ngày chưa quay lại':()=>`${pick(SUFFIX)} đã 31 ngày chưa mua lại`,
+  'Lead mới được lưu từ Google Maps':()=>`Lead mới: ${pick(['Kho','Đại lý','Cửa hàng'])} ${pick(SUFFIX)}`, 'Khách trả lời tin nhắn "QUAN TAM"':()=>`${pick(SUFFIX)} trả lời "QUAN TAM"`,
+  'Đơn hàng giao thành công':()=>`Đơn #DH${rnd(10000,99999)} giao thành công` };
+function log(html, icon, color){
+  const el=document.createElement('div'); el.className='log-item';
+  el.innerHTML=`<i class="fa-solid ${icon}" style="color:var(${color})"></i><div>${html}<div class="sub">${now()}</div></div>`;
+  $('autoLog').prepend(el);
+}
+$('simBtn').onclick = () => {
+  const active = state.rules.filter(r=>r.on); if(!active.length) return toast('Bật ít nhất một kịch bản để mô phỏng','warn');
+  const r = pick(active); r.runs++;
+  log(`<b>Sự kiện:</b> ${EVENTS[r.trigger]()}`, 'fa-bell', '--ai');
+  setTimeout(()=>{
+    const ai = r.action.includes('AI');
+    log(ai ? `<b>${esc(r.action)}:</b> AI dùng mẫu nhắc mua lại đã duyệt, cá nhân hóa theo lịch sử mua` : `<b>Đã thực hiện:</b> ${esc(r.action)}`, ai?'fa-wand-magic-sparkles':'fa-circle-check', ai?'--warn':'--ok');
+    renderRules(); toast(`Automation: ${esc(r.action)}`,'info');
+  }, 700);
+};
+log('<b>Đã thực hiện:</b> Gửi tin nhắn SMS cảm ơn & mã giảm giá cho đơn #DH58213', 'fa-circle-check', '--ok');
+log('<b>Sự kiện:</b> Đơn #DH58213 của Phúc Lộc đã chốt', 'fa-bell', '--ai');
+
+/* ===================== KHỞI ĐỘNG ===================== */
+updateSidebar(); renderResults(); show(fromHash());
+</script>

@@ -1,0 +1,20 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+title Trạng thái phiếu nhập
+hide empty description
+state "Nháp" as Nhap
+state "Đã gửi" as DaGui
+state "Đã duyệt" as DaDuyet
+state "Hoàn tất" as HoanTat
+state "Hủy" as Huy
+[*] --> Nhap
+Nhap --> DaGui : gửi duyệt
+DaGui --> Nhap : trả lại
+DaGui --> DaDuyet : kế toán duyệt
+DaDuyet --> HoanTat : ghi tồn
+Nhap --> Huy : hủy
+HoanTat --> [*]
+Huy --> [*]
+@enduml

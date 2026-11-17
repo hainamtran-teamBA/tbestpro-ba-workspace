@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam shadowing false
+title Nhập kho theo đơn mua
+|Mua hàng|
+|NV kho|
+|QL kho|
+|Kế toán|
+|Hệ thống|
+|Mua hàng|
+start
+:Tạo đơn mua (SKU, số bao, kg dự kiến);
+:Container về kho;
+|NV kho|
+:Mở phiếu nhập theo đơn mua;
+repeat
+  :Chọn SKU;
+  :Đưa thẻ qua đầu đọc để bàn;
+  |Hệ thống|
+  :Ghi nhận N mã thẻ, kg để trống;
+  |NV kho|
+  :Treo thẻ lên bao;
+  repeat
+    :Đặt bao lên cân (số bao tùy ý);
+    |Hệ thống|
+    :Đọc kg từ cân, cộng dồn lượt;
+    |NV kho|
+  repeat while (Còn bao chưa cân?) is (có)
+  -> không;
+repeat while (Còn SKU khác?) is (có)
+-> không;
+|Hệ thống|
+:Chia đều tổng kg cho các thẻ theo SKU, kiểm dung sai;
+if (Trong dung sai?) then (có)
+else (không)
+  |QL kho|
+  :Giải trình chênh lệch;
+endif
+|NV kho|
+:Gửi duyệt;
+|Kế toán|
+:Đối chiếu số bao, lô, kg;
+if (Duyệt?) then (có)
+  :Hoàn tất: tồn tăng;
+  stop
+else (không)
+  :Trả lại kèm lý do;
+  stop
+endif
+@enduml

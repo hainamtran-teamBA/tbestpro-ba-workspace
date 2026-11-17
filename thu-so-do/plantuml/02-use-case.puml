@@ -1,0 +1,32 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+left to right direction
+title Use case - Kho cà phê
+actor "Mua hàng" as MH
+actor "NV kho" as NV
+actor "QL kho" as QL
+actor "Kế toán" as KT
+rectangle "Hệ thống kho" {
+  usecase "UC-01\nThiết lập kho" as UC01
+  usecase "UC-02\nNhập kho theo đơn mua" as UC02
+  usecase "UC-03\nXuất bán" as UC03
+  usecase "UC-04\nXé bao lấy lẻ" as UC04
+  usecase "UC-07\nKiểm kê" as UC07
+  usecase "UC-08\nKhách trả hàng" as UC08
+}
+MH --> UC02
+NV --> UC02
+NV --> UC03
+NV --> UC04
+NV --> UC07
+NV --> UC08
+QL --> UC02
+QL --> UC07
+UC02 <-- KT : duyệt
+UC03 <-- KT : duyệt
+UC04 <-- KT : duyệt
+UC07 <-- KT : duyệt
+UC08 <-- KT : duyệt
+@enduml

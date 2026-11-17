@@ -1,0 +1,53 @@
+# Bí mật: không bao giờ đẩy lên
+.env
+.env.*
+*.pem
+*.key
+
+# Tài liệu gốc, nặng: để trên Google Drive, cần thì tải về
+tai-lieu-goc/
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.mp4
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.zip
+
+# Rác của máy
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
+.claude/settings.local.json
+
+# Bản sao lưu CapCut (chỉ dùng trên máy đang chạy CapCut)
+Du-an/02-Facebook-Ads/Claude-CapCut/sao-luu/
+Du-an/02-Facebook-Ads/Claude-CapCut/video-goc/
+Du-an/02-Facebook-Ads/Claude-CapCut/video-da-dung/
+
+# Kho của dev, tải riêng từ GitHub của dev
+Du-an/01-Kho-Real-time/kho-rfid/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# Bản đồ Graphify: mỗi máy tự chạy /graphify, không đẩy
+graphify-out/
+**/graphify-out/
+
+# Skill, agent: mỗi máy tự giữ, danh sách ở cai-dat-may.md
+.claude/skills/*/__pycache__/
+.claude/luu-tru-skill/
+.claude/agents/*
+!.claude/agents/README.md
+.playwright/
+
+# Máy công ty: repo của dev (anh Hiếu) có git riêng
+WMS/

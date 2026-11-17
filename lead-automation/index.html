@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadFlow B2B</title>
+<script src="https://cdn.tailwindcss.com/3.4.5"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] },
+    colors: { brand: { 50:'#eef6ff',100:'#d9eaff',500:'#2f6fed',600:'#1f5bd6',700:'#1a4bb0' } } } } };
+</script>
+<style>
+  body { background:#f5f7fb; }
+  .nav-item.active { background:#eef6ff; color:#1f5bd6; }
+  .nav-item.active i { color:#1f5bd6; }
+  .card { background:#fff; border:1px solid #e6eaf2; border-radius:14px; }
+  .input { width:100%; border:1px solid #d6dce8; border-radius:10px; padding:9px 12px; font-size:14px; background:#fff; transition:border-color .15s, box-shadow .15s; }
+  .input:focus { outline:none; border-color:#2f6fed; box-shadow:0 0 0 3px rgba(47,111,237,.15); }
+  .btn { display:inline-flex; align-items:center; gap:8px; border-radius:10px; padding:9px 16px; font-size:14px; font-weight:600; transition:all .15s; }
+  .btn:active { transform:scale(.98); }
+  .btn-primary { background:#1f5bd6; color:#fff; } .btn-primary:hover { background:#1a4bb0; }
+  .btn-ghost { background:#fff; border:1px solid #d6dce8; color:#334155; } .btn-ghost:hover { background:#f1f5f9; }
+  .btn-green { background:#059669; color:#fff; } .btn-green:hover { background:#047857; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .badge { display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600; white-space:nowrap; }
+  .switch { position:relative; width:38px; height:22px; background:#cbd5e1; border-radius:999px; transition:.2s; cursor:pointer; flex-shrink:0; }
+  .switch::after { content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:.2s; }
+  .switch.on { background:#059669; } .switch.on::after { left:19px; }
+  .toast { animation: slideIn .25s ease-out; }
+  @keyframes slideIn { from { transform:translateX(110%); opacity:0 } to { transform:translateX(0); opacity:1 } }
+  .fade-in { animation: fade .25s ease-out; } @keyframes fade { from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:none } }
+  .caret::after { content:'▍'; animation: blink 1s infinite; color:#2f6fed; } @keyframes blink { 50% { opacity:0 } }
+  table th { font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:#64748b; }
+</style>
+</head>
+<body class="font-sans text-slate-800">
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed md:sticky top-0 left-0 z-40 h-screen w-64 bg-white border-r border-slate-200 flex flex-col -translate-x-full md:translate-x-0 transition-transform">
+    <div class="h-16 flex items-center gap-3 px-5 border-b border-slate-100">
+      <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center"><i class="fa-solid fa-bolt"></i></div>
+      <div><div class="font-bold leading-tight">LeadFlow B2B</div><div class="text-xs text-slate-500">Tự động hóa Lead & SMS</div></div>
+    </div>
+    <nav class="flex-1 p-3 space-y-1 text-sm font-medium">
+      <button data-page="leads" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-magnifying-glass-location w-5 text-slate-400"></i>Tìm kiếm & Quét data</button>
+      <button data-page="campaign" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-paper-plane w-5 text-slate-400"></i>Chiến dịch & Gateway</button>
+      <button data-page="ai" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-wand-magic-sparkles w-5 text-slate-400"></i>AI Agent<span id="pendingBadge" class="ml-auto badge bg-amber-100 text-amber-700 hidden">0</span></button>
+      <button data-page="automation" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-diagram-project w-5 text-slate-400"></i>Automation</button>
+    </nav>
+    <div class="p-4 m-3 rounded-xl bg-slate-50 text-xs text-slate-600 space-y-2">
+      <div class="flex justify-between"><span>Lead đã lưu</span><b id="sbLeads">0</b></div>
+      <div class="flex justify-between"><span>Đã đồng ý nhận tin</span><b id="sbConsent">0</b></div>
+      <div class="flex justify-between"><span>Tin đã gửi hôm nay</span><b id="sbSent">0</b></div>
+    </div>
+  </aside>
+  <div id="overlay" class="fixed inset-0 bg-black/30 z-30 hidden md:hidden"></div>
+
+  <!-- MAIN -->
+  <main class="flex-1 min-w-0">
+    <header class="h-16 bg-white border-b border-slate-200 flex items-center gap-3 px-4 md:px-8 sticky top-0 z-20">
+      <button id="menuBtn" class="md:hidden w-9 h-9 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-bars"></i></button>
+      <div class="min-w-0">
+        <h1 id="pageTitle" class="font-semibold text-lg truncate">Tìm kiếm & Quét dữ liệu</h1>
+        <p id="pageSub" class="text-xs text-slate-500 truncate">Thu thập lead doanh nghiệp từ Google Maps</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="hidden sm:inline-flex badge bg-emerald-50 text-emerald-700"><i class="fa-solid fa-circle text-[7px]"></i>3 gateway online</span>
+        <div class="w-9 h-9 rounded-full bg-brand-100 text-brand-700 grid place-items-center font-semibold text-sm">TB</div>
+      </div>
+    </header>
+
+    <div class="p-4 md:p-8 max-w-[1400px]">
+
+      <!-- ============ MODULE 1: LEADS ============ -->
+      <section id="page-leads" class="page fade-in space-y-6">
+        <div class="card p-5">
+          <div class="grid md:grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
+            <div><label class="text-sm font-medium text-slate-600">Từ khóa</label><input id="kw" class="input mt-1" placeholder="VD: Quán cafe, đại lý, kho bãi" value="kho bãi"></div>
+            <div><label class="text-sm font-medium text-slate-600">Khu vực</label><input id="area" class="input mt-1" placeholder="VD: Hà Nội" value="Thủ Đức"></div>
+            <button id="scanBtn" class="btn btn-primary h-[42px]"><i class="fa-solid fa-map-location-dot"></i>Quét dữ liệu Google Maps</button>
+            <button id="fbBtn" class="btn btn-ghost h-[42px]"><i class="fa-brands fa-facebook text-[#1877f2]"></i>Import từ Facebook</button>
+          </div>
+          <div id="scanProgress" class="hidden mt-5">
+            <div class="flex justify-between text-sm mb-2"><span id="scanStep" class="text-slate-600">Đang khởi tạo…</span><span id="scanPct" class="font-semibold text-brand-600">0%</span></div>
+            <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="scanBar" class="h-full bg-brand-500 transition-all duration-300" style="width:0%"></div></div>
+          </div>
+          <p class="text-xs text-slate-400 mt-3"><i class="fa-solid fa-circle-info mr-1"></i>Engine: gosom/google-maps-scraper v1.18.1 (mã nguồn mở). Bản demo dùng dữ liệu mô phỏng; riêng truy vấn "kho bãi · Thủ Đức" là kết quả quét thật ngày 10/11/2026.</p>
+        </div>
+
+        <div class="card">
+          <div class="flex flex-wrap items-center gap-3 p-4 border-b border-slate-100">
+            <h2 class="font-semibold">Kết quả</h2>
+            <span id="resultCount" class="badge bg-slate-100 text-slate-600">0 doanh nghiệp</span>
+            <div class="ml-auto flex gap-2">
+              <button id="saveSelBtn" class="btn btn-green" disabled><i class="fa-solid fa-floppy-disk"></i>Lưu vào tệp khách hàng</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50"><tr class="text-left">
+                <th class="p-3 w-10"><input type="checkbox" id="selAll" class="accent-brand-600"></th>
+                <th class="p-3">Tên doanh nghiệp</th><th class="p-3">Số điện thoại</th><th class="p-3">Địa chỉ</th>
+                <th class="p-3">Đánh giá</th><th class="p-3">Trạng thái</th><th class="p-3" title="Telesale xác nhận khách đồng ý nhận tin quảng cáo">Đồng ý nhận tin</th>
+              </tr></thead>
+              <tbody id="resultBody"></tbody>
+            </table>
+          </div>
+          <div id="emptyResults" class="p-12 text-center text-slate-500">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-brand-50 text-brand-600 grid place-items-center text-xl mb-3"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <p class="font-medium text-slate-700">Chưa có kết quả</p><p class="text-sm">Nhập từ khóa và khu vực rồi bấm "Quét dữ liệu Google Maps".</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MODULE 2: CAMPAIGN ============ -->
+      <section id="page-campaign" class="page hidden fade-in space-y-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="campStats"></div>
+        <div class="grid lg:grid-cols-[1.4fr_1fr] gap-6">
+          <div class="card p-5 space-y-4">
+            <h2 class="font-semibold flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-brand-600"></i>Soạn chiến dịch</h2>
+            <div><label class="text-sm font-medium text-slate-600">Tiêu đề chiến dịch</label><input id="cTitle" class="input mt-1" placeholder="VD: Chào dịch vụ kho vận tháng 11"></div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div><label class="text-sm font-medium text-slate-600">Tệp khách hàng</label><select id="cSegment" class="input mt-1"></select></div>
+              <div><label class="text-sm font-medium text-slate-600">Kênh gửi</label>
+                <div class="mt-1 grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-[10px]" id="channelToggle">
+                  <button data-ch="sms" class="ch-btn rounded-lg py-1.5 text-sm font-semibold bg-white shadow-sm"><i class="fa-solid fa-comment-sms mr-1"></i>SMS</button>
+                  <button data-ch="email" class="ch-btn rounded-lg py-1.5 text-sm font-semibold text-slate-500"><i class="fa-solid fa-envelope mr-1"></i>Email</button>
+                </div></div>
+            </div>
+            <div><label class="text-sm font-medium text-slate-600" id="gwLabel">Gateway gửi tin</label><select id="cGateway" class="input mt-1"></select></div>
+            <div>
+              <div class="flex items-center justify-between"><label class="text-sm font-medium text-slate-600">Nội dung</label>
+                <select id="cTemplate" class="text-xs border border-slate-200 rounded-lg px-2 py-1"></select></div>
+              <input id="cSubject" class="input mt-1 hidden" placeholder="Tiêu đề email">
+              <textarea id="cContent" rows="5" class="input mt-1 resize-none" placeholder="Nhập nội dung hoặc chọn mẫu AI đã duyệt… Dùng {ten} để chèn tên doanh nghiệp."></textarea>
+              <div class="flex justify-between text-xs text-slate-500 mt-1"><span>Biến: <code class="bg-slate-100 px-1 rounded">{ten}</code> <code class="bg-slate-100 px-1 rounded">{khu_vuc}</code></span><span id="charCount">0 ký tự</span></div>
+            </div>
+            <label class="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm cursor-pointer">
+              <input type="checkbox" id="cConsent" checked class="mt-0.5 accent-amber-600">
+              <span><b>Chỉ gửi cho lead đã đồng ý nhận tin</b> và tự thêm cú pháp từ chối (NĐ 91/2020). <span class="text-amber-700" id="recipientInfo"></span></span>
+            </label>
+            <div class="flex flex-wrap gap-3 pt-1">
+              <button id="testBtn" class="btn btn-ghost"><i class="fa-solid fa-vial"></i>Gửi Test</button>
+              <button id="launchBtn" class="btn btn-primary"><i class="fa-solid fa-rocket"></i>Khởi chạy chiến dịch</button>
+            </div>
+          </div>
+          <div class="card p-5">
+            <h2 class="font-semibold flex items-center gap-2 mb-4"><i class="fa-solid fa-tower-broadcast text-brand-600"></i>Trạng thái gateway</h2>
+            <div id="gwList" class="space-y-3"></div>
+            <div class="mt-5 p-4 rounded-xl bg-slate-50 text-sm">
+              <div class="text-xs font-semibold text-slate-500 uppercase mb-2">Xem trước tin nhắn</div>
+              <div id="preview" class="bg-white border border-slate-200 rounded-2xl rounded-tl-sm p-3 text-slate-700 whitespace-pre-wrap min-h-[60px]">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="p-4 border-b border-slate-100 font-semibold">Lịch sử gửi</div>
+          <div class="overflow-x-auto"><table class="w-full text-sm">
+            <thead class="bg-slate-50"><tr class="text-left"><th class="p-3">Chiến dịch</th><th class="p-3">Kênh</th><th class="p-3">Gateway</th><th class="p-3">Tiến độ</th><th class="p-3">Thành công</th><th class="p-3">Lỗi</th><th class="p-3">Trạng thái</th><th class="p-3">Thời gian</th></tr></thead>
+            <tbody id="historyBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ============ MODULE 3: AI ============ -->
+      <section id="page-ai" class="page hidden fade-in space-y-6">
+        <div class="p-4 rounded-xl bg-brand-50 border border-brand-100 text-sm text-brand-700 flex gap-3">
+          <i class="fa-solid fa-user-shield mt-0.5"></i>
+          <span><b>Human-in-the-loop:</b> AI chỉ soạn nháp. Nội dung phải được người dùng duyệt mới xuất hiện trong danh sách mẫu của module Chiến dịch.</span>
+        </div>
+        <div class="grid lg:grid-cols-[1fr_1.4fr] gap-6">
+          <div class="card p-5 space-y-4">
+            <h2 class="font-semibold flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-600"></i>Thiết lập</h2>
+            <div><label class="text-sm font-medium text-slate-600">Tệp khách hàng</label><select id="aiSegment" class="input mt-1"></select></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="text-sm font-medium text-slate-600">Kênh</label><select id="aiChannel" class="input mt-1"><option value="sms">SMS (ngắn)</option><option value="email">Email</option></select></div>
+              <div><label class="text-sm font-medium text-slate-600">Giọng văn</label><select id="aiTone" class="input mt-1"><option>Chuyên nghiệp</option><option>Thân thiện</option><option>Ngắn gọn, trực diện</option></select></div>
+            </div>
+            <div><label class="text-sm font-medium text-slate-600">Sản phẩm / ưu đãi chào hàng</label><input id="aiOffer" class="input mt-1" value="dịch vụ kho vận & fulfillment, giảm 15% tháng đầu"></div>
+            <div id="aiInsight" class="p-4 rounded-xl bg-slate-50 text-sm space-y-2"></div>
+            <button id="aiGenBtn" class="btn btn-primary w-full justify-center"><i class="fa-solid fa-wand-magic-sparkles"></i>AI Soạn tin nhắn tự động</button>
+          </div>
+          <div class="card p-5 flex flex-col">
+            <div class="flex items-center gap-2 mb-3"><h2 class="font-semibold">Bản nháp AI</h2><span id="draftStatus" class="badge bg-slate-100 text-slate-500">Chưa có</span></div>
+            <textarea id="aiDraft" rows="10" class="input flex-1 resize-none leading-relaxed" placeholder="Bấm “AI Soạn tin nhắn tự động” để tạo nội dung…" readonly></textarea>
+            <div class="flex flex-wrap gap-3 mt-4">
+              <button id="aiRegenBtn" class="btn btn-ghost" disabled><i class="fa-solid fa-rotate"></i>Tạo lại</button>
+              <button id="aiEditBtn" class="btn btn-ghost" disabled><i class="fa-solid fa-pen"></i>Chỉnh sửa</button>
+              <button id="aiApproveBtn" class="btn btn-green ml-auto" disabled><i class="fa-solid fa-circle-check"></i>Duyệt & Lưu nội dung</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="p-4 border-b border-slate-100 font-semibold">Thư viện nội dung đã duyệt</div>
+          <div id="approvedList" class="divide-y divide-slate-100"></div>
+        </div>
+      </section>
+
+      <!-- ============ MODULE 4: AUTOMATION ============ -->
+      <section id="page-automation" class="page hidden fade-in space-y-6">
+        <div class="card p-5">
+          <h2 class="font-semibold flex items-center gap-2 mb-4"><i class="fa-solid fa-plus text-brand-600"></i>Tạo kịch bản mới</h2>
+          <div class="grid md:grid-cols-[1fr_auto_1fr_auto] gap-3 items-end">
+            <div><label class="text-xs font-semibold text-slate-500 uppercase">Nếu (điều kiện)</label>
+              <select id="trigSel" class="input mt-1">
+                <option>Sau khi chốt đơn</option><option>Khách mua 30 ngày chưa quay lại</option>
+                <option>Lead mới được lưu từ Google Maps</option><option>Khách trả lời tin nhắn "QUAN TAM"</option><option>Đơn hàng giao thành công</option>
+              </select></div>
+            <div class="hidden md:grid place-items-center pb-2 text-slate-400"><i class="fa-solid fa-arrow-right-long text-xl"></i></div>
+            <div><label class="text-xs font-semibold text-slate-500 uppercase">Thì (hành động)</label>
+              <select id="actSel" class="input mt-1">
+                <option>Gửi tin nhắn SMS cảm ơn & mã giảm giá</option><option>Gửi AI Reminder</option>
+                <option>Giao Telesale gọi xác nhận</option><option>Gửi email giới thiệu dịch vụ</option><option>Gửi khảo sát hài lòng</option>
+              </select></div>
+            <button id="addRuleBtn" class="btn btn-primary h-[42px]"><i class="fa-solid fa-plus"></i>Thêm</button>
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-[1.4fr_1fr] gap-6">
+          <div class="space-y-3" id="ruleList"></div>
+          <div class="card p-5">
+            <div class="flex items-center mb-3"><h2 class="font-semibold">Nhật ký chạy</h2><button id="simBtn" class="btn btn-ghost ml-auto text-xs py-1.5"><i class="fa-solid fa-play"></i>Mô phỏng sự kiện</button></div>
+            <div id="autoLog" class="space-y-2 text-sm max-h-[420px] overflow-y-auto"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 fade-in">
+    <div class="w-12 h-12 rounded-xl bg-[#1877f2]/10 text-[#1877f2] grid place-items-center text-xl mb-4"><i class="fa-brands fa-facebook"></i></div>
+    <h3 class="font-semibold text-lg">Import lead từ Facebook</h3>
+    <p class="text-sm text-slate-600 mt-2">Tính năng đang <b>chờ tích hợp công cụ bên thứ 3</b> (Facebook Lead Ads API / form khách tự điền). Lead từ nguồn này có sẵn sự đồng ý nhận tin nên sẽ dùng ngay được cho chiến dịch.</p>
+    <div class="mt-4 p-3 rounded-lg bg-slate-50 text-xs text-slate-500"><i class="fa-regular fa-clock mr-1"></i>Dự kiến: sau khi chọn đối tác tích hợp</div>
+    <div class="mt-6 flex justify-end gap-2"><button class="btn btn-ghost" onclick="closeModal()">Đóng</button><button class="btn btn-primary" onclick="closeModal();toast('Đã ghi nhận yêu cầu tích hợp Facebook','info')">Đăng ký nhận thông báo</button></div>
+  </div>
+</div>
+
+<div id="toasts" class="fixed top-4 right-4 z-[60] space-y-2 w-80 max-w-[calc(100vw-2rem)]"></div>
+
+<script>
+/* ===================== DỮ LIỆU ===================== */
+// Kết quả quét thật: gosom/google-maps-scraper, truy vấn "kho bãi Thủ Đức", 10/11/2026
+const REAL_KHO_THUDUC = [
+  ['Bãi giữ xe ô tô Khanh Lâm','+84 909 453 788','1 Số 8, Thủ Đức, Hồ Chí Minh',3.7,3,'khanhlamtrans.com'],
+  ['BÃI XE ĐỨC TRẮNG','+84 902 881 112','38 Đ. Số 3, KP 6, Thủ Đức, Hồ Chí Minh',5.0,20,''],
+  ['Kho xưởng Thủ Đức','+84 357 886 665','144 Linh Trung, Linh Xuân, Hồ Chí Minh',0,0,''],
+  ['CHO THUÊ KHO XƯỞNG THỦ ĐỨC','+84 917 810 512','23 Đường 12, KP2, Hiệp Bình, Hồ Chí Minh',5.0,1,''],
+  ['Bãi Xe Ô Tô Xe Máy Nhà Thiếu Nhi Thủ Đức','+84 933 202 299','281 Đ. Võ Văn Ngân, Thủ Đức, Hồ Chí Minh',5.0,2,'dichvugiuxe286.com'],
+  ['CHO THUÊ KHO XƯỞNG','+84 942 345 643','Võ Nguyên Giáp, Thủ Đức, Hồ Chí Minh',5.0,1,''],
+  ['Băng Keo - Dây Đai Thủ Đức Giá Xưởng','+84 906 825 068','27A Đ. 24, Hiệp Bình, Hồ Chí Minh',5.0,6,'anthanhdat.vn'],
+  ['Kho SOTRANS Thủ Đức','+84 28 3826 9729','Km 9 Võ Nguyên Giáp, Thủ Đức, Hồ Chí Minh',4.2,38,'sotrans.com.vn'],
+  ['Trung Tâm Dịch Vụ Kho Bãi Công Ty VIMEDIMEX','+84 974 760 826','36/212B Đ. Số 12, Thủ Đức, Hồ Chí Minh',5.0,1,'vimeleasing.vn'],
+  ['Trung Tâm Kho vận và Phân Phối Phía Nam','+84 28 6252 6555','Hẻm 6 Đặng Văn Bi, Thủ Đức, Hồ Chí Minh',4.4,13,'vinamilk.com.vn'],
+];
+const SUFFIX = ['Minh Phát','An Khang','Hoàng Gia','Phúc Lộc','Thành Đạt','Việt Hưng','Sao Mai','Kim Ngân','Đông Á','Tân Tiến','Hải Âu','Bình Minh','Ngọc Lan','Trường Sơn','Phương Nam','Gia Huy'];
+const STREETS = ['Nguyễn Trãi','Lê Lợi','Trần Hưng Đạo','Hai Bà Trưng','Lý Thường Kiệt','Phạm Văn Đồng','Cầu Giấy','Láng Hạ','Kim Mã','Hoàng Quốc Việt','Nguyễn Văn Linh','Võ Văn Kiệt'];
+
+const state = {
+  leads: [],          // {id,name,phone,address,rating,reviews,website,email,segment,area,consent}
+  results: [],
+  selected: new Set(),
+  channel: 'sms',
+  campaigns: [],
+  approved: [],
+  draftApproved: false,
+  rules: [],
+  sentToday: 0,
+};
+let uid = 1;
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = arr => arr[rnd(0,arr.length-1)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+const now = () => new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) + ' ' + new Date().toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
+const fakePhone = () => '+84 ' + pick(['90','91','93','94','96','97','98','88','86','35','38']) + rnd(1,9) + ' ' + rnd(100,999) + ' ' + rnd(100,999);
+const slug = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[^a-z0-9]+/g,'');
+
+function makeLead(name, phone, address, rating, reviews, website, segment, area, consent=false) {
+  return { id: uid++, name, phone, address, rating, reviews, website,
+    email: website ? 'info@' + website : (Math.random() < .3 ? slug(name).slice(0,14) + '@gmail.com' : ''),
+    segment, area, consent };
+}
+
+// Tệp mẫu có sẵn để demo
+(function seed(){
+  const seg = 'Đại lý mỹ phẩm · Hà Nội';
+  for (let i=0;i<24;i++) state.leads.push(makeLead('Đại lý mỹ phẩm '+SUFFIX[i%SUFFIX.length]+(i>=16?' '+(i-15):''), fakePhone(),
+    rnd(10,250)+' '+pick(STREETS)+', Hà Nội', (rnd(35,50)/10), rnd(2,120), Math.random()<.4?slug(SUFFIX[i%16])+'.vn':'', seg, 'Hà Nội', i<15));
+  state.campaigns.push(
+    {id:uid++,title:'Tri ân đại lý Q4',channel:'sms',gateway:'Thiết bị Android 1 (Telesale)',total:15,sent:15,ok:15,fail:0,status:'Thành công',time:'09:12 08/11'},
+    {id:uid++,title:'Giới thiệu dòng sản phẩm mới',channel:'email',gateway:'SMTP công ty',total:9,sent:9,ok:9,fail:0,status:'Thành công',time:'14:30 07/11'},
+    {id:uid++,title:'Nhắc lịch nhập hàng',channel:'sms',gateway:'GSM Modem (Cụm 5 SIM)',total:15,sent:15,ok:11,fail:4,status:'Lỗi mạng',time:'16:05 06/11'});
+  state.approved.push({id:uid++,channel:'sms',segment:seg,text:'Chào {ten}, TBest gửi tặng đại lý mã NHAPHANG15 giảm 15% đơn sỉ đầu tiên tháng này. Liên hệ 0909 xxx xxx để được báo giá.',time:'08/11 09:00'});
+  state.rules.push(
+    {id:uid++,trigger:'Sau khi chốt đơn',action:'Gửi tin nhắn SMS cảm ơn & mã giảm giá',on:true,runs:128},
+    {id:uid++,trigger:'Khách mua 30 ngày chưa quay lại',action:'Gửi AI Reminder',on:true,runs:41},
+    {id:uid++,trigger:'Lead mới được lưu từ Google Maps',action:'Giao Telesale gọi xác nhận',on:false,runs:0});
+})();
+
+/* ===================== CHUNG ===================== */
+function toast(msg, type='success') {
+  const cfg = { success:['fa-circle-check','text-emerald-600','border-emerald-200'], error:['fa-circle-xmark','text-rose-600','border-rose-200'],
+                info:['fa-circle-info','text-brand-600','border-brand-100'], warn:['fa-triangle-exclamation','text-amber-600','border-amber-200'] }[type];
+  const el = document.createElement('div');
+  el.className = `toast bg-white border ${cfg[2]} shadow-lg rounded-xl p-3 flex gap-3 text-sm`;
+  el.innerHTML = `<i class="fa-solid ${cfg[0]} ${cfg[1]} mt-0.5"></i><div class="flex-1">${msg}</div>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+function closeModal(){ const m=document.getElementById('modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+const PAGES = {
+  leads:['Tìm kiếm & Quét dữ liệu','Thu thập lead doanh nghiệp từ Google Maps'],
+  campaign:['Chiến dịch & SMS Gateway','Soạn, kiểm tra và khởi chạy chiến dịch SMS / Email'],
+  ai:['AI Agent','Soạn thảo nội dung và phân tích tệp khách hàng'],
+  automation:['Automation','Kịch bản tự động hóa theo vòng đời đơn hàng'],
+};
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('page-'+page).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.page===page));
+  document.getElementById('pageTitle').textContent = PAGES[page][0];
+  document.getElementById('pageSub').textContent = PAGES[page][1];
+  if (page==='campaign') renderCampaign();
+  if (page==='ai') renderAI();
+  if (page==='automation') renderRules();
+  toggleSidebar(false);
+}
+document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function toggleSidebar(open){ document.getElementById('sidebar').classList.toggle('-translate-x-full', !open); document.getElementById('overlay').classList.toggle('hidden', !open); }
+document.getElementById('menuBtn').onclick=()=>toggleSidebar(true);
+document.getElementById('overlay').onclick=()=>toggleSidebar(false);
+
+function segments(){
+  const m = {};
+  state.leads.forEach(l=>{ (m[l.segment] ||= []).push(l); });
+  return m;
+}
+function updateSidebar(){
+  document.getElementById('sbLeads').textContent = state.leads.length;
+  document.getElementById('sbConsent').textContent = state.leads.filter(l=>l.consent).length;
+  document.getElementById('sbSent').textContent = state.sentToday;
+}
+
+/* ===================== MODULE 1 ===================== */
+document.getElementById('fbBtn').onclick = ()=>{ const m=document.getElementById('modal'); m.classList.remove('hidden'); m.classList.add('flex'); };
+
+document.getElementById('scanBtn').onclick = () => {
+  const kw = document.getElementById('kw').value.trim(), area = document.getElementById('area').value.trim();
+  if (!kw || !area) return toast('Vui lòng nhập Từ khóa và Khu vực','warn');
+  const btn = document.getElementById('scanBtn'); btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>Đang quét…';
+  const box = document.getElementById('scanProgress'); box.classList.remove('hidden');
+  const isReal = slug(kw).includes('kho') && slug(area).includes('thuduc');
+  const total = isReal ? REAL_KHO_THUDUC.length : rnd(12,20);
+  const steps = [[10,'Khởi tạo trình duyệt headless (Playwright)…'],[30,`Tìm “${kw}” tại ${area} trên Google Maps…`],
+                 [55,`Đã tìm thấy ${total} địa điểm, đang cuộn danh sách…`],[85,'Trích xuất chi tiết: SĐT, địa chỉ, website, đánh giá…'],[100,'Hoàn tất, đang khử trùng lặp…']];
+  let i = 0;
+  const t = setInterval(()=>{
+    const [p,s] = steps[i];
+    document.getElementById('scanBar').style.width = p+'%';
+    document.getElementById('scanPct').textContent = p+'%';
+    document.getElementById('scanStep').textContent = s;
+    if (++i === steps.length) {
+      clearInterval(t);
+      setTimeout(()=>{
+        const seg = cap(kw) + ' · ' + area;
+        state.results = isReal
+          ? REAL_KHO_THUDUC.map(r=>makeLead(r[0],r[1],r[2],r[3],r[4],r[5],seg,area))
+          : Array.from({length:total},(_,k)=>makeLead(cap(kw)+' '+SUFFIX[k%SUFFIX.length]+(k>=16?' '+(k-15):''), fakePhone(),
+              rnd(5,300)+' '+pick(STREETS)+', '+area, rnd(30,50)/10, rnd(0,200), Math.random()<.35?slug(SUFFIX[k%16])+slug(kw).slice(0,6)+'.vn':'', seg, area));
+        state.selected = new Set(state.results.filter(r=>!isSaved(r)).map(r=>r.id));
+        renderResults();
+        box.classList.add('hidden'); btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-map-location-dot"></i>Quét dữ liệu Google Maps';
+        toast(`Quét xong: <b>${total}</b> doanh nghiệp${isReal?' (dữ liệu thật)':''}`);
+      }, 400);
+    }
+  }, 550);
+};
+const isSaved = r => state.leads.some(l=>l.phone===r.phone);
+
+function renderResults(){
+  const body = document.getElementById('resultBody');
+  document.getElementById('emptyResults').classList.toggle('hidden', state.results.length>0);
+  document.getElementById('resultCount').textContent = state.results.length + ' doanh nghiệp';
+  body.innerHTML = state.results.map(r=>{
+    const saved = state.leads.find(l=>l.phone===r.phone);
+    return `<tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+      <td class="p-3"><input type="checkbox" class="rowSel accent-brand-600" data-id="${r.id}" ${state.selected.has(r.id)?'checked':''} ${saved?'disabled':''}></td>
+      <td class="p-3"><div class="font-medium">${esc(r.name)}</div>${r.website?`<div class="text-xs text-slate-400">${esc(r.website)}</div>`:''}</td>
+      <td class="p-3 whitespace-nowrap font-mono text-[13px]">${esc(r.phone)}</td>
+      <td class="p-3 text-slate-600 min-w-[220px]">${esc(r.address)}</td>
+      <td class="p-3 whitespace-nowrap">${r.reviews?`<i class="fa-solid fa-star text-amber-400 text-xs"></i> ${r.rating.toFixed(1)} <span class="text-slate-400">(${r.reviews})</span>`:'<span class="text-slate-400">—</span>'}</td>
+      <td class="p-3">${saved?'<span class="badge bg-emerald-50 text-emerald-700"><i class="fa-solid fa-check"></i>Đã lưu</span>':'<span class="badge bg-slate-100 text-slate-500">Chưa lưu</span>'}</td>
+      <td class="p-3">${saved?`<div class="switch ${saved.consent?'on':''}" data-consent="${saved.id}" title="Telesale đã xác nhận đồng ý"></div>`:'<span class="text-xs text-slate-400">Lưu trước</span>'}</td>
+    </tr>`;}).join('');
+  body.querySelectorAll('.rowSel').forEach(c=>c.onchange=()=>{ c.checked?state.selected.add(+c.dataset.id):state.selected.delete(+c.dataset.id); updateSaveBtn(); });
+  body.querySelectorAll('[data-consent]').forEach(s=>s.onclick=()=>{
+    const l = state.leads.find(x=>x.id===+s.dataset.consent); l.consent=!l.consent; s.classList.toggle('on',l.consent); updateSidebar();
+    toast(l.consent?`${esc(l.name)}: đã xác nhận đồng ý nhận tin`:`${esc(l.name)}: bỏ xác nhận`, l.consent?'success':'info');
+  });
+  updateSaveBtn();
+}
+function updateSaveBtn(){
+  const n = [...state.selected].filter(id=>!isSaved(state.results.find(r=>r.id===id)||{})).length;
+  const b = document.getElementById('saveSelBtn'); b.disabled = n===0;
+  b.innerHTML = `<i class="fa-solid fa-floppy-disk"></i>Lưu ${n||''} vào tệp khách hàng`;
+}
+document.getElementById('selAll').onchange = e => {
+  state.results.forEach(r=>{ if(!isSaved(r)) e.target.checked?state.selected.add(r.id):state.selected.delete(r.id); }); renderResults();
+};
+document.getElementById('saveSelBtn').onclick = () => {
+  const toSave = state.results.filter(r=>state.selected.has(r.id) && !isSaved(r));
+  state.leads.push(...toSave); state.selected.clear(); renderResults(); updateSidebar();
+  toast(`Đã lưu <b>${toSave.length}</b> lead vào tệp “${esc(toSave[0].segment)}”. Bật “Đồng ý nhận tin” sau khi telesale xác nhận.`);
+};
+
+/* ===================== MODULE 2 ===================== */
+const GATEWAYS = {
+  sms: [['Thiết bị Android 1 (Telesale)','fa-mobile-screen','Pin 82% · Viettel',.97],['Thiết bị Android 2','fa-mobile-screen','Pin 64% · Vinaphone',.95],['GSM Modem (Cụm 5 SIM)','fa-server','5/5 SIM hoạt động',.88]],
+  email: [['SMTP công ty','fa-envelope','Giới hạn 500 thư/ngày',.98],['Amazon SES','fa-cloud','Đã xác thực tên miền',.99]],
+};
+function renderCampaign(){
+  const segs = segments(), sel = document.getElementById('cSegment'), prev = sel.value;
+  sel.innerHTML = Object.entries(segs).map(([k,v])=>`<option value="${esc(k)}">${esc(k)} (${v.length})</option>`).join('');
+  if (prev && segs[prev]) sel.value = prev;
+  const gw = document.getElementById('cGateway');
+  gw.innerHTML = GATEWAYS[state.channel].map(g=>`<option>${g[0]}</option>`).join('');
+  document.getElementById('gwLabel').textContent = state.channel==='sms'?'Gateway gửi tin':'Máy chủ gửi email';
+  document.getElementById('cSubject').classList.toggle('hidden', state.channel!=='email');
+  const tpl = document.getElementById('cTemplate');
+  const list = state.approved.filter(a=>a.channel===state.channel);
+  tpl.innerHTML = `<option value="">Chèn mẫu AI đã duyệt (${list.length})</option>` + list.map(a=>`<option value="${a.id}">${esc(a.text.slice(0,40))}…</option>`).join('');
+  document.getElementById('gwList').innerHTML = GATEWAYS[state.channel].map(g=>`
+    <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:border-brand-100 transition">
+      <div class="w-9 h-9 rounded-lg bg-slate-100 grid place-items-center text-slate-600"><i class="fa-solid ${g[1]}"></i></div>
+      <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${g[0]}</div><div class="text-xs text-slate-500">${g[2]}</div></div>
+      <span class="badge bg-emerald-50 text-emerald-700"><i class="fa-solid fa-circle text-[6px]"></i>Online</span></div>`).join('');
+  renderStats(); renderHistory(); updateRecipients(); updatePreview();
+}
+function renderStats(){
+  const sum = k => state.campaigns.reduce((s,c)=>s+c[k],0);
+  const sent = sum('sent'), ok = sum('ok');
+  const cards = [['Chiến dịch',state.campaigns.length,'fa-bullhorn','bg-brand-50 text-brand-600'],['Tin đã gửi',sent,'fa-paper-plane','bg-sky-50 text-sky-600'],
+    ['Tỷ lệ thành công',(sent?Math.round(ok/sent*100):0)+'%','fa-circle-check','bg-emerald-50 text-emerald-600'],['Lỗi',sum('fail'),'fa-triangle-exclamation','bg-rose-50 text-rose-600']];
+  document.getElementById('campStats').innerHTML = cards.map(c=>`<div class="card p-4 flex items-center gap-3"><div class="w-10 h-10 rounded-xl ${c[3]} grid place-items-center"><i class="fa-solid ${c[2]}"></i></div><div><div class="text-xs text-slate-500">${c[0]}</div><div class="text-xl font-bold">${c[1]}</div></div></div>`).join('');
+}
+const STATUS = { 'Đang gửi':'bg-sky-50 text-sky-700', 'Thành công':'bg-emerald-50 text-emerald-700', 'Lỗi mạng':'bg-rose-50 text-rose-700' };
+function renderHistory(){
+  document.getElementById('historyBody').innerHTML = state.campaigns.map(c=>{
+    const pct = Math.round(c.sent/c.total*100);
+    return `<tr class="border-t border-slate-100 hover:bg-slate-50">
+      <td class="p-3 font-medium">${esc(c.title)}</td>
+      <td class="p-3"><i class="fa-solid ${c.channel==='sms'?'fa-comment-sms':'fa-envelope'} text-slate-400 mr-1"></i>${c.channel.toUpperCase()}</td>
+      <td class="p-3 text-slate-600 whitespace-nowrap">${esc(c.gateway)}</td>
+      <td class="p-3 min-w-[140px]"><div class="flex items-center gap-2"><div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-brand-500 transition-all" style="width:${pct}%"></div></div><span class="text-xs text-slate-500">${c.sent}/${c.total}</span></div></td>
+      <td class="p-3 text-emerald-700 font-medium">${c.ok}</td><td class="p-3 text-rose-600 font-medium">${c.fail}</td>
+      <td class="p-3"><span class="badge ${STATUS[c.status]}">${c.status==='Đang gửi'?'<i class="fa-solid fa-spinner fa-spin"></i>':''}${c.status}</span></td>
+      <td class="p-3 text-slate-500 whitespace-nowrap">${c.time}</td></tr>`;}).join('');
+}
+function recipients(){
+  const seg = segments()[document.getElementById('cSegment').value] || [];
+  let list = state.channel==='email' ? seg.filter(l=>l.email) : seg;
+  const consentOnly = document.getElementById('cConsent').checked;
+  return { all: list.length, list: consentOnly ? list.filter(l=>l.consent) : list, consentOnly };
+}
+function updateRecipients(){
+  const r = recipients();
+  document.getElementById('recipientInfo').textContent = `Người nhận hợp lệ: ${r.list.length}/${r.all}` + (state.channel==='email'?' (có email)':'') + '.';
+}
+const OPT_OUT = { sms: '\nTu choi: soan TC gui 0909xxxxxx', email: '\n\n— Bạn nhận email này vì đã đồng ý nhận thông tin. Hủy đăng ký: [link]' };
+function fill(text, lead){ return text.replaceAll('{ten}', lead?.name || 'Quý khách').replaceAll('{khu_vuc}', lead?.area || ''); }
+function updatePreview(){
+  const txt = document.getElementById('cContent').value;
+  const r = recipients();
+  const full = txt ? fill(txt, r.list[0] || r.all && segments()[document.getElementById('cSegment').value][0]) + (document.getElementById('cConsent').checked ? OPT_OUT[state.channel] : '') : '—';
+  document.getElementById('preview').textContent = full;
+  if (state.channel==='sms') {
+    const unicode = /[^\x00-\x7F]/.test(full), per = unicode?70:160, parts = Math.max(1, Math.ceil(full.length/per));
+    document.getElementById('charCount').innerHTML = `${full==='—'?0:full.length} ký tự · ${parts} SMS${unicode?' <span class="text-amber-600">(có dấu: 70 ký tự/SMS)</span>':''}`;
+  } else document.getElementById('charCount').textContent = `${txt.length} ký tự`;
+}
+document.querySelectorAll('.ch-btn').forEach(b=>b.onclick=()=>{
+  state.channel = b.dataset.ch;
+  document.querySelectorAll('.ch-btn').forEach(x=>{ const on=x===b; x.classList.toggle('bg-white',on); x.classList.toggle('shadow-sm',on); x.classList.toggle('text-slate-500',!on); });
+  renderCampaign();
+});
+['cSegment','cConsent'].forEach(id=>document.getElementById(id).onchange=()=>{ updateRecipients(); updatePreview(); });
+document.getElementById('cContent').oninput = updatePreview;
+document.getElementById('cTemplate').onchange = e => {
+  const a = state.approved.find(x=>x.id===+e.target.value); if(!a) return;
+  document.getElementById('cContent').value = a.text; updatePreview(); toast('Đã chèn mẫu nội dung đã duyệt','info');
+};
+document.getElementById('testBtn').onclick = () => {
+  if (!document.getElementById('cContent').value.trim()) return toast('Nhập nội dung trước khi gửi test','warn');
+  toast(`Đã gửi tin test qua <b>${esc(document.getElementById('cGateway').value)}</b> tới ${state.channel==='sms'?'0909 *** 123 (máy quản lý)':'marketing@tbestpro.vn'}`, 'info');
+};
+document.getElementById('launchBtn').onclick = () => {
+  const title = document.getElementById('cTitle').value.trim(), txt = document.getElementById('cContent').value.trim();
+  if (!title) return toast('Nhập tiêu đề chiến dịch','warn');
+  if (!txt) return toast('Nhập nội dung hoặc chọn mẫu AI đã duyệt','warn');
+  const r = recipients();
+  if (!r.list.length) return toast(r.consentOnly ? 'Tệp này chưa có lead nào <b>đồng ý nhận tin</b>. Cho telesale gọi xác nhận trước (module Quét data).' : 'Tệp không có người nhận phù hợp','error');
+  const gwName = document.getElementById('cGateway').value, gw = GATEWAYS[state.channel].find(g=>g[0]===gwName);
+  const c = {id:uid++,title,channel:state.channel,gateway:gwName,total:r.list.length,sent:0,ok:0,fail:0,status:'Đang gửi',time:now()};
+  state.campaigns.unshift(c); renderStats(); renderHistory();
+  toast(`Đã khởi chạy “${esc(title)}” tới <b>${c.total}</b> người nhận`);
+  document.getElementById('cTitle').value='';
+  const t = setInterval(()=>{
+    const n = Math.min(rnd(1,3), c.total-c.sent);
+    for (let i=0;i<n;i++) Math.random()<gw[3] ? c.ok++ : c.fail++;
+    c.sent += n; state.sentToday += n; updateSidebar();
+    if (c.sent>=c.total) {
+      clearInterval(t);
+      c.status = c.fail/c.total > .1 ? 'Lỗi mạng' : 'Thành công';
+      toast(c.status==='Thành công' ? `“${esc(c.title)}” hoàn tất: ${c.ok}/${c.total} thành công` : `“${esc(c.title)}”: ${c.fail} tin lỗi mạng, sẽ thử lại qua gateway khác`, c.status==='Thành công'?'success':'error');
+    }
+    if (!document.getElementById('page-campaign').classList.contains('hidden')) { renderStats(); renderHistory(); }
+  }, 700);
+};
+
+/* ===================== MODULE 3 ===================== */
+function renderAI(){
+  const segs = segments(), sel = document.getElementById('aiSegment'), prev = sel.value;
+  sel.innerHTML = Object.entries(segs).map(([k,v])=>`<option value="${esc(k)}">${esc(k)} (${v.length})</option>`).join('');
+  if (prev && segs[prev]) sel.value = prev;
+  renderInsight(); renderApproved();
+}
+function renderInsight(){
+  const seg = segments()[document.getElementById('aiSegment').value] || [];
+  const withWeb = seg.filter(l=>l.website).length, rated = seg.filter(l=>l.reviews);
+  const avg = rated.length ? (rated.reduce((s,l)=>s+l.rating,0)/rated.length).toFixed(1) : '—';
+  document.getElementById('aiInsight').innerHTML = `
+    <div class="text-xs font-semibold text-slate-500 uppercase"><i class="fa-solid fa-chart-simple mr-1"></i>AI phân tích tệp</div>
+    <div class="grid grid-cols-3 gap-2 text-center">
+      <div class="bg-white rounded-lg p-2"><div class="font-bold text-lg">${seg.length}</div><div class="text-xs text-slate-500">Lead</div></div>
+      <div class="bg-white rounded-lg p-2"><div class="font-bold text-lg">${seg.length?Math.round(withWeb/seg.length*100):0}%</div><div class="text-xs text-slate-500">Có website</div></div>
+      <div class="bg-white rounded-lg p-2"><div class="font-bold text-lg">${avg}</div><div class="text-xs text-slate-500">Đánh giá TB</div></div>
+    </div>
+    <p class="text-slate-600 text-xs leading-relaxed">${seg.length ? `Gợi ý: tệp gồm doanh nghiệp quy mô nhỏ–vừa; ${withWeb<seg.length/2?'đa số chưa có website → nên ưu tiên SMS/Zalo, nội dung ngắn, có lời kêu gọi gọi lại.':'nhiều đơn vị có website → có thể dùng email kèm báo giá chi tiết.'}` : 'Chưa có lead trong tệp.'}</p>`;
+}
+document.getElementById('aiSegment').onchange = renderInsight;
+
+function genDraft(){
+  const segName = document.getElementById('aiSegment').value || 'khách hàng', ch = document.getElementById('aiChannel').value,
+        tone = document.getElementById('aiTone').value, offer = document.getElementById('aiOffer').value || 'sản phẩm của chúng tôi';
+  const kind = segName.split('·')[0].trim().toLowerCase();
+  if (ch==='sms') {
+    return { 'Chuyên nghiệp': `Kính gửi {ten}, TBest xin giới thiệu ${offer} dành riêng cho các đơn vị ${kind} tại {khu_vuc}. Quý anh/chị vui lòng phản hồi "QUAN TAM" để được tư vấn và báo giá trong 24h.`,
+             'Thân thiện': `Chào {ten}! TBest đang có ${offer} cho các anh chị ${kind} khu {khu_vuc} nè. Nhắn "QUAN TAM" để bên em gọi tư vấn nhanh nha!`,
+             'Ngắn gọn, trực diện': `{ten}: ${offer}. Nhắn QUAN TAM de nhan bao gia trong 24h. TBest.` }[tone];
+  }
+  return `Tiêu đề: {ten} – giải pháp ${offer.split(',')[0]} cho ${kind} tại {khu_vuc}
+
+Kính gửi Ban quản lý {ten},
+
+Chúng tôi là TBest – đơn vị vận hành chuỗi kho TMĐT với hơn 2.000 đơn/ngày. Qua tìm hiểu, chúng tôi nhận thấy các đơn vị ${kind} tại {khu_vuc} thường gặp khó khăn về chi phí lưu kho và tốc độ giao hàng.
+
+Chúng tôi xin gửi tới Quý đơn vị ${offer}:
+• Quản lý tồn kho theo từng sản phẩm bằng RFID, báo cáo theo thời gian thực
+• Soát đơn tự động trước khi giao, giảm giao sai/thiếu
+• Hỗ trợ nhiều kho, nhiều thị trường
+
+${tone==='Thân thiện'?'Anh/chị có 15 phút trong tuần này để bên em gọi tư vấn không ạ?':'Rất mong được trao đổi 15 phút với Quý đơn vị trong tuần này để trình bày chi tiết.'}
+
+Trân trọng,
+Phòng Kinh doanh TBest`;
+}
+function typeOut(text){
+  const ta = document.getElementById('aiDraft'); ta.value=''; ta.readOnly=true; ta.classList.add('caret');
+  setBtns(false); document.getElementById('draftStatus').className='badge bg-brand-50 text-brand-700';
+  document.getElementById('draftStatus').innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>AI đang soạn…';
+  let i=0; const step = Math.max(2, Math.round(text.length/120));
+  const t = setInterval(()=>{ i+=step; ta.value = text.slice(0,i); ta.scrollTop=ta.scrollHeight;
+    if (i>=text.length){ clearInterval(t); ta.classList.remove('caret'); setBtns(true); state.draftApproved=false;
+      document.getElementById('draftStatus').className='badge bg-amber-100 text-amber-700'; document.getElementById('draftStatus').textContent='Chờ duyệt';
+      const pb=document.getElementById('pendingBadge'); pb.textContent='1'; pb.classList.remove('hidden'); }
+  }, 18);
+}
+function setBtns(on){ ['aiRegenBtn','aiEditBtn','aiApproveBtn','aiGenBtn'].forEach(id=>document.getElementById(id).disabled=!on); }
+document.getElementById('aiGenBtn').onclick = () => { if(!document.getElementById('aiSegment').value) return toast('Chưa có tệp khách hàng','warn'); typeOut(genDraft()); };
+document.getElementById('aiRegenBtn').onclick = () => {
+  const tones=['Chuyên nghiệp','Thân thiện','Ngắn gọn, trực diện'], s=document.getElementById('aiTone');
+  s.value = tones[(tones.indexOf(s.value)+1)%3]; typeOut(genDraft()); toast(`Tạo lại với giọng “${s.value}”`,'info');
+};
+document.getElementById('aiEditBtn').onclick = () => { const ta=document.getElementById('aiDraft'); ta.readOnly=false; ta.focus(); toast('Bạn có thể chỉnh sửa trực tiếp bản nháp','info'); };
+document.getElementById('aiApproveBtn').onclick = () => {
+  const text = document.getElementById('aiDraft').value.trim(); if(!text) return;
+  state.approved.unshift({id:uid++,channel:document.getElementById('aiChannel').value,segment:document.getElementById('aiSegment').value,text,time:now()});
+  document.getElementById('aiDraft').readOnly=true; document.getElementById('aiApproveBtn').disabled=true; document.getElementById('aiEditBtn').disabled=true;
+  document.getElementById('draftStatus').className='badge bg-emerald-50 text-emerald-700'; document.getElementById('draftStatus').innerHTML='<i class="fa-solid fa-check"></i>Đã duyệt';
+  document.getElementById('pendingBadge').classList.add('hidden');
+  renderApproved(); toast('Đã duyệt & lưu. Nội dung có thể dùng trong module Chiến dịch.');
+};
+function renderApproved(){
+  document.getElementById('approvedList').innerHTML = state.approved.length ? state.approved.map(a=>`
+    <div class="p-4 flex gap-4 hover:bg-slate-50 transition">
+      <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 grid place-items-center shrink-0"><i class="fa-solid ${a.channel==='sms'?'fa-comment-sms':'fa-envelope'}"></i></div>
+      <div class="flex-1 min-w-0"><div class="text-sm text-slate-700 line-clamp-2 whitespace-pre-line">${esc(a.text.slice(0,220))}${a.text.length>220?'…':''}</div>
+        <div class="text-xs text-slate-400 mt-1">${esc(a.segment)} · Duyệt ${a.time}</div></div>
+      <button class="btn btn-ghost text-xs py-1.5 self-start" onclick="useTpl(${a.id})"><i class="fa-solid fa-arrow-right"></i>Dùng</button>
+    </div>`).join('') : '<div class="p-8 text-center text-sm text-slate-500">Chưa có nội dung nào được duyệt.</div>';
+}
+function useTpl(id){
+  const a = state.approved.find(x=>x.id===id);
+  if (state.channel!==a.channel) document.querySelector(`.ch-btn[data-ch="${a.channel}"]`).click();
+  go('campaign'); document.getElementById('cContent').value = a.text; updatePreview();
+  toast('Đã chuyển nội dung sang Chiến dịch','info');
+}
+
+/* ===================== MODULE 4 ===================== */
+function renderRules(){
+  document.getElementById('ruleList').innerHTML = state.rules.map(r=>`
+    <div class="card p-4 flex items-center gap-4 hover:shadow-sm transition ${r.on?'':'opacity-60'}">
+      <div class="flex-1 min-w-0 flex flex-wrap items-center gap-2 text-sm">
+        <span class="badge bg-violet-50 text-violet-700 py-1"><i class="fa-solid fa-code-branch"></i>NẾU</span><span class="font-medium">${esc(r.trigger)}</span>
+        <i class="fa-solid fa-arrow-right text-slate-300"></i>
+        <span class="badge bg-brand-50 text-brand-700 py-1"><i class="fa-solid fa-bolt"></i>THÌ</span><span class="font-medium">${esc(r.action)}</span>
+        ${r.action.includes('AI')?'<span class="badge bg-amber-50 text-amber-700"><i class="fa-solid fa-user-check"></i>Mẫu cần duyệt</span>':''}
+        <div class="w-full text-xs text-slate-400">Đã chạy ${r.runs} lần</div>
+      </div>
+      <div class="switch ${r.on?'on':''}" onclick="toggleRule(${r.id})"></div>
+      <button class="w-8 h-8 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition" onclick="delRule(${r.id})"><i class="fa-regular fa-trash-can"></i></button>
+    </div>`).join('');
+}
+function toggleRule(id){ const r=state.rules.find(x=>x.id===id); r.on=!r.on; renderRules(); toast(`Kịch bản đã ${r.on?'bật':'tắt'}`, r.on?'success':'info'); }
+function delRule(id){ state.rules = state.rules.filter(x=>x.id!==id); renderRules(); toast('Đã xóa kịch bản','info'); }
+document.getElementById('addRuleBtn').onclick = () => {
+  const trigger=document.getElementById('trigSel').value, action=document.getElementById('actSel').value;
+  if (state.rules.some(r=>r.trigger===trigger&&r.action===action)) return toast('Kịch bản này đã tồn tại','warn');
+  state.rules.push({id:uid++,trigger,action,on:true,runs:0}); renderRules(); toast('Đã thêm kịch bản tự động');
+};
+const EVENTS = { 'Sau khi chốt đơn':()=>`Đơn #DH${rnd(10000,99999)} – ${pick(SUFFIX)} chốt đơn`, 'Khách mua 30 ngày chưa quay lại':()=>`${pick(SUFFIX)} đã 31 ngày chưa mua lại`,
+  'Lead mới được lưu từ Google Maps':()=>`Lead mới: ${pick(['Kho','Đại lý','Cửa hàng'])} ${pick(SUFFIX)}`, 'Khách trả lời tin nhắn "QUAN TAM"':()=>`${pick(SUFFIX)} trả lời "QUAN TAM"`,
+  'Đơn hàng giao thành công':()=>`Đơn #DH${rnd(10000,99999)} giao thành công` };
+function log(html, icon, color){
+  const box=document.getElementById('autoLog'), el=document.createElement('div');
+  el.className='fade-in flex gap-2 p-2.5 rounded-lg bg-slate-50';
+  el.innerHTML=`<i class="fa-solid ${icon} ${color} mt-0.5"></i><div class="flex-1">${html}<div class="text-xs text-slate-400">${now()}</div></div>`;
+  box.prepend(el);
+}
+document.getElementById('simBtn').onclick = () => {
+  const active = state.rules.filter(r=>r.on); if(!active.length) return toast('Không có kịch bản nào đang bật','warn');
+  const r = pick(active); r.runs++;
+  log(`<b>Sự kiện:</b> ${EVENTS[r.trigger]()}`, 'fa-bell', 'text-violet-500');
+  setTimeout(()=>{
+    const ai = r.action.includes('AI');
+    log(ai ? `<b>${esc(r.action)}:</b> AI dùng mẫu nhắc mua lại đã duyệt, cá nhân hóa theo lịch sử mua` : `<b>Đã thực hiện:</b> ${esc(r.action)}`, ai?'fa-wand-magic-sparkles':'fa-circle-check', ai?'text-amber-500':'text-emerald-500');
+    renderRules(); toast(`Automation: ${esc(r.action)}`,'info');
+  }, 700);
+};
+log('<b>Đã thực hiện:</b> Gửi tin nhắn SMS cảm ơn & mã giảm giá cho đơn #DH58213', 'fa-circle-check', 'text-emerald-500');
+log('<b>Sự kiện:</b> Đơn #DH58213 – Phúc Lộc chốt đơn', 'fa-bell', 'text-violet-500');
+
+/* ===================== KHỞI ĐỘNG ===================== */
+updateSidebar(); renderResults();
+</script>
+</body>
+</html>
