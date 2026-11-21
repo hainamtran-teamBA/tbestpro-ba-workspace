@@ -194,7 +194,7 @@ Tài liệu chi tiết (luồng, thiết bị, phương án dự phòng): [Số 
 - **Mua thiết bị Nextwaves, tự tích hợp vào Ganico v2.** Nextwaves có SDK mã nguồn mở (MIT) cho súng NHR-10 (Bluetooth: web, Flutter, Android) và đầu đọc để bàn NRN (USB): https://github.com/Nextwaves-Industries/nextwaves-sdk . Phần mềm Nextwaves (được tặng) **dùng tạm**. Chưa có SDK cho đầu đọc cố định NR155.
 - **Sản phẩm không gán sẵn kg.** Nhập: mở phiếu, chọn SKU, đưa thẻ qua đầu đọc để bàn (phiếu hiện đủ số bao, kg trống), treo thẻ, cân theo lượt (**số bao mỗi lượt tùy ý**), tổng kg **chia đều theo từng SKU**. **Không trừ bì.**
 - **Một container = một lô** (mã lô công ty tạo, nhà cung cấp in). Container nhiều lô thì làm từng lô riêng, không trộn lô trên một lượt cân.
-- **Không lắp ăng-ten cạnh bàn cân**; kiểm soát bằng dung sai tổng kg (đang bàn: hụt tối đa 0,5%, dư tối đa 0,1%). Ngưỡng không bắt được sót 1 bao khi một SKU có hơn khoảng 200 bao → QL kho kiểm ngẫu nhiên.
+- **Không lắp ăng-ten cạnh bàn cân**; kiểm soát bằng dung sai tổng kg (**đã chốt**: hụt tối đa 0,5%, dư tối đa 0,1%; người dùng xác nhận lại 2026-11-17). Ngưỡng không bắt được sót 1 bao khi một SKU có hơn khoảng 200 bao → QL kho kiểm ngẫu nhiên.
 
 **Kết quả chạy thử phân quyền (12/11, 4 vai trò TEST-, đăng nhập từng vai trò)**
 - Bật "bắt buộc duyệt": tồn **chỉ đổi khi Kế toán bấm Hoàn tất**; NV kho, QL kho tự duyệt bị chặn (`SELF_APPROVAL_FORBIDDEN`); chỉ admin tự duyệt được (quyền dựng sẵn).
@@ -205,4 +205,14 @@ Tài liệu chi tiết (luồng, thiết bị, phương án dự phòng): [Số 
 - API Nextwaves có upsert mã hàng, nhà cung cấp, đơn mua theo mã ngoài + webhook → nối Ganico v2 sau này.
 - Tài liệu (bản dở, 6/8 mục): https://claude.ai/artifact/UHWKgMUkmknpcXXYAQQt4K
 
-**Còn chờ chốt:** nhập theo đơn mua hay phiếu thường ghi số đơn mua; bỏ `tag.update` khỏi NV kho; kế toán kiểm lô khi duyệt xuất; mức dung sai cuối cùng; cân cho bao lẻ.
+**Còn chờ chốt:** nhập theo đơn mua hay phiếu thường ghi số đơn mua; bỏ `tag.update` khỏi NV kho; kế toán kiểm lô khi duyệt xuất; cân cho bao lẻ.
+
+## 12. Cập nhật 16/11/2026: báo giá phát triển Nextwaves, hướng tự dựng phần mềm, nguyên tắc số kg
+
+- **Nextwaves báo (tin nhắn gửi người dùng, 2026-11-16) [Bên khác nói]:** bộ giải pháp có sẵn chỉ phục vụ bán lẻ. Có sẵn: sản phẩm chỉ cần mã + đơn vị kg (không cài 60 kg/bao); phiếu nhập chọn SKU, đưa thẻ qua bàn đọc, mỗi thẻ 1 bao, cột kg trống; mỗi bao lưu kg riêng. Phải phát triển thêm: kết nối cân lấy kg tự động theo lượt (**tối đa 10 bao cùng SKU/lượt**), cộng dồn; chốt phiếu chia đều tổng kg cho số thẻ của SKU, phần lẻ dồn bao cuối; dung sai so kg thực cân với kg dự kiến, vượt ngưỡng chờ người có quyền duyệt; màn hình phiếu nhập và màn hình cân. **Phí phát triển riêng 60.000.000 VNĐ**; thiết bị (bàn đọc, thẻ, ăng-ten) báo giá sau khi đồng ý phí phát triển.
+- **Hướng người dùng đang nghiêng (2026-11-16, chưa trình sếp):** mua thiết bị Nextwaves, **tự dựng phần mềm**. Lệch với chốt 04/11 ("mua trọn gói dùng trước, tự thiết kế tính sau", `Dự Án/01 WMS/README.md:9`) → cần sếp đồng ý; cần người viết và bảo trì. SDK công khai có cho súng NHR-10 và đầu đọc bàn NRN, chưa có cho NR155 [Đã kiểm GitHub 2026-11-16].
+- **Nguyên tắc đã chốt (người dùng, 2026-11-16): số kg không được sửa tay.** Quét QR/RFID đối soát số bao và loại hàng; cân theo lượt cộng dồn để so tổng kg với kg dự kiến. Cách lấy kg theo mức chống sửa tay: gõ tay (không dùng) → gõ tay + bắt buộc ảnh màn hình cân + người khác duyệt khi lệch → nối cân tự động qua RS232 của FI05, chỉ nhận số khi cân báo ổn định.
+- **Còn chờ:** sếp đồng ý tự dựng; ai viết phần mềm; Nextwaves báo giá chỉ thiết bị và danh sách máy; thử đọc chuỗi số từ FI05 qua cáp USB–RS232.
+- **2026-11-17 (người dùng xác nhận):** dung sai −0,5% / +0,1% là **đã chốt** (bỏ ghi "đang bàn" ở mục 11 và khỏi danh sách "còn chờ chốt"). Định mức hao hụt +0,1%/tháng vẫn là đề xuất.
+- **2026-11-17 (người dùng nói):** thử nối cáp USB–RS232 vào cân FI05 **đã lấy được dữ liệu cân** trên máy tính (chương trình đọc cân do dev bên mình viết). Kho sắp chuyển sang kho mới (Joseph báo, chưa rõ ngày).
+- **2026-11-19 (người dùng nói):** vì nối cân đã lấy được dữ liệu, **chốt mua thiết bị rồi tự dựng phần mềm**, không mua phần phát triển 60 triệu của Nextwaves. Sếp đã duyệt hướng này chưa: chưa có thông tin. Ai viết và bảo trì: chưa rõ.

@@ -1,14 +1,15 @@
-- [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA; skill BA đã cất (2026-11-12), tri thức ở reference/
-- [Dự án WMS Kho 7](project-wms-kho7.md) — demo Gani 2 WMS, trạng thái khảo sát và bước tiếp theo
+- [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA; cách thích làm việc; nguồn sự thật ở CLAUDE.md và reference/
+- [Dự án WMS Kho 7](project-wms-kho7.md) — 21/11: áp dụng QR trước (máy in + máy quét cầm tay), tự dựng; thiết bị Nextwaves tính sau; chi tiết ở reference/
+- [Danh mục 4 dự án (PM)](project-portfolio-du-an.md) — Kho, FB Ads, SMS, Cổng báo cáo; trạng thái cập nhật 21/11
+- [Bàn dự án](project-trang-quan-ly-du-an.md) — Trang web/ban-thu/v3 là bản chuẩn (17/11), tạm dừng; Hồ sơ BA chỉ tham khảo
+- [Cách làm việc với agent](project-thiet-ke-cach-lam-viec-agent.md) — các việc còn treo; phần đã chốt ở CLAUDE.md
 - [Bám trọng tâm](feedback-bam-trong-tam.md) — một dự án, một việc, ra tài liệu cụ thể; tránh lan man nhiều nhánh
-- [Danh mục 3 dự án (PM)](project-portfolio-du-an.md) — Du-an/ trong workspace: Kho, FB Ads, SMS; cách cập nhật
 - [Không tự mở rộng](feedback-khong-tu-mo-rong.md) — chỉ điền bên/dữ liệu người dùng đã làm việc thật; hỏi trước khi thêm hay tạo file
-- [Đọc tài liệu trước khi hỏi](feedback-doc-tai-lieu-truoc.md) — đọc kiến trúc OS, PDF hướng dẫn, đề án, thử Tizi trước khi hỏi hay đề xuất
+- [Đọc tài liệu trước khi hỏi](feedback-doc-tai-lieu-truoc.md) — đọc kiến trúc OS, PDF hướng dẫn, báo cáo, thử Tizi trước khi hỏi hay đề xuất
 - [Định dạng Google Doc chuẩn](feedback-dinh-dang-google-doc.md) — Arial, H1 17pt, dòng ghi chú xám 9pt, mục đánh số 13pt, bảng viền #bbb đầu bảng nền #eee
 - [Nhật ký công việc trên Notion](reference-nhat-ky-notion.md) — trang riêng tư, mỗi ngày một mục, cuối buổi ghi thêm
-- [Hiện skill đang dùng](feedback-hien-skill-dang-dung.md) — cuối mỗi câu trả lời ghi skill/agent đã dùng, hoặc ghi "không dùng skill"
-- [Đồng bộ hai máy](project-dong-bo-hai-may.md) — GitHub riêng tư + Notion + Drive; "chốt buổi" / "làm tiếp"
-- [Link xem ngoài Tbestpro](feedback-link-xem-ngoai-tbestpro.md) — link trang làm ra phải mở được bằng tài khoản khác; claude.ai công ty bị khóa chia sẻ ngoài
-- [Trình duyệt chạy ngầm](feedback-trinh-duyet-chay-ngam.md) — Playwright mặc định headless; mở cửa sổ chỉ khi người dùng muốn xem demo
-- [Trang quản lý dự án](project-trang-quan-ly-du-an.md) — đã dựng ở site/ (13/11): hồ sơ 2 nhánh đặc tả + liên quan, tổng quan 1 màn hình, không cây UC ở thanh bên
+- [Link xem báo cáo](feedback-link-xem-ngoai-tbestpro.md) — HTML hoặc claude.ai tùy dạng; form báo cáo ở thư mục Mẫu; claude.ai chỉ người trong Tbestpro xem được
+- [Trình duyệt chạy ngầm](feedback-trinh-duyet-chay-ngam.md) — chạy ngầm; chỉ hiện cửa sổ khi cần người dùng đăng nhập hoặc xem demo
 - [Báo cáo sếp ngắn gọn](feedback-bao-cao-sep-ngan-gon.md) — tin Zalo vài dòng, giọng người thật, không in đậm/bảng/phân tích dài
+- [Giao diện không chú thích thừa](feedback-giao-dien-khong-chu-thich-thua.md) — ẩn bộ lọc không có dữ liệu, không bộ lọc mặc định, không chữ phụ
+- [Trang cần đăng nhập](feedback-trang-can-dang-nhap.md) — người dùng tự đăng nhập một lần ở cửa sổ Playwright, rồi chạy ngầm; không xin mật khẩu

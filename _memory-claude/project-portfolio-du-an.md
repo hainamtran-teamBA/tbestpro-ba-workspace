@@ -1,15 +1,17 @@
 ---
 name: project-portfolio-du-an
-description: Claude đóng vai PM cho 4 dự án (thêm 04 Cổng báo cáo nội bộ) của người dùng (Kho real-time, Facebook Ads, SMS agent); thư mục Du-an/ trong workspace là nguồn sự thật
+description: Claude làm PM cho 4 dự án trong Dự Án/ (Kho, Facebook Ads, SMS, Cổng báo cáo nội bộ); cấu trúc mỗi dự án và cách cập nhật; dọn 2026-11-19, cập nhật trạng thái 2026-11-21
 metadata:
   type: project
 ---
 
-Từ 2026-10-27 người dùng nhờ Claude làm **PM** cho 3 dự án, thư mục `Du-an/` trong workspace: `00-Tong-quan.md` (bảng điều khiển, lộ trình 12 tuần), `01-Kho-Real-time/`, `02-Facebook-Ads/`, `03-SMS-Agent/` (mỗi nơi có `README.md`, `lo-trinh.md`, `nhat-ky.md`). Người dùng muốn phân thành các thư mục con để dễ quản lý; ưu tiên Kho (sếp giao trực tiếp), sau đó FB Ads (đang thử n8n + Slack + Claude MCP), SMS (chưa bắt đầu).
+Từ 2026-10-27 anh nhờ Claude làm **PM** cho các dự án trong `Dự Án/`: `00-Tong-quan.md` (bảng điều khiển), `01 WMS/`, `02 Facebook Ads/`, `03 SMS Agent/`, `04 Cổng báo cáo nội bộ/`. Ưu tiên Kho (sếp giao trực tiếp).
 
-**Why:** để quản lý theo cổng quyết định, đo bằng kết quả, không để việc nằm trong trí nhớ hội thoại.
-**How to apply:** khi người dùng nói "cập nhật dự án X" hoặc báo kết quả, ghi `nhat-ky.md`, đổi trạng thái việc trong `lo-trinh.md`, cập nhật bảng ở `00-Tong-quan.md` (thứ Sáu). Số liệu AI không tự tính, dùng code/SQL. Liên quan [[project-wms-kho7]].
+**Cấu trúc (dọn 2026-11-19):** mỗi dự án giữ `README.md` và `bao-cao/` (bản chính thức). File mẫu dùng chung nằm ở `Mẫu/` (báo cáo so sánh, mẫu giao diện Pinterest). Dự kiến thêm `nhap/` cho bản đang làm.
+- **Kho** (cập nhật 2026-11-21): **áp dụng QR trước** (mua máy in QR và máy quét cầm tay, tự dựng phần mềm), **sau đó mới tính mua thiết bị Nextwaves**. Đã xóa `kho-rfid` (dev giữ trên GitHub). Xem [[project-wms-kho7]].
+- **SMS** (2026-11-21): đang **test gửi tin cho 100 khách bằng phần mềm tự viết**. Giữ README và báo cáo.
+- **Facebook Ads** (2026-11-21): **dev đang làm phần chi phí Facebook Ads**; phía mình **đang test kéo dữ liệu từ các nền tảng về** (bản dùng thử "Hiệu quả post", chi tiết ở `Dự Án/02 Facebook Ads/README.md` mục 10). Workspace giữ `Claude-CapCut/`, `bao-cao/`, `Test Data/`.
+- **Cổng báo cáo nội bộ:** giữ nguyên (báo cáo và README).
 
-**2026-10-27:** thêm dự án `04-Cong-bao-cao-noi-bo/` (website nhỏ tự host để báo cáo công việc thay tin nhắn nhóm, đính kèm file; tách hẳn dự án Facebook Ads; dùng ~5-10% thời gian). Báo cáo hiện qua tin nhắn nên dễ trôi. Chưa chốt số người, người xem, mẫu báo cáo, chỗ chạy thật.
-
-**2026-10-27 (sau):** dự án 04 đã có bản chạy thử tại `Du-an/04-Cong-bao-cao-noi-bo/app/` (WORKNOTE: Node + SQLite có sẵn, chạy `node server.js` → http://localhost:3000). Phạm vi người dùng chốt: Tổng quan + hộp thoại tạo báo cáo + đính kèm file + phản hồi; ai cũng xem được; chưa đăng nhập/phân quyền.
+**Why:** quản lý theo cổng quyết định, đo bằng kết quả, không để việc nằm trong trí nhớ hội thoại.
+**How to apply:** khi anh nói "cập nhật dự án X" hoặc báo kết quả, cập nhật trạng thái ở `README.md` của dự án và `00-Tong-quan.md`; nhật ký thì ghi vào Notion (đã bỏ `lo-trinh.md` 2026-11-19). Số liệu AI không tự tính, dùng code hoặc SQL. README dự án và `00-Tong-quan.md` có thể còn nhắc phần đã xóa, cần rà.

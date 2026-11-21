@@ -5,7 +5,7 @@
 *.key
 
 # Tài liệu gốc, nặng: để trên Google Drive, cần thì tải về
-tai-lieu-goc/
+Tài liệu gốc/
 *.pdf
 *.docx
 *.doc
@@ -29,12 +29,10 @@ __pycache__/
 .claude/settings.local.json
 
 # Bản sao lưu CapCut (chỉ dùng trên máy đang chạy CapCut)
-Du-an/02-Facebook-Ads/Claude-CapCut/sao-luu/
-Du-an/02-Facebook-Ads/Claude-CapCut/video-goc/
-Du-an/02-Facebook-Ads/Claude-CapCut/video-da-dung/
+Dự Án/02 Facebook Ads/Claude-CapCut/sao-luu/
+Dự Án/02 Facebook Ads/Claude-CapCut/video-goc/
+Dự Án/02 Facebook Ads/Claude-CapCut/video-da-dung/
 
-# Kho của dev, tải riêng từ GitHub của dev
-Du-an/01-Kho-Real-time/kho-rfid/
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
 
@@ -42,8 +40,24 @@ Du-an/01-Kho-Real-time/kho-rfid/
 graphify-out/
 **/graphify-out/
 
-# Skill, agent: mỗi máy tự giữ, danh sách ở cai-dat-may.md
+# Skill, agent: mỗi máy tự giữ, danh sách ở Cài đặt máy.md
 .claude/skills/
 .claude/luu-tru-skill/
 .claude/agents/
 .playwright/
+
+# Nhật ký agent: mỗi máy tự giữ
+Việc/nhat-ky.jsonl
+Việc/.nhat-ky-map.json
+
+# Văn phòng ảo mức 2: máy chủ nội bộ (mỗi máy tự cài, mã bí mật không đẩy)
+tools/van-phong/node_modules/
+tools/van-phong/.npm-cache/
+tools/van-phong/.token
+Việc/.phien-chinh
+Việc/.phien-trang.json
+
+# Dữ liệu gọi thử ScrapeCreators và bản đăng web (chứa dữ liệu thật, mỗi máy tự giữ)
+Dự Án/02 Facebook Ads/Test Data/goi-thu/
+Dự Án/02 Facebook Ads/Test Data/dang-len-v5/
+Dự Án/02 Facebook Ads/Test Data/dang-len-e/
