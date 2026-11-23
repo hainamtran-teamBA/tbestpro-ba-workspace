@@ -1,63 +1,35 @@
+# Đẩy toàn bộ workspace (kể cả Tài liệu gốc, PDF, Excel, ảnh) để chuyển máy.
+# Chỉ giữ lại: bí mật, phiên đăng nhập, bộ nhớ đệm, rác của máy.
+
 # Bí mật: không bao giờ đẩy lên
 .env
 .env.*
 *.pem
 *.key
+tools/van-phong/.token
 
-# Tài liệu gốc, nặng: để trên Google Drive, cần thì tải về
-Tài liệu gốc/
-*.pdf
-*.docx
-*.doc
-*.xlsx
-*.xls
-*.pptx
-*.mp4
-*.mov
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
-*.zip
+# Phiên đăng nhập trình duyệt, Cloudflare (có thông tin tài khoản)
+.playwright-cli/
+.playwright/
+.wrangler/
+**/.wrangler/
 
-# Rác của máy
+# Cơ sở dữ liệu cục bộ
+*.db
+*.db-shm
+*.db-wal
+
+# Rác của máy, bộ nhớ đệm
 .DS_Store
 node_modules/
 __pycache__/
 *.pyc
 .claude/settings.local.json
-
-# Bản sao lưu CapCut (chỉ dùng trên máy đang chạy CapCut)
-Dự Án/02 Facebook Ads/Claude-CapCut/sao-luu/
-Dự Án/02 Facebook Ads/Claude-CapCut/video-goc/
-Dự Án/02 Facebook Ads/Claude-CapCut/video-da-dung/
-
-# Playwright CLI output (may contain credentials)
-.playwright-cli/
-
-# Bản đồ Graphify: mỗi máy tự chạy /graphify, không đẩy
-graphify-out/
-**/graphify-out/
-
-# Skill, agent: mỗi máy tự giữ, danh sách ở Cài đặt máy.md
-.claude/skills/
-.claude/luu-tru-skill/
-.claude/agents/
-.playwright/
-
-# Nhật ký agent: mỗi máy tự giữ
-Việc/nhat-ky.jsonl
-Việc/.nhat-ky-map.json
-
-# Văn phòng ảo mức 2: máy chủ nội bộ (mỗi máy tự cài, mã bí mật không đẩy)
 tools/van-phong/node_modules/
 tools/van-phong/.npm-cache/
-tools/van-phong/.token
 Việc/.phien-chinh
 Việc/.phien-trang.json
 
-# Dữ liệu gọi thử ScrapeCreators và bản đăng web (chứa dữ liệu thật, mỗi máy tự giữ)
-Dự Án/02 Facebook Ads/Test Data/goi-thu/
-Dự Án/02 Facebook Ads/Test Data/dang-len-v5/
-Dự Án/02 Facebook Ads/Test Data/dang-len-e/
+# Bản đồ Graphify: mỗi máy tự chạy /graphify
+graphify-out/
+**/graphify-out/
