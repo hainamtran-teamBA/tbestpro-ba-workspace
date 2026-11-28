@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Báo cáo</title>
+<!--
+  KHUÔN BÁO CÁO TBESTPRO (bản 1, chốt 2026-11-18, dựa trên báo cáo Kho 7 v2 của Mahi)
+  Cách dùng: chép file này, CHỈ sửa khối dữ liệu <script id="du-lieu"> ở cuối file.
+  Không sửa phần style và script dựng trang. Quy tắc đầy đủ: QUY-TAC.md cùng thư mục.
+-->
+<style>
+:root{--ink:#141416;--mute:#6e6e73;--soft:#a1a1a6;--line:#e3e3e6;--panel:#f4f4f6;--sel:#f7f7f9;--warn:#9a6a00}
+*{box-sizing:border-box}
+html{background:#ececef}
+body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.bar{width:min(1440px,calc(100vw - 48px));margin:20px auto 0;display:flex;justify-content:flex-end}
+.bar button{font:inherit;font-size:15px;background:#fff;border:1px solid #3a3a3c;border-radius:8px;padding:7px 18px;cursor:pointer}
+.page{width:min(1440px,calc(100vw - 48px));margin:16px auto 28px;background:#fff;border-radius:12px;padding:56px 64px 64px}
+.sh{display:flex;gap:18px;align-items:flex-start;margin-bottom:36px}
+.no{flex:none;width:44px;height:44px;border-radius:8px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:600;margin-top:4px}
+.kick{font-size:13px;letter-spacing:.12em;color:var(--mute);font-weight:600;text-transform:uppercase}
+h1{font-size:38px;font-weight:600;letter-spacing:-.02em;margin:2px 0 6px;line-height:1.15}
+.lead{color:var(--mute);margin:0;font-size:18px}
+h2{font-size:22px;font-weight:600;margin:0 0 14px}
+.blk{margin-bottom:44px}.blk:last-child{margin-bottom:0}
+.m{color:var(--soft)}
+.s{display:block;font-size:.82em;color:var(--mute)}
+.ck{color:var(--warn);font-size:.82em;font-weight:500;white-space:nowrap}
+
+/* ===== Bảng so sánh: tự chia hàng theo số mục ===== */
+.cmpw{--ph:200px;--logo:64px;--fs:17px;--nm:20px;--pad:13px 16px;--gap:14px;--lab:20%}
+.cmpw.d4{--ph:160px;--logo:56px;--fs:15.5px;--nm:18px;--pad:11px 13px;--gap:12px;--lab:17%}
+.cmpw.d5{--ph:130px;--logo:48px;--fs:14px;--nm:16px;--pad:9px 11px;--gap:10px;--lab:15%}
+.cmpw.d6{--ph:110px;--logo:42px;--fs:13px;--nm:15px;--pad:8px 9px;--gap:8px;--lab:14%}
+.cmpw.logo{--ph:calc(var(--logo) + 36px)}
+.cmp{width:calc(100% + 2*var(--gap));border-collapse:separate;border-spacing:var(--gap) 0;table-layout:fixed;margin:0 calc(-1*var(--gap));font-size:var(--fs)}
+.cmp+.cmp{margin-top:44px}
+.cmp th,.cmp td{padding:var(--pad);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.cmp thead th{font-weight:400;vertical-align:top;padding:0 0 14px}
+.cmp thead th:first-child{vertical-align:bottom}
+.cmp thead th:first-child{width:var(--lab);padding-left:2px}
+.grp{font-size:calc(var(--nm) + 2px);font-weight:600;display:block}
+.grp+.s{margin-top:2px}
+.ph{background:var(--panel);border-radius:8px;height:var(--ph);overflow:hidden;margin-bottom:14px;padding:14px;display:flex;align-items:center;justify-content:center}
+.ph img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;mix-blend-mode:multiply}
+.logo .ph img,.ph.lg img{width:var(--logo);height:var(--logo);border-radius:12px;mix-blend-mode:normal;object-fit:cover;background:#fff}
+.ph .mono{width:var(--logo);height:var(--logo);border-radius:12px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:600;font-size:calc(var(--logo)*.38);letter-spacing:.02em}
+.nm{display:block;font-size:var(--nm);font-weight:600;padding:0 4px;line-height:1.25}
+.cmp thead .s{padding:2px 4px 0}
+.tag{display:inline-block;font-size:13px;margin:6px 4px 0;padding:2px 10px;border-radius:999px;background:var(--ink);color:#fff;font-weight:500}
+.tag.vien{background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.cmp tbody th{font-weight:400;color:var(--mute);padding-left:2px}
+.cmp tbody td,.cmp tbody th{border-top:1px solid var(--line)}
+.cmp td.sel{background:var(--sel)}
+.cmp th.sel .ph{box-shadow:inset 0 0 0 2px var(--ink)}
+.cmp .trong{background:none!important;border-top-color:transparent!important}
+
+/* ===== Thẻ đề xuất ===== */
+.picks{display:grid;gap:28px}
+.pick{border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.pick.ngang{display:grid;grid-template-columns:44% 1fr}
+.pick .ph{border-radius:0;margin:0;height:220px;padding:24px}
+.pick.ngang .ph{height:100%;min-height:280px;padding:28px}
+.pick .bd{padding:26px 28px;display:flex;flex-direction:column;flex:1}
+.pick .lg{width:52px;height:52px;border-radius:12px;margin-bottom:14px;object-fit:cover;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.pick .lg.mono{display:grid;place-items:center;background:var(--ink);color:#fff;font-weight:600;font-size:19px;box-shadow:none}
+.pick .use{font-size:13px;letter-spacing:.1em;color:var(--mute);font-weight:600;text-transform:uppercase}
+.pick h3{font-size:26px;font-weight:600;margin:4px 0 10px;letter-spacing:-.01em;line-height:1.2}
+.pick p{margin:0 0 18px;color:#3a3a3e}
+.pick dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}
+.pick dt{color:var(--mute)} .pick dd{margin:0;text-align:right}
+.pick .pr{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--line);margin-top:auto;padding-top:12px}
+.pick dl+.pr{margin-top:16px}
+.pick .pr b{font-size:24px;font-weight:600;text-align:right}
+.pick .pr span{color:var(--mute);font-size:14px}
+.picks.c4 .pick h3{font-size:21px}.picks.c4 .pick .bd{padding:20px 22px}.picks.c4 .pick .pr b{font-size:20px}.picks.c4 .pick p{font-size:15px}
+
+/* ===== Ô chỉ số ===== */
+.kpis{display:grid;gap:16px}
+.kpi{background:var(--panel);border-radius:10px;padding:22px 24px}
+.kpi b{display:block;font-size:34px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.kpi span{display:block;margin-top:6px;color:#3a3a3e}
+.kpi .s{margin-top:2px}
+
+/* ===== Bảng chi phí ===== */
+.quote{width:100%;border-collapse:collapse}
+.quote th,.quote td{padding:16px 20px;text-align:right;vertical-align:top}
+.quote th:first-child,.quote td:first-child{text-align:left}
+.quote thead th{background:var(--ink);color:#fff;font-weight:600;font-size:15px}
+.quote tbody td{border-bottom:1px solid var(--line)}
+.quote tbody b{font-weight:600}
+.quote .d{display:block;font-size:14px;color:var(--mute);margin-top:2px}
+.quote tfoot td{background:var(--ink);color:#fff;font-size:22px;font-weight:600;padding:20px}
+.quote tfoot .ck{color:#f0c36b}
+
+/* ===== Danh sách, ghi chú ===== */
+.list{margin:0;padding:0;list-style:none;counter-reset:n;display:grid;gap:0}
+.list li{counter-increment:n;display:grid;grid-template-columns:36px 1fr;gap:4px 14px;padding:16px 0;border-top:1px solid var(--line)}
+.list li:last-child{border-bottom:1px solid var(--line)}
+.list li::before{content:counter(n);width:28px;height:28px;border-radius:7px;background:var(--panel);display:grid;place-items:center;font-weight:600;font-size:15px}
+.list b{font-weight:600}
+.note{border-left:3px solid var(--ink);background:var(--panel);padding:14px 20px;color:#3a3a3e;font-size:15px}
+.note.noi-bat{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:22px 26px;font-size:18px}
+.note.noi-bat b{color:#f0c36b;font-weight:600}
+.blk>.note{margin-top:0}
+.quote+.note{margin-top:22px}
+
+@page{size:A4;margin:12mm 12mm}
+@media print{
+ html,body{background:#fff} body{font-size:11.5px} .bar{display:none}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .page{width:auto;margin:0;padding:0;border-radius:0;break-after:page} .page:last-child{break-after:auto}
+ .sh{margin-bottom:18px} .no{width:30px;height:30px;font-size:15px} .kick{font-size:9px} h1{font-size:24px} .lead{font-size:12px} h2{font-size:15px;margin-bottom:8px}
+ .blk{margin-bottom:22px}
+ .cmpw{--ph:105px;--logo:36px;--fs:11px;--nm:13px;--pad:6px 8px;--gap:8px}
+ .cmpw.d4{--ph:90px;--logo:32px;--fs:10px;--nm:12px;--pad:5px 6px;--gap:6px}
+ .cmpw.d5,.cmpw.d6{--ph:76px;--logo:28px;--fs:9px;--nm:11px;--pad:4px 5px;--gap:5px}
+ .cmpw.logo{--ph:calc(var(--logo) + 18px)}
+ .cmp{break-inside:avoid} .cmp+.cmp{margin-top:20px} .ph{margin-bottom:7px;padding:8px} .tag{font-size:8.5px;padding:1px 7px} .grp{font-size:14px}
+ .picks{gap:14px} .pick.ngang{grid-template-columns:1fr} .pick .ph,.pick.ngang .ph{min-height:120px;height:120px;padding:10px} .pick .bd{padding:14px 16px} .pick .lg{width:32px;height:32px;margin-bottom:8px} .pick .lg.mono{font-size:12px} .pick .use{font-size:8.5px} .pick h3{font-size:16px} .pick p{margin-bottom:10px;font-size:10.5px} .pick dl{font-size:10px} .pick .pr b{font-size:15px} .pick .pr span{font-size:9.5px}
+ .picks.c4 .pick h3{font-size:14px}
+ .kpis{gap:10px} .kpi{padding:12px 14px} .kpi b{font-size:20px}
+ .quote th,.quote td{padding:9px 12px} .quote thead th{font-size:11px} .quote .d{font-size:9.5px} .quote tfoot td{font-size:15px;padding:12px}
+ .list li{padding:8px 0;grid-template-columns:22px 1fr} .list li::before{width:20px;height:20px;font-size:10px}
+ .note{font-size:10.5px;padding:9px 14px} .note.noi-bat{font-size:12px;padding:12px 16px}
+ .pick,.kpi,.list li,.quote tr{break-inside:avoid}
+}
+@media screen and (max-width:900px){ .page{padding:32px 20px} .picks,.kpis{grid-template-columns:1fr!important} .pick.ngang{grid-template-columns:1fr} .cmpw{overflow-x:auto} .cmp{min-width:820px} }
+</style></head><body>
+<div class="bar"><button onclick="window.print()">In / Lưu PDF</button></div>
+<main id="bao-cao"></main>
+
+<!-- ================= DỮ LIỆU BÁO CÁO: chỉ sửa phần này ================= -->
+<script type="application/json" id="du-lieu">
+{
+ "tieu_de": "SMS · So sánh nhà cung cấp",
+ "trang": [
+  {
+   "nhan": "SMS · SO SÁNH NHÀ CUNG CẤP",
+   "tieu_de": "Nên chuyển sang UniSMS",
+   "mo_ta": "Rẻ hơn Semaphore, có API và báo tin đã tới máy để nối với Tizi. Tính cho 60.000 tin/tháng.",
+   "khoi": [
+    {
+     "loai": "chi-so",
+     "muc": [
+      {
+       "so": "15,1 tr",
+       "nhan": "Semaphore mỗi tháng",
+       "phu": "đang dùng"
+      },
+      {
+       "so": "12,7 tr",
+       "nhan": "UniSMS mỗi tháng",
+       "phu": "theo báo giá"
+      },
+      {
+       "so": "2,4–7,8 tr",
+       "nhan": "tiết kiệm mỗi tháng",
+       "phu": "tùy ép giá được đến đâu"
+      }
+     ]
+    },
+    {
+     "loai": "so-sanh",
+     "kieu_anh": "logo",
+     "nhom": [
+      {
+       "ten": "Nhà cung cấp",
+       "muc": [
+        {
+         "ten": "Semaphore",
+         "nhan": "Đang dùng"
+        },
+        {
+         "ten": "UniSMS",
+         "de_xuat": true
+        },
+        {
+         "ten": "Cast.ph"
+        },
+        {
+         "ten": "PhilSMS"
+        },
+        {
+         "ten": "M360"
+        }
+       ],
+       "dong": [
+        {
+         "ten": "Giá 1 tin",
+         "o": [
+          "≈ 250 đ",
+          {
+           "v": "≈ 210 đ",
+           "dam": true
+          },
+          "≈ 120 đ",
+          "≈ 160 đ",
+          {
+           "v": "Chưa công bố",
+           "mo": true
+          }
+         ]
+        },
+        {
+         "ten": "Tiền/tháng",
+         "o": [
+          "15,1 tr",
+          {
+           "v": "12,7 tr",
+           "dam": true
+          },
+          "7,3 tr",
+          "9,5 tr",
+          null
+         ]
+        },
+        {
+         "ten": "Gửi qua API",
+         "o": [
+          "Có",
+          {
+           "v": "Có",
+           "dam": true
+          },
+          {
+           "v": "Phải xin",
+           "mo": true
+          },
+          "Có",
+          "Có"
+         ]
+        },
+        {
+         "ten": "Báo tin đã tới máy",
+         "o": [
+          {
+           "v": "Không",
+           "mo": true
+          },
+          {
+           "v": "Có",
+           "dam": true
+          },
+          {
+           "v": "Không",
+           "mo": true
+          },
+          {
+           "v": "Không",
+           "mo": true
+          },
+          "Có"
+         ]
+        },
+        {
+         "ten": "Đã làm việc",
+         "o": [
+          "Đang dùng",
+          {
+           "v": "Có báo giá",
+           "dam": true
+          },
+          {
+           "v": "Tra web",
+           "mo": true
+          },
+          {
+           "v": "Tra web",
+           "mo": true
+          },
+          {
+           "v": "Tra web",
+           "mo": true
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "loai": "ghi-chu",
+     "noi_dung": "Cast rẻ nhất nhưng không công khai API, không báo tin đã tới máy: dùng làm **giá để ép UniSMS**."
+    }
+   ]
+  },
+  {
+   "nhan": "SMS · CHI PHÍ",
+   "tieu_de": "Đổi nhà cung cấp tiết kiệm ít, rút gọn mẫu tin tiết kiệm nhiều",
+   "mo_ta": "Mẫu tin hiện dài, bị tách 3–4 tin mỗi đơn.",
+   "khoi": [
+    {
+     "loai": "bang-gia",
+     "tieu_de": "Nếu đổi sang UniSMS (60.000 tin/tháng, đơn vị: đồng)",
+     "cot": [
+      "Phương án",
+      "Giá 1 tin",
+      "Mỗi tháng",
+      "Tiết kiệm"
+     ],
+     "dong": [
+      {
+       "ten": "Semaphore (hiện tại)",
+       "o": [
+        "250",
+        "15,1 tr",
+        "—"
+       ]
+      },
+      {
+       "ten": "UniSMS, giá báo",
+       "o": [
+        "210",
+        "12,7 tr",
+        "2,4 tr"
+       ]
+      },
+      {
+       "ten": "UniSMS, nạp 3 tháng/lần",
+       "o": [
+        "190",
+        "11,3 tr",
+        "3,8 tr"
+       ]
+      },
+      {
+       "ten": "UniSMS, ép bằng giá Cast",
+       "can_chot": "cần đàm phán",
+       "o": [
+        "120",
+        "7,3 tr",
+        "7,8 tr"
+       ]
+      }
+     ]
+    },
+    {
+     "loai": "chi-so",
+     "tieu_de": "Nếu rút mẫu tin xuống 1 tin (dưới 160 ký tự)",
+     "muc": [
+      {
+       "so": "45 tr",
+       "nhan": "chi phí SMS hiện nay mỗi tháng"
+      },
+      {
+       "so": "≈ 1.000 đ",
+       "nhan": "mỗi đơn hiện nay"
+      },
+      {
+       "so": "≈ 210 đ",
+       "nhan": "mỗi đơn sau khi rút gọn"
+      }
+     ]
+    },
+    {
+     "loai": "ghi-chu",
+     "noi_dung": "Nguồn: báo giá UniSMS 19/10/2026; web các bên xem 27/11/2026; số 45 triệu từ \"Đề xuất tối ưu chi phí SMS\". Quy đổi 1 peso ≈ 450 đ (giả định). Số ở trang này là ước tính."
+    }
+   ]
+  },
+  {
+   "nhan": "SMS · BƯỚC TIẾP",
+   "tieu_de": "Cần hỏi 3 câu trước khi chốt",
+   "mo_ta": "Giá cuối của UniSMS phụ thuộc Tbestpro có đăng ký kinh doanh ở Philippines không.",
+   "khoi": [
+    {
+     "loai": "danh-sach",
+     "muc": [
+      {
+       "dam": "Tbestpro có giấy đăng ký kinh doanh ở Philippines không?",
+       "noi_dung": "UniSMS hỏi ngày 28/10, chưa trả lời."
+      },
+      {
+       "dam": "Tài khoản Semaphore đứng tên ai?",
+       "noi_dung": "Có bị tính là tài khoản nước ngoài không."
+      },
+      {
+       "dam": "Giá Semaphore trên hóa đơn là bao nhiêu?",
+       "noi_dung": "Cần số đúng để đàm phán."
+      }
+     ]
+    },
+    {
+     "loai": "ghi-chu",
+     "kieu": "noi-bat",
+     "noi_dung": "**Làm tiếp:** hỏi sếp, kế toán 3 câu trên → trả lời UniSMS, kèm giá Cast để ép giá → dev dùng thử UniSMS miễn phí, gửi thử từ Tizi → rút gọn mẫu tin."
+    }
+   ]
+  }
+ ]
+}
+</script>
+<!-- ===================================================================== -->
+
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('du-lieu').textContent);
+if (D.tieu_de) document.title = D.tieu_de;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// **chữ** -> chữ đậm
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+const viTat = t => String(t||'?').replace(/[^\p{L}\p{N} ]/gu,' ').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+// Số cột theo số mục: 6 -> 3-3, 8 -> 4-4, 10 -> 5-5, 12 -> 4-4-4 ...
+const BANG_COT = {1:1,2:2,3:3,4:4,5:3,6:3,7:4,8:4,9:3,10:5,11:4,12:4,13:5,14:5,15:5};
+const soCot = (n, ep) => ep || BANG_COT[n] || (n % 6 === 0 ? 6 : 5);
+const soCotThe = n => ({1:1,2:2,3:3,4:2,5:3,6:3,7:4,8:4,9:3})[n] || 4;
+
+function o(v, sel){
+  const c = []; if (sel) c.push('sel');
+  if (v === null || v === undefined || v === '') { c.push('m'); return `<td class="${c.join(' ')}">Chưa ghi</td>`; }
+  if (typeof v !== 'object') v = { v };
+  if (v.mo) c.push('m');
+  let h = v.dam ? `<b>${md(v.v)}</b>` : md(v.v);
+  if (v.can_chot) h += ` <span class="ck">${esc(v.can_chot === true ? 'cần chốt' : v.can_chot)}</span>`;
+  if (v.phu) h += `<span class="s">${md(v.phu)}</span>`;
+  return `<td class="${c.join(' ')}">${h}</td>`;
+}
+
+function anhMuc(m, kieu){
+  if (m.anh) return `<div class="ph${kieu==='logo'?' lg':''}"><img src="${esc(m.anh)}" alt="${esc(m.ten)}"></div>`;
+  return `<div class="ph"><div class="mono">${esc(viTat(m.ten))}</div></div>`;
+}
+
+function soSanh(k){
+  const nhom = k.nhom || [{ ten: k.ten_nhom || '', muc: k.muc, dong: k.dong }];
+  const lonNhat = Math.max(...nhom.map(g => g.muc.length));
+  const cot = soCot(lonNhat, k.cot);
+  const coAnhThat = nhom.some(g => g.muc.some(m => m.anh)) && k.kieu_anh !== 'logo';
+  const kieu = k.kieu_anh || (coAnhThat ? 'anh' : 'logo');
+  const lop = ['cmpw', cot >= 6 ? 'd6' : cot === 5 ? 'd5' : cot === 4 ? 'd4' : '', kieu === 'logo' ? 'logo' : ''].join(' ');
+  let h = `<div class="${lop}">`;
+  for (const g of nhom){
+    for (let i = 0; i < g.muc.length; i += cot){
+      const phan = g.muc.slice(i, i + cot), du = cot - phan.length;
+      const dauTien = i === 0;
+      h += `<table class="cmp"><thead><tr><th>${dauTien ? `<span class="grp">${md(g.ten)}</span>${g.phu?`<span class="s">${md(g.phu)}</span>`:''}` : `<span class="s">${md(g.ten)} (tiếp)</span>`}</th>`;
+      for (const m of phan){
+        const tag = m.nhan || (m.de_xuat ? 'Đề xuất' : '');
+        h += `<th class="${m.de_xuat?'sel':''}">${anhMuc(m, kieu)}<span class="nm">${md(m.ten)}</span>${m.phu?`<span class="s">${md(m.phu)}</span>`:''}${tag?`<span class="tag${m.de_xuat?'':' vien'}">${esc(tag)}</span>`:''}</th>`;
+      }
+      h += '<th class="trong"></th>'.repeat(du) + '</tr></thead><tbody>';
+      for (const d of g.dong){
+        h += `<tr><th>${md(d.ten)}</th>`;
+        phan.forEach((m, j) => { h += o((d.o||[])[i + j], m.de_xuat); });
+        h += '<td class="trong"></td>'.repeat(du) + '</tr>';
+      }
+      h += '</tbody></table>';
+    }
+  }
+  return h + '</div>';
+}
+
+function the(k){
+  const n = k.the.length, cot = k.cot || soCotThe(n);
+  const ngang = cot <= 2 && k.the.some(t => t.anh) && k.kieu_anh !== 'logo';
+  let h = `<div class="picks c${cot}" style="grid-template-columns:repeat(${cot},1fr)">`;
+  for (const t of k.the){
+    let anh = '';
+    if (k.kieu_anh === 'logo') anh = t.anh ? `<img class="lg" src="${esc(t.anh)}" alt="">` : `<div class="lg mono">${esc(viTat(t.ten))}</div>`;
+    const ph = (k.kieu_anh !== 'logo' && t.anh) ? `<div class="ph"><img src="${esc(t.anh)}" alt="${esc(t.ten)}"></div>` : '';
+    h += `<div class="pick${ngang && ph ? ' ngang' : ''}">${ph}<div class="bd">${anh}`;
+    if (t.nhan) h += `<div class="use">${md(t.nhan)}</div>`;
+    h += `<h3>${md(t.ten)}</h3>`;
+    if (t.mo_ta) h += `<p>${md(t.mo_ta)}</p>`;
+    if (t.thong_so && t.thong_so.length) h += '<dl>' + t.thong_so.map(([a,b]) => `<dt>${md(a)}</dt><dd>${md(b)}</dd>`).join('') + '</dl>';
+    if (t.gia) h += `<div class="pr"><span>${md(t.gia_nhan || 'Đơn giá')}</span><b>${md(t.gia)}</b></div>`;
+    h += '</div></div>';
+  }
+  return h + '</div>';
+}
+
+function chiSo(k){
+  const n = k.muc.length, cot = k.cot || (n <= 4 ? n : n <= 6 ? 3 : 4);
+  return `<div class="kpis" style="grid-template-columns:repeat(${cot},1fr)">` + k.muc.map(m =>
+    `<div class="kpi"><b>${md(m.so)}</b><span>${md(m.nhan)}</span>${m.phu?`<span class="s">${md(m.phu)}</span>`:''}</div>`).join('') + '</div>';
+}
+
+function bangGia(k){
+  let h = '<table class="quote"><thead><tr>' + k.cot.map(c => `<th>${md(c)}</th>`).join('') + '</tr></thead><tbody>';
+  for (const d of k.dong){
+    h += `<tr><td><b>${md(d.ten)}</b>${(d.phu||d.can_chot)?`<span class="d">${md(d.phu||'')}${d.can_chot?`${d.phu?' · ':''}<span class="ck">${esc(d.can_chot===true?'cần chốt':d.can_chot)}</span>`:''}</span>`:''}</td>`;
+    h += (d.o||[]).map(x => `<td>${md(x)}</td>`).join('') + '</tr>';
+  }
+  h += '</tbody>';
+  if (k.tong) h += `<tfoot><tr><td>${md(k.tong.nhan||'TỔNG CỘNG')}${k.tong.phu?` <span class="ck">${esc(k.tong.phu)}</span>`:''}</td>` + '<td></td>'.repeat(k.cot.length - 2) + `<td>${md(k.tong.gia_tri)}</td></tr></tfoot>`;
+  return h + '</table>';
+}
+
+const danhSach = k => '<ol class="list">' + k.muc.map(m => `<li><div>${m.dam?`<b>${md(m.dam)}</b> `:''}${md(m.noi_dung||'')}</div></li>`).join('') + '</ol>';
+const ghiChu = k => `<div class="note ${k.kieu||''}">${md(k.noi_dung)}</div>`;
+
+const DUNG = { 'so-sanh': soSanh, 'the': the, 'chi-so': chiSo, 'bang-gia': bangGia, 'danh-sach': danhSach, 'ghi-chu': ghiChu };
+let out = '';
+D.trang.forEach((p, i) => {
+  out += `<section class="page"><div class="sh"><div class="no">${i+1}</div><div>${p.nhan?`<div class="kick">${md(p.nhan)}</div>`:''}<h1>${md(p.tieu_de)}</h1>${p.mo_ta?`<p class="lead">${md(p.mo_ta)}</p>`:''}</div></div>`;
+  for (const k of (p.khoi||[])){
+    const f = DUNG[k.loai];
+    out += `<div class="blk">${k.tieu_de?`<h2>${md(k.tieu_de)}</h2>`:''}${f ? f(k) : `<div class="note">Không hiểu loại khối "${esc(k.loai)}"</div>`}</div>`;
+  }
+  out += '</section>';
+});
+document.getElementById('bao-cao').innerHTML = out;
+})();
+</script>
+</body></html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kho 7 · Trạm cân QR</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAFAFC;--card:#FFFFFF;--rail:#FCFCFD;--ink:#1E1E20;--mute:#5F6367;--line:#E0E5EB;--line2:#EEF0F3;--input:#C6CCD5;
+--primary:#0A81FF;--primary-ink:#0068D6;--accent:#E6F2FF;--gray:#EFEFF1;
+--ok:#1B7F3B;--ok-bg:#E3F2E3;--warn:#965A12;--warn-bg:#F6EBD3;--bad:#B52A22;--bad-bg:#FBE6E4;
+--font:'Be Vietnam Pro',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--simh:48px}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:1px solid transparent;border-radius:9px;height:32px;padding:0 12px;font-size:13px;font-weight:500;background:var(--gray);white-space:nowrap}
+button:hover{filter:brightness(.97)}
+button:disabled{cursor:not-allowed;opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.b-pri{background:var(--primary);color:#fff}
+.b-out{background:var(--card);border-color:var(--input)}
+.b-bad{background:var(--card);border-color:var(--bad);color:var(--bad)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:inherit;text-decoration:none}
+
+/* shell */
+.shell{display:flex;height:100vh}
+.rail{width:236px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;padding:8px;background:var(--rail);border-right:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 10px}
+.brand .ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(180deg,#3B9BFF,#0A81FF);color:#fff;font-weight:700;display:grid;place-items:center;font-size:15px}
+.brand b{font-size:15px;flex:1}
+.find{display:flex;align-items:center;gap:8px;background:var(--gray);border-radius:12px;height:36px;padding:0 10px;color:var(--mute);font-size:14px;margin-bottom:8px}
+.find kbd{margin-left:auto;font:11px var(--font);border:1px solid var(--input);border-radius:6px;padding:1px 5px;background:var(--card)}
+.grp-t{font-size:12px;color:var(--mute);padding:4px 10px;font-weight:500}
+.rl{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;font-size:14px}
+.rl:hover{background:var(--gray)}
+.rl.on{background:var(--accent);color:var(--primary-ink);font-weight:600}
+.rl svg{width:18px;height:18px;flex-shrink:0}
+.rl .cnt{margin-left:auto;background:var(--primary);color:#fff;font-size:11px;font-weight:600;border-radius:999px;min-width:22px;height:20px;display:grid;place-items:center;padding:0 6px}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.top h1{font-size:15px;font-weight:600;flex:1}
+.seg{display:flex;background:var(--gray);border-radius:9px;padding:2px}
+.seg button{height:26px;padding:0 10px;background:transparent;font-size:12px;font-weight:600;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.content{flex:1;overflow:auto;padding:24px 28px 80px}
+.page-h{font-size:28px;font-weight:700;letter-spacing:-.01em}
+.page-d{color:var(--mute);font-size:14px;max-width:760px;margin:6px 0 16px}
+
+/* cards, lists */
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card+.card{margin-top:14px}
+.card h3{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.wrow{display:flex;align-items:center;gap:10px;padding:7px 0}
+.wrow+.wrow{border-top:1px solid var(--line2)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#9C6411}
+.dot.red{background:var(--bad)}.dot.blue{background:var(--primary)}
+.wrow .tx{flex:1}
+.wrow .tx b{font-weight:600}
+.wrow.late .tx{color:var(--bad)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:500;background:var(--gray);color:var(--mute);white-space:nowrap}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.warn::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.blue{background:var(--accent);color:var(--primary-ink)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:var(--mute);padding:8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 8px;border-bottom:1px solid var(--line2)}
+.tbl .r{text-align:right}
+.tbl td{white-space:nowrap}
+.tbl tr.pend td{color:var(--warn)}
+.crumb{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:14px}
+.crumb a{color:var(--primary-ink);font-weight:500}
+.crumb span{color:var(--mute)}
+.hd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.hd .ttl{font-size:22px;font-weight:700}
+.hd .meta{color:var(--mute)}
+.sp{flex:1}
+.empty{color:var(--mute);padding:24px 0;text-align:center}
+
+/* labels step */
+.lblrow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 0}
+.lblrow+.lblrow{border-top:1px solid var(--line2)}
+.lblrow .sku{font-weight:600}
+.lblrow .sub{color:var(--mute);font-size:13px}
+.lab{display:grid;grid-template-columns:76px 1fr;gap:10px;border:1px dashed var(--input);border-radius:8px;padding:8px;width:300px;background:#fff}
+.lab svg{width:76px;height:76px}
+.lab .s{font-weight:700;font-size:15px;line-height:1.2}
+.lab .l{font-size:12px;color:var(--mute)}
+.lab .n{font-family:var(--mono);font-weight:700;font-size:18px}
+.detgrid{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px}
+.fld label{display:block;font-size:13px;color:var(--mute);margin-bottom:4px}
+.fld input{width:100%;height:36px;border:1px solid var(--input);border-radius:9px;padding:0 10px;font:inherit;background:var(--gray)}
+.skuhd{font-weight:600;margin:4px 0 8px}
+.skuhd+.detgrid{margin-bottom:12px}
+
+/* station */
+.station{display:grid;grid-template-columns:1fr 400px;gap:14px;align-items:start}
+.st-left{display:grid;gap:12px}
+.st-right{display:grid;gap:14px}
+.scale{display:grid;grid-template-columns:1fr auto;gap:6px 20px;align-items:center;padding:16px 22px}
+.scale .kg{font-family:var(--mono);font-weight:700;font-size:112px;line-height:1;letter-spacing:-.03em}
+.scale .kg small{font-size:36px;margin-left:10px;color:var(--mute)}
+.scale .side{display:grid;gap:8px;justify-items:end;align-content:start}
+.scale .facts{grid-column:1/-1;display:flex;gap:36px;flex-wrap:wrap;border-top:1px solid var(--line2);padding-top:12px}
+.fact .k{font-size:12px;color:var(--mute);font-weight:500}
+.fact .v{font-size:22px;font-weight:700}
+.fact .v.off{color:var(--warn)}
+.fact .v.big{font-size:28px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-weight:600;border-radius:999px;padding:5px 14px;font-size:15px}
+.chip::before{content:"";width:10px;height:10px;border-radius:50%;background:currentColor}
+.chip.ok{color:var(--ok);background:var(--ok-bg)}.chip.warn{color:var(--warn);background:var(--warn-bg)}.chip.mute{color:var(--mute);background:var(--gray)}
+.alert{border-radius:12px;padding:8px 10px 8px 16px;font-weight:600;font-size:18px;min-height:52px;display:flex;align-items:center;gap:10px}
+.alert.empty{visibility:hidden}
+.alert.ok{background:var(--ok-bg);color:var(--ok)}
+.alert.warn{background:var(--warn-bg);color:var(--warn)}
+.alert.bad{background:var(--bad-bg);color:var(--bad);font-size:22px}
+.alert .msg{flex:1}
+.alert button{height:38px;font-size:14px;background:#fff;border-color:currentColor;color:inherit}
+.alert select{font:inherit;font-size:14px;height:38px;border:1px solid currentColor;border-radius:9px;padding:0 8px;background:#fff;color:var(--ink)}
+.tabs{display:flex;gap:6px}
+.tabs button{height:36px;padding:0 14px;font-size:14px;background:var(--gray);color:var(--mute);font-weight:600}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--primary-ink)}
+.bags h3{justify-content:space-between}
+.baglist{list-style:none;max-height:320px;overflow:auto}
+.baglist li{display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid var(--line2);font-size:17px}
+.baglist li .bn{font-family:var(--mono);font-weight:700;min-width:86px}
+.baglist li .bs{color:var(--mute);flex:1;font-size:15px}
+.baglist li.wrong{background:var(--bad-bg);color:var(--bad)}
+.baglist li.wrong .bs{color:var(--bad);font-weight:600}
+.baglist.stl{max-height:420px}
+.station>.st-left,.station>.st-right,.st-right>*,.st-left>*{min-width:0}
+.st-right .tbl td{white-space:normal}
+.skurow .miss{grid-column:1/-1;font-size:13px;color:#a15c00;background:#fff4e0;border-radius:8px;padding:6px 8px;margin-top:4px}
+.why{width:100%;min-width:180px;font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+tr.pend .why{border-color:#e0a23a}
+@media(max-width:760px){.st-left .side .fact{text-align:left!important}}.baglist li.todo .bn{color:var(--mute)}
+.baglist .none{color:var(--mute);padding:14px 4px;border:0;font-size:14px}
+.confirm{height:72px;font-size:22px;font-weight:600;border-radius:12px;width:100%}
+.skurow{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.skurow.on{border-color:var(--primary);box-shadow:inset 4px 0 0 var(--primary)}
+.skurow .nm{font-weight:600;display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.skurow .ln{display:flex;justify-content:space-between;margin:5px 0;font-size:14px}
+.skurow .ln b{font-family:var(--mono)}
+.bar{display:block;height:6px;background:var(--gray);border-radius:3px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--primary)}
+.bar.done>i{background:var(--ok)}
+.lotrow{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:8px}
+.lotrow.on{border-color:var(--primary);box-shadow:inset 4px 0 0 var(--primary)}
+.lotrow .l1{display:flex;justify-content:space-between;align-items:center}
+.lotrow .l1 b{font-family:var(--mono);font-size:15px}
+.lotrow .l1 span{color:var(--mute);font-size:13px}
+.lotrow .pt{display:block;margin-top:4px;font-size:13px;font-weight:600;color:var(--warn)}
+.loose{display:grid;gap:10px}
+.lstep{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line2);font-size:17px}
+.lstep .no{width:28px;height:28px;border-radius:50%;background:var(--gray);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--mute)}
+.lstep.cur .no{background:var(--primary);color:#fff}
+.lstep.done .no{background:var(--ok-bg);color:var(--ok)}
+.lstep .val{font-family:var(--mono);font-weight:700;font-size:20px;text-align:right}
+.lstep .sub{display:block;font-size:13px;color:var(--mute)}
+.need{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}
+.need b{font-family:var(--mono);font-size:24px}
+
+
+/* labels page */
+.a5wrap{display:grid;gap:16px;justify-content:start}
+.a5h{font-weight:600;margin-top:8px}
+.a5{width:210mm;height:148mm;background:#fff;border:1px solid #bbb;padding:12mm;display:grid;grid-template-columns:minmax(0,1fr) 62mm;overflow:hidden;gap:8mm;align-items:center;color:#000;break-inside:avoid}
+.a5t{font-family:"Times New Roman",Times,serif;font-weight:700;font-size:18pt;line-height:1.75;white-space:nowrap}
+.a5q{display:grid;justify-items:center;gap:2mm}
+.a5q svg{width:58mm;height:58mm;display:block}
+.a5b{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:20pt}
+.a5o{font-size:10pt}
+@media(max-width:820px){.a5{zoom:.42}}
+@page{size:A5 landscape;margin:0}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tlabel{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px;display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;break-inside:avoid}
+.tq svg{width:120px;height:120px;display:block}
+.tn{font-weight:700;font-size:15px;line-height:1.15}
+.ts{font-size:12px;color:#333}
+.tb{font-family:var(--mono);font-weight:700;font-size:20px;margin-top:4px}
+@media print{.rail,.top,.crumb,.hd,.sim{display:none!important}.content{padding:0;overflow:visible}.shell{display:block;height:auto}.tgrid{display:block}.tlabel{width:100mm;height:75mm;border:0;page-break-after:always;grid-template-columns:38mm 1fr}.tq svg{width:36mm;height:36mm}.a5wrap{display:block}.a5h{display:none}.a5{border:0;page-break-after:always;zoom:1}.a5:last-child{page-break-after:auto}}
+/* camera scanner: full screen on the phone */
+.cam{position:fixed;inset:0;z-index:80;background:#111;display:flex;flex-direction:column;color:#fff}
+.camtop{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:#111}
+.camtop b{font-size:16px}
+.camtop button{background:#333;color:#fff;height:36px;font-size:14px}
+.camview{position:relative;flex:1;min-height:180px;overflow:hidden;background:#000}
+.camview video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.camframe{position:absolute;top:50%;left:50%;width:min(62vw,260px);height:min(62vw,260px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.9);border-radius:16px;box-shadow:0 0 0 2000px rgba(0,0,0,.25);pointer-events:none}
+.camres{padding:14px 16px;min-height:150px;display:grid;align-content:center;gap:2px;text-align:center;background:#2a2a2a;transition:background .15s}
+.camres.ok{background:var(--ok)}.camres.warn{background:#B7791F}.camres.bad{background:var(--bad)}
+.camres .crt{font-size:22px;font-weight:700;line-height:1.2}
+.camres .crb{font-family:var(--mono);font-size:52px;font-weight:700;line-height:1.05}
+.camres .crl{font-size:16px;opacity:.95}
+.camres .crx{justify-self:center;margin-top:8px;height:40px;font-size:15px;background:#fff;color:var(--bad);font-weight:600}
+.camcnt{display:flex;justify-content:space-around;gap:8px;padding:10px 12px;background:#1b1b1b;text-align:center}
+.camcnt div{display:grid}.camcnt span{font-size:12px;color:#aaa}.camcnt b{font-family:var(--mono);font-size:22px}
+.cambot{display:flex;gap:8px;align-items:center;padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:#111}
+.camkg{font-size:18px;font-weight:700;min-width:90px}
+.camsim{background:#333;color:#ddd;height:48px;font-size:12px;border:1px dashed #777;white-space:normal;line-height:1.1;flex:0 1 110px}
+.camok{flex:1;height:52px;font-size:18px;font-weight:600}
+.camb{background:var(--card);border-color:var(--primary);color:var(--primary-ink)}
+/* station mode: full screen at the scale */
+body.kiosk .rail,body.kiosk .side-card{display:none}
+body.kiosk .scale .kg{font-size:150px}
+
+/* simulator (not part of the real screen) */
+.sim{position:fixed;left:236px;right:0;bottom:0;height:var(--simh);display:flex;gap:20px;align-items:center;background:#fff;border-top:1px dashed #9AA0A6;padding:0 16px;font-size:12px;color:var(--mute);z-index:50;overflow-x:auto}
+body.kiosk .sim{left:0}
+.sim .g{display:flex;gap:6px;align-items:center}
+.sim .g b{font-weight:600;color:var(--ink)}
+.sim button{height:28px;font-size:12px;padding:0 9px;background:#fff;border-color:var(--input)}
+#flash{position:fixed;inset:0;border:12px solid var(--bad);pointer-events:none;opacity:0;z-index:100}
+#flash.on{animation:fl 1s steps(1,end)}
+@keyframes fl{0%{opacity:1}25%{opacity:0}50%{opacity:1}75%{opacity:0}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){#flash.on{animation:none;opacity:1}}
+@media (max-width:1100px){.station{grid-template-columns:1fr}.detgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.rail{display:none}.sim{left:0}.content{padding:16px 16px 90px}.scale{grid-template-columns:1fr;padding:12px 14px}.scale .kg{font-size:64px}.scale .side{justify-items:start;grid-auto-flow:column;justify-content:start}.scale .facts{gap:14px 20px}.fact .v{font-size:18px}.fact .v.big{font-size:22px}.lblrow{grid-template-columns:1fr}.lblrow>div:last-child{justify-items:start!important;display:flex!important;gap:6px}.lab{width:100%}.top .b-out{display:none}.hd .ttl{font-size:18px}.card{padding:12px}.baglist li{font-size:15px;gap:8px}.lstep{font-size:15px;grid-template-columns:28px 1fr}.lstep .val{grid-column:2;text-align:left;font-size:16px}.alert{font-size:15px}.alert.bad{font-size:17px}.confirm{height:60px;font-size:19px}.station{grid-template-columns:minmax(0,1fr)}}
+.ti{min-width:0}.ts,.tn{overflow-wrap:anywhere}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<div id="flash" aria-hidden="true"></div>
+<div id="camwrap"></div>
+<script>
+/* ---------- text ---------- */
+const T={
+en:{flow:"Warehouse flow",find:"Find or run",receiving:"Receiving",release:"Release slips",stocktakes:"Stocktakes",stockReport:"Stock report",calendar:"Warehouse calendar",
+ goodsIn:"Goods in",goodsInD:"Print a QR label for every bag, weigh the bags on the scale and scan them; the system fills bags and kilos. Then buying confirms and accounting puts it in stock.",
+ waiting:"Waiting for you",receipts:"Receipts",receive:"Receive",cont:"Continue weighing",open:"Open",arrivedToday:"arrived today",inProgress:"weighing",
+ goodsOut:"Goods out",goodsOutD:"Take the lot the system tells you, scan every bag and weigh it. Loose kilos: scan the bag, pour into the customer's bag, weigh. The warehouse manager approves, then stock goes down.",
+ weighShip:"Weigh & ship",
+ stLabels:"Labels to print",stWeigh:"Weighing",stBuying:"Buying to confirm",stAcc:"Accounting to confirm",stMgr:"Manager to approve",stStock:"In stock",stShip:"To weigh",stShipped:"Shipped",
+ c1:"1. QR labels",c2:"2. Weigh and scan",c3:"3. Shelf, lot, expiry",printed:"printed",printAll:"Print {n} labels",reprint:"Reprint a label",extra:"Extra label",extraSent:"Extra label: waiting for manager",
+ shelf:"Shelf position",slot:"Supplier's lot",made:"Made on",expires:"Expires on",asOnBags:"as on the bags",
+ sendBuying:"Send to buying",sendMgr:"Send to manager",station:"Station mode",exitStation:"Exit station mode",
+ stable:"Stable",unstable:"Unstable",tared:"Tared",batchSku:"Batch SKU",bagsInBatch:"Bags in batch",kgPerBag:"kg / bag",pickLot:"Pick lot",
+ confirm:"Confirm batch",undo:"Undo last batch",progress:"Progress",batches:"Batches",bags:"Bags",time:"Time",sku:"SKU",kg:"kg",lot:"Lot",
+ wrongSku:"WRONG SKU",wrongLot:"WRONG LOT",pick:"pick",dup:"Already scanned",remove:"Remove",noBags:"No bags",scanned:"Scanned",batchDone:"Batch confirmed",notPrinted:"Label not printed",
+ missing:"Missing bags",outTol:"Kg out of tolerance, sent to warehouse manager",sentBuy:"Sent to buying",sentMgr:"Sent to warehouse manager",
+ undoReq:"Undo sent to warehouse manager",pending:"Waiting for manager",kpbOff:"kg/bag {v} – check bags on scale",reqAppr:"Ask manager",
+ openBatch:"Confirm or remove the bags in the batch first",printFirst:"Print the labels first",
+ reqExc:"Ask for exception",chooseReason:"Reason",sendReq:"Send",r1:"Old lot not reachable",r2:"Old lot bags damaged",r3:"Customer asks for this lot",r4:"Other",
+ whole:"Whole bags",loose:"Loose kg",total:"Total kg",left:"left",partial:"partial",partialFirst:"Partial bag {n} first",isPartial:"Partial bag – use Loose kg",
+ needKg:"Still to pour",l1:"Scan the bag to cut",l2:"Cut, pour into the customer's bag, put it on the scale",l3:"Confirm loose kg",l1s:"partial bags first",l2s:"empty customer bag tared first",
+ looseDone:"Loose kg confirmed: {k} kg from {b}; bag now {r} kg",tooMuch:"More than the bag holds",pickPartial:"Partial bag of this lot first",
+ noLoose:"No loose kg for this SKU",tooMany:"Only {n} whole bags left for this SKU",overNeed:"More than needed ({k} kg)",stillNeed:"still {k} kg to pour",pourAll:"Pour the whole bag ({k} kg); still {m} kg after",pourX:"Pour {k} kg",noLooseLeft:"Loose kg done",batchIs:"batch is",looseShort:"Loose",labelsOf:"QR labels",printNow:"Print",camScan:"Scan with camera",camClose:"Close camera",camNoHttps:"Camera needs an https link",camDenied:"Camera not allowed",stockLabels:"Stock bag labels",viewLabels:"View labels",camAim:"Point the camera at a QR label",camRemoveBag:"Remove this bag",camRemoved:"Bag removed",camSimPut:"Simulator: put scanned bags on scale",receiptDone:"Receipt",stD:"Every Friday the warehouse manager opens a stocktake. Staff scan every bag and weigh by batch, like receiving. The system compares bags and kg per SKU and lot; bags of different SKUs may sit on the scale together; the system splits bags and kg per SKU.",calRow:"Fri 27/11 · Count the warehouse",openSt:"Open a stocktake",scope:"Scope",wholeWh:"Whole warehouse",stCounting:"Counting",stReview:"Review differences",stAcc2:"Accounting to approve",stDoneP:"Closed",whLocked:"Stocktake in progress: shipping is paused",notInStock:"Not in stock",wrongLoc:"Wrong shelf: belongs to {s}",shelfNow:"Shelf",scannedShelf:"Scanned on this shelf",wrongLocN:"Wrong shelf",notInStockN:"Not in stock",bagsOnShelf:"Bags on shelf",notYet:"not yet",endCount:"Finish counting",result:"Result",sysBags:"Bags in system",foundBags:"Bags found",missingBags:"Missing bags",missingKg:"Missing kg",sysKg:"Kg in system",expShelf:"System shelf",seenShelf:"Found on",recount:"Recount missing",mgrClose:"Close and send to accounting",accApprove:"Accounting: approve and adjust stock",stSentAcc:"Sent to accounting",stDone:"Stock adjusted, warehouse unlocked",stS1:"Scan 1 bag",stSAll:"Weigh all remaining bags (2 missing)",ff:"Fast-forward",stDup:"Already counted",stSShelf:"Scan whole shelf (2 left)",stSHidden:"Scan a missing bag",stSOther:"Scan bag from other shelf",stSGone:"Scan shipped bag",scanBag:"Scan bag",otherRc:"Label belongs to order {id}",stS10:"Scan 10 bags (mixed SKUs)",stHistory:"Stocktake history",weighedBags:"Bags weighed",kgOffRows:"Kg gap rows",skuLot:"SKU · order · lot",sysKgFound:"System kg (found bags)",kgWeighed:"Kg weighed",gap:"Gap",why:"Reason",whyPh:"Why the gap",needWhy:"Explain {n} rows first",tolNote:"Rows need a reason when a bag is missing or kg differs more than {p}% from the system.",stillMissing:"Not scanned yet",mustPartial:"Use the partial bag first: {b}",olderLot:"Older lot {l} still in stock",stillNeedK:"Still needed",order:"Order",customer:"Customer",supplier:"Supplier",pickOrder:"In stock",
+ simLbl:"Simulator",simScale:"Scale",simScanner:"Scanner",put1:"Put 1 bag",put10:"Put 10 bags",putCust:"Put customer bag (poured)",putEmpty:"Put empty customer bag",tare:"Tare",removeAll:"Remove all",
+ scanRob:"Scan Robusta bag",scanArab:"Scan Arabica bag",scanBag:"Scan bag",scanPartial:"Scan partial bag",scanWrongLot:"Scan newer-lot bag",scanDup:"Scan duplicate",
+ notInDemo:"Not part of this demo"},
+vi:{flow:"Luồng kho",find:"Tìm hoặc chạy",receiving:"Nhập kho",release:"Phiếu xuất kho",stocktakes:"Kiểm kê",stockReport:"Báo cáo tồn",calendar:"Lịch kho",
+ goodsIn:"Nhập kho",goodsInD:"In tem QR cho từng bao, đặt bao lên cân và quét; hệ thống tự điền số bao và kg. Sau đó Mua hàng xác nhận, Kế toán nhập tồn.",
+ waiting:"Việc đang chờ",receipts:"Phiếu nhập",receive:"Nhận hàng",cont:"Cân tiếp",open:"Mở",arrivedToday:"về hôm nay",inProgress:"đang cân",
+ goodsOut:"Xuất kho",goodsOutD:"Lấy đúng lô hệ thống chỉ, quét từng bao rồi cân. Xuất lẻ: quét bao, đổ sang bao khách, cân. QL kho duyệt thì tồn giảm.",
+ weighShip:"Cân xuất",
+ stLabels:"Chờ in tem",stWeigh:"Đang cân",stBuying:"Mua hàng xác nhận",stAcc:"Kế toán xác nhận",stMgr:"Chờ QL kho duyệt",stStock:"Đã nhập tồn",stShip:"Chờ cân xuất",stShipped:"Đã xuất",
+ c1:"1. Tem QR",c2:"2. Cân và quét",c3:"3. Kệ, lô, hạn dùng",printed:"đã in",printAll:"In {n} tem",reprint:"In lại 1 tem",extra:"In thêm tem",extraSent:"In thêm tem: chờ QL kho",
+ shelf:"Vị trí kệ",slot:"Lô nhà cung cấp",made:"Ngày sản xuất",expires:"Hạn dùng",asOnBags:"theo trên bao",
+ sendBuying:"Gửi Mua hàng",sendMgr:"Gửi QL kho",station:"Chế độ trạm cân",exitStation:"Thoát trạm cân",
+ stable:"Ổn định",unstable:"Chưa ổn định",tared:"Đã trừ bì",batchSku:"SKU lượt",bagsInBatch:"Bao trong lượt",kgPerBag:"kg / bao",pickLot:"Lô cần lấy",
+ confirm:"Chốt lượt",undo:"Hủy lượt vừa chốt",progress:"Tiến độ",batches:"Các lượt",bags:"Bao",time:"Giờ",sku:"SKU",kg:"kg",lot:"Lô",
+ wrongSku:"SAI SKU",wrongLot:"SAI LÔ",pick:"lấy",dup:"Đã quét",remove:"Bỏ ra",noBags:"Chưa có bao",scanned:"Đã quét",batchDone:"Đã chốt lượt",notPrinted:"Tem chưa in",
+ missing:"Thiếu bao",outTol:"Kg vượt dung sai, đã gửi QL kho duyệt",sentBuy:"Đã gửi Mua hàng",sentMgr:"Đã gửi QL kho",
+ undoReq:"Đã gửi QL kho duyệt hủy",pending:"Chờ QL kho",kpbOff:"kg/bao {v} – kiểm tra bao trên cân",reqAppr:"Xin QL kho",
+ openBatch:"Chốt hoặc bỏ bao trong lượt trước",printFirst:"In tem trước",
+ reqExc:"Xin ngoại lệ",chooseReason:"Lý do",sendReq:"Gửi",r1:"Không lấy được lô cũ",r2:"Bao lô cũ hỏng",r3:"Khách yêu cầu lô này",r4:"Khác",
+ whole:"Bao nguyên",loose:"Kg lẻ",total:"Tổng kg",left:"còn",partial:"bao dở",partialFirst:"Lấy bao dở {n} trước",isPartial:"Bao dở – dùng mục Kg lẻ",
+ needKg:"Còn phải đổ",l1:"Quét bao cần rạch",l2:"Rạch, đổ sang bao khách, đặt lên cân",l3:"Chốt kg lẻ",l1s:"ưu tiên bao dở",l2s:"trừ bì bao khách rỗng trước",
+ looseDone:"Đã chốt kg lẻ: {k} kg từ {b}; bao còn {r} kg",tooMuch:"Nhiều hơn số kg trong bao",pickPartial:"Lấy bao dở của lô này trước",
+ noLoose:"SKU này không xuất lẻ",tooMany:"SKU này chỉ còn {n} bao nguyên",overNeed:"Nhiều hơn số cần ({k} kg)",stillNeed:"còn phải đổ {k} kg",pourAll:"Đổ hết bao ({k} kg); sau đó còn thiếu {m} kg",pourX:"Đổ {k} kg",noLooseLeft:"Đã đủ kg lẻ",batchIs:"lượt đang là",looseShort:"Lẻ",labelsOf:"Tem QR",printNow:"In",camScan:"Quét bằng camera",camClose:"Tắt camera",camNoHttps:"Camera cần link https",camDenied:"Chưa cho phép camera",stockLabels:"Tem bao trong kho",viewLabels:"Xem tem",camAim:"Đưa camera vào tem QR",camRemoveBag:"Bỏ bao này",camRemoved:"Đã bỏ bao",camSimPut:"Giả lập: đặt các bao đã quét lên cân",receiptDone:"Cả phiếu",stD:"Thứ Sáu hằng tuần QL kho mở phiếu kiểm kê. Nhân viên quét từng bao và cân theo lượt như lúc nhập. Hệ thống so số bao và kg theo từng SKU, lô; bao nhiều mã đặt chung lên cân thì hệ thống tự chia số bao và kg theo từng mã.",calRow:"Thứ Sáu 27/11 · Kiểm kê kho",openSt:"Mở phiếu kiểm kê",scope:"Phạm vi",wholeWh:"Cả kho",stCounting:"Đang đếm",stReview:"Xem chênh lệch",stAcc2:"Chờ Kế toán duyệt",stDoneP:"Đã chốt",whLocked:"Kho đang kiểm kê: tạm dừng xuất",notInStock:"Không có trong tồn",wrongLoc:"Sai kệ: bao của {s}",shelfNow:"Kệ",scannedShelf:"Đã quét ở kệ này",wrongLocN:"Sai kệ",notInStockN:"Không có trong tồn",bagsOnShelf:"Bao trên kệ",notYet:"chưa quét",endCount:"Kết thúc đếm",result:"Kết quả",sysBags:"Bao trên hệ thống",foundBags:"Bao tìm thấy",missingBags:"Bao thiếu",missingKg:"Kg thiếu",sysKg:"Kg trên hệ thống",expShelf:"Kệ trên hệ thống",seenShelf:"Tìm thấy ở",recount:"Đếm lại bao thiếu",mgrClose:"Chốt và gửi Kế toán",accApprove:"Kế toán: duyệt và điều chỉnh tồn",stSentAcc:"Đã gửi Kế toán",stDone:"Đã điều chỉnh tồn, mở khóa kho",stS1:"Quét 1 bao",stSAll:"Cân hết phần còn lại (thiếu 2 bao)",ff:"Tua nhanh",stDup:"Bao này đã đếm rồi",stSShelf:"Quét cả kệ (còn 2 bao)",stSHidden:"Quét bao đang thiếu",stSOther:"Quét bao kệ khác",stSGone:"Quét bao đã xuất",scanBag:"Quét bao",otherRc:"Tem của phiếu {id}, không phải phiếu này",stS10:"Quét 10 bao (lẫn mã)",stHistory:"Lịch sử kiểm kê",weighedBags:"Bao đã cân",kgOffRows:"Dòng lệch kg",skuLot:"SKU · phiếu · lô",sysKgFound:"Kg hệ thống (bao tìm thấy)",kgWeighed:"Kg cân",gap:"Lệch",why:"Giải trình",whyPh:"Lý do lệch",needWhy:"Cần giải trình {n} dòng trước khi chốt",tolNote:"Dòng phải giải trình khi thiếu bao hoặc kg lệch quá {p}% so với hệ thống.",stillMissing:"Chưa quét",mustPartial:"Phải dùng bao dở trước: {b}",olderLot:"Còn lô cũ hơn {l}, nên lấy trước",stillNeedK:"Còn cần",order:"Đơn",customer:"Khách",supplier:"Nhà cung cấp",pickOrder:"Hàng trong kho",
+ simLbl:"Giả lập",simScale:"Cân",simScanner:"Máy quét",put1:"Đặt 1 bao",put10:"Đặt 10 bao",putCust:"Đặt bao khách (đã đổ)",putEmpty:"Đặt bao khách rỗng",tare:"Trừ bì",removeAll:"Bỏ hết",
+ scanRob:"Quét bao Robusta",scanArab:"Quét bao Arabica",scanBag:"Quét bao",scanPartial:"Quét bao dở",scanWrongLot:"Quét bao lô mới",scanDup:"Quét trùng",
+ notInDemo:"Không có trong bản demo"}};
+let LANG="en";try{LANG=localStorage.getItem("k7-lang")||"en"}catch(e){}
+const t=k=>T[LANG][k]||k;
+const fmt=(n,d=1)=>Number(n).toLocaleString(LANG==="vi"?"vi-VN":"en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=n=>(n>0?"+":n<0?"−":"")+fmt(Math.abs(n),2)+"%";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const r1=n=>Math.round(n*10)/10;
+const nn=n=>String(n).padStart(3,"0");
+const now=()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+/* tạm 26/11: bao không vượt 60 kg, +0,5 sai số cân; cận dưới chờ số hụt tối đa */
+const KPB_MIN=58,KPB_MAX=60.5;
+/* nhập: dung sai −0,5% đến 0% (26/11). xuất: CHƯA CHỐT, tạm ±1% */
+const EXP_TOL_PCT=0.5;   // % of the whole slip kg (whole bags + loose bags)
+const bagW=()=>Math.round((59.6+Math.random()*0.4)*100)/100;
+
+/* ---------- sample data ---------- */
+const ROB="CF_ROBUSTA_S18_CLEAN_G1",ARA="CF_ARABICA_S16_WP_G2";
+function mkReceipt(id,po,sup,lot,skus,status){return {id,po,sup,lot,status,skus:skus.map(s=>({...s,printed:s.printed||0,shelf:s.shelf||"",slot:"",made:"",exp:"",extra:false})),batches:[],cur:{sku:null,bags:[],appr:false,ask:false},removed:[]}}
+const GN="GREEN COFFEE BEAN",ORIGIN="VIET NAM";
+const RC={
+ "PH-OD-67":mkReceipt("PH-OD-67","PH-OD-67","","10122026",[{code:"CF_ARABICA _S16_WP_G2",name:"ARABICA GREEN BEAN COFFEE",expBags:208,expKg:12480,printed:208},{code:"CF_ARABICA _S18_WP_G2",name:"ARABICA GREEN BEAN COFFEE",expBags:112,expKg:6720,printed:112}],"weigh"),
+ "PH-OD-70":mkReceipt("PH-OD-70","PH-OD-70","","081226BT",[{code:"CF_ARABICA_SON LA_S18_G1",name:"ARABICA SON LA S18 GRADE 1",expBags:315,expKg:18900,printed:315}],"weigh"),
+ "PH-OD-71":mkReceipt("PH-OD-71","PH-OD-71","","081226BT",[{code:"CF_ARABICA_SON LA_S16_G1",name:"ARABICA SON LA S16 GRADE 1",expBags:315,expKg:18900,printed:315}],"weigh")};
+const OTHER_RC=[];
+
+const LOTS=[
+ {lot:"L2610-03",grn:"GRN-0098",sku:ROB,exp:120,bags:[]},
+ {lot:"L2611-01",grn:"GRN-0123",sku:ROB,exp:120,bags:[]},
+ {lot:"L2611-04",grn:"GRN-0131",sku:ROB,exp:120,bags:[]},
+ {lot:"L2611-02",grn:"GRN-0124",sku:ARA,exp:40,bags:[]}];
+(function stock(){LOTS[0].bags.push({no:45,kg:35.2,partial:true});LOTS[3].bags.push({no:7,kg:21.5,partial:true});for(let i=115;i<=120;i++)LOTS[0].bags.push({no:i,kg:r1(bagW()),partial:false});for(let k=1;k<=3;k++)for(let i=1;i<=LOTS[k].exp;i++)LOTS[k].bags.push({no:i,kg:r1(bagW()),partial:false})})();
+const XS={"PXK-SI-2611-0055-1":{id:"PXK-SI-2611-0055-1",so:"SO-2611-0055",cust:"Customer A",lines:[{sku:ROB,whole:10,looseKg:30},{sku:ARA,whole:2,looseKg:0}],status:"ship",batches:[],cur:{sku:null,bags:[],appr:false,ask:false},mode:"whole",src:null,exc:null,excLog:[],removed:[],used:new Set()}};
+const OTHER_XS=[{id:"PXK-SI-2611-0044-1",kg:300,sku:"CF_ARABICA_SON LA_S16_1% BROKEN",status:"mgr"},{id:"PXK-SI-2611-0019-1",kg:60,sku:"CF_ROBUSTA_S16_CLEAN_G1",status:"shipped"}];
+
+/* ---------- devices: scale + scanner (shared) ---------- */
+const SC={onScale:[],kg:0,target:0,settle:0,stable:true,tare:0};
+let VIEW={name:"receiving"},S=null,ALERT=null;
+let AC=null;
+function beep(n){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();for(let i=0;i<n;i++){const o=AC.createOscillator(),g=AC.createGain(),t0=AC.currentTime+i*0.22;o.type="square";o.frequency.value=1200;g.gain.setValueAtTime(0.15,t0);g.gain.setValueAtTime(0,t0+0.15);o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+0.16)}}catch(e){}}
+function flash(){const f=document.getElementById("flash");f.classList.remove("on");void f.offsetWidth;f.classList.add("on");clearTimeout(flash.t);flash.t=setTimeout(()=>f.classList.remove("on"),1000)}
+function setAlert(type,text){ALERT={type,text};if(type==="ok"||type==="warn"||type==="bad"){const a=ALERT;setTimeout(()=>{if(ALERT===a){ALERT=null;render()}},type==="ok"?2500:type==="warn"?3000:4000)}}
+function reweigh(){if(S)S.cur.ask=false;SC.target=Math.max(0,SC.onScale.reduce((a,w)=>a+w,0)-SC.tare);SC.settle=15;SC.stable=false;render()}
+setInterval(()=>{const s=SC,was=s.stable;if(s.settle>0){s.settle--;const amp=Math.min(3,s.target*0.01+0.3);s.kg=Math.max(0,s.target+(Math.random()-.5)*2*amp);s.stable=false}else{s.kg=s.target;s.stable=true}if(was!==s.stable)render();else if(!s.stable)renderScale()},100);
+let buf="",bufT=0;
+document.addEventListener("keydown",e=>{if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;const n=Date.now();if(n-bufT>80)buf="";bufT=n;if(e.key==="Enter"&&buf.length>8){onScan(buf);buf="";e.preventDefault();return}if(e.key.length===1)buf+=e.key});
+function onScan(code){if(VIEW.name==="receipt")rScan(code);else if(VIEW.name==="slip")xScan(code);else if(VIEW.name==="stock")stScan(code)}
+
+/* ---------- inbound (receipt) ---------- */
+const rSku=c=>S.skus.find(s=>s.code===c);
+const rDoneBags=c=>S.batches.filter(b=>b.sku===c).reduce((a,b)=>a+b.bags.length,0);
+const rMissing=c=>{const s=rSku(c),u=rUsed(c),m=[];for(let i=1;i<=s.expBags;i++)if(!u.has(i))m.push(i);return m};
+const rScanned=c=>rDoneBags(c)+S.cur.bags.filter(x=>!x.wrong&&x.sku===c).length;
+const rDoneKg=c=>S.batches.filter(b=>b.sku===c).reduce((a,b)=>a+b.kg,0);
+const rUsed=c=>{const u=new Set();S.batches.filter(b=>b.sku===c).forEach(b=>b.bags.forEach(x=>u.add(x.no)));S.cur.bags.filter(x=>x.sku===c).forEach(x=>u.add(x.no));return u};
+const rTag=(c,no)=>`${S.id}|${S.lot}|${c}|${nn(no)}`;
+const rLabel=x=>nn(x.no)+"/"+nn(rSku(x.sku).expBags);
+const okBags=()=>S.cur.bags.filter(x=>!x.wrong);
+const hasWrong=()=>S.cur.bags.some(x=>x.wrong);
+const rKpb=()=>{const n=okBags().length;return n?SC.kg/n:null};
+const rKpbOff=()=>{const v=rKpb();return SC.stable&&v!==null&&(v<KPB_MIN||v>KPB_MAX)};
+const rLocked=()=>S.status!=="weigh";
+const rCanPress=()=>!rLocked()&&SC.stable&&SC.kg>0&&okBags().length>0&&!hasWrong();
+function rPrint(c){const s=rSku(c);if(!s)return;s.printed=s.expBags;window.open("#/labels/"+S.id+"/"+S.skus.indexOf(s),"_blank");if(S.status==="labels"&&S.skus.every(x=>x.printed>=x.expBags))S.status="weigh";render()}
+function rExtra(c){const s=rSku(c);if(s){s.extra=true;render()}}
+function rScan(code){
+ if(rLocked()){if(S.status==="labels"){beep(1);setAlert("warn",t("printFirst"));render()}return}
+ const p=String(code).trim().split("|");if(p.length<4)return;
+ if(p[0]!==S.id){beep(2);flash();setAlert("bad",t("otherRc").replace("{id}",p[0]));render();return}
+ const sku=p[2],no=parseInt(p[3],10),s=rSku(sku);if(!s)return;
+ if(no>s.printed){beep(1);setAlert("warn",t("notPrinted"));render();return}
+ if(rUsed(sku).has(no)){beep(1);setAlert("warn",t("dup")+": "+nn(no));render();return}
+ S.cur.ask=false;S.cur.sku=sku;
+ const bag={sku,no,wrong:false};S.cur.bags.unshift(bag);
+ setAlert("ok",t("scanned")+": "+rLabel(bag)+" · "+short(sku));
+ render();
+}
+function rRemove(i){const r=S.cur.bags.splice(i,1)[0];if(r)S.removed.push({sku:r.sku,no:r.no,at:new Date().toISOString()});S.cur.ask=false;S.cur.sku=S.cur.bags.length?S.cur.bags[0].sku:null;if(!hasWrong()&&ALERT&&ALERT.type==="bad")ALERT=null;render()}
+function rConfirm(){
+ if(!rCanPress())return;
+ if(rKpbOff()){S.cur.ask=true;beep(1);render();return}
+ const kg=r1(SC.kg),all=S.cur.bags.slice().reverse(),codes=[...new Set(all.map(x=>x.sku))],tm=now(),first=S.batches.length+1;
+ let left=kg;   // several SKUs in one weighing: split the scale kg by bag count, last SKU takes the rounding rest
+ codes.forEach((c,i)=>{const bags=all.filter(x=>x.sku===c),part=i===codes.length-1?r1(left):r1(kg*bags.length/all.length);left-=part;
+  S.batches.push({id:S.batches.length+1,time:tm,sku:c,bags,kg:part,pend:false,split:codes.length>1})});
+ const last=S.batches.length;
+ S.cur={sku:null,bags:[],appr:false,ask:false};setAlert("ok",t("batchDone")+" #"+(first===last?first:first+"–"+last)+" · "+fmt(kg)+" kg");render();
+}
+function rUndo(){const b=S.batches[S.batches.length-1];if(!b||b.pend||rLocked())return;b.pend=true;setAlert("warn",t("undoReq")+" (#"+b.id+")");render()}
+function rSend(){
+ if(rLocked())return;
+ if(S.cur.bags.length){setAlert("bad",t("openBatch"));render();return}
+ const miss=S.skus.map(s=>({c:s.code,m:s.expBags-rDoneBags(s.code)})).filter(x=>x.m>0);
+ if(miss.length){setAlert("bad",t("missing")+": "+miss.map(x=>{const m=rMissing(x.c);return short(x.c)+" "+x.m+(m.length&&m.length<=10?" ("+m.map(nn).join(", ")+")":"")}).join(" · "));render();return}
+ const exp=S.skus.reduce((a,s)=>a+s.expKg,0),got=S.skus.reduce((a,s)=>a+rDoneKg(s.code),0),d=(got-exp)/exp*100;
+ if(d<-0.5||d>0){S.status="mgr";setAlert("warn-fixed",t("outTol")+" ("+pct(d)+")")}else{S.status="buying";setAlert("ok-fixed",t("sentBuy")+" ("+pct(d)+")")}
+ render();
+}
+function rReq(){if(!rLocked()&&rKpbOff()){S.cur.appr=true;render()}}
+
+/* ---------- outbound (release slip: several SKU lines) ---------- */
+const lotOf=l=>LOTS.find(x=>x.lot===l);
+const keyOf=(lot,no)=>lot+"|"+no;
+const xTag=(L,b)=>`${L.grn}|${L.lot}|${L.sku}|${nn(b.no)}`;
+const xLabel=x=>nn(x.no)+"/"+nn(lotOf(x.lot).exp);
+const short=c=>c.replace(/^CF_/,"").split("_").filter((x,i,a)=>!(i===a.length-1&&/^G\d$/.test(x.trim()))).join(" ").replace(/\s+/g," ").trim();   // drop CF_ and grade, keep bean size
+const lineOf=c=>S.lines.find(l=>l.sku===c);
+const lotsOf=c=>LOTS.filter(L=>L.sku===c);
+const xInCur=k=>S.cur.bags.some(x=>x.key===k);
+const xTaken=k=>S.used.has(k)||S.cur.bags.some(x=>x.key===k&&!x.wrong);
+const fullLeft=L=>L.bags.filter(b=>!b.partial&&!xTaken(keyOf(L.lot,b.no)));
+const partsOf=c=>lotsOf(c).flatMap(L=>partLeft(L).map(b=>({lot:L.lot,no:b.no,kg:b.kg,exp:L.exp})));
+const partLeft=L=>L.bags.filter(b=>b.partial&&b.kg>0.05&&!S.used.has(keyOf(L.lot,b.no)));
+const assignedLot=c=>{const L=lotsOf(c).find(L=>fullLeft(L).length>0);return L?L.lot:null};
+const looseLot=c=>{const L=lotsOf(c).find(L=>partLeft(L).length||fullLeft(L).length);return L?L.lot:null};
+const wholeDone=c=>S.batches.filter(b=>b.type==="batch"&&b.sku===c).reduce((a,b)=>a+b.bags.length,0);
+const looseDoneKg=c=>S.batches.filter(b=>b.type==="loose"&&b.sku===c).reduce((a,b)=>a+b.kg,0);
+const lineKg=l=>l.whole*60+l.looseKg;
+const slipKg=X=>X.lines.reduce((a,l)=>a+lineKg(l),0);
+const totalDone=()=>S.batches.reduce((a,b)=>a+b.kg,0);
+const xNeedLoose=c=>{const l=lineOf(c);return l?Math.max(0,r1(l.looseKg-looseDoneKg(c))):0};
+const wholeLine=()=>S.lines.find(l=>wholeDone(l.sku)<l.whole);   // next line still needing whole bags
+const looseLine=()=>S.lines.find(l=>xNeedLoose(l.sku)>0);
+const xKpb=()=>{const n=okBags().length;return n?SC.kg/n:null};
+const xKpbOff=()=>{const v=xKpb();return SC.stable&&v!==null&&(v<KPB_MIN||v>KPB_MAX)};
+const xLocked=()=>S.status!=="ship";
+const xCanPress=()=>!xLocked()&&S.mode==="whole"&&SC.stable&&SC.kg>0&&okBags().length>0&&!hasWrong();
+const srcBag=()=>S.src?lotOf(S.src.lot).bags.find(b=>b.no===S.src.no):null;
+function xMode(m){if(xLocked())return;if(S.cur.bags.length&&m==="loose"){setAlert("bad",t("openBatch"));render();return}S.mode=m;S.src=null;ALERT=null;render()}
+function xScan(code){
+ if(xLocked())return;
+ const p=String(code).trim().split("|");if(p.length<4)return;
+ const L=lotOf(p[1]);if(!L||L.sku!==p[2])return;
+ const no=parseInt(p[3],10),st=L.bags.find(b=>b.no===no);if(!st)return;
+ const key=keyOf(L.lot,no),line=lineOf(L.sku);
+ if(S.used.has(key)||xInCur(key)||(S.src&&S.src.key===key)){beep(1);setAlert("warn",t("dup")+": "+L.lot+" "+nn(no));render();return}
+ if(S.mode==="loose"){
+  if(!line||xNeedLoose(L.sku)<=0){beep(2);flash();setAlert("bad",t("noLoose")+": "+short(L.sku));render();return}
+  const ll=looseLot(L.sku),pt=partsOf(L.sku);
+  if(!st.partial&&pt.length){beep(2);flash();setAlert("bad",t("mustPartial").replace("{b}",pt[0].lot+" "+nn(pt[0].no)+" · "+fmt(pt[0].kg)+" kg"));render();return}
+  S.src={lot:L.lot,no,key,sku:L.sku};
+  if(!st.partial&&ll&&L.lot!==ll){beep(1);setAlert("warn",t("olderLot").replace("{l}",ll))}else ALERT=null;
+  render();return;
+ }
+ if(st.partial){beep(1);setAlert("warn",t("isPartial"));render();return}
+ S.cur.ask=false;
+ const need=assignedLot(L.sku);
+ const wrong=!line||line.whole<=0?"sku":null;
+ if(!wrong)S.cur.sku=L.sku;
+ const bag={key,lot:L.lot,sku:L.sku,no,wrong,need,exc:null};S.cur.bags.unshift(bag);
+ if(wrong){beep(2);flash();ALERT=null}
+ else if(need&&L.lot!==need){beep(1);setAlert("warn",t("olderLot").replace("{l}",need)+" · "+xLabel(bag))}
+ else setAlert("ok",t("scanned")+": "+short(L.sku)+" · "+xLabel(bag));
+ render();
+}
+function xRemove(i){const r=S.cur.bags.splice(i,1)[0];if(r){S.removed.push({key:r.key,at:new Date().toISOString()});if(S.exc&&S.exc.key===r.key)S.exc=null}S.cur.ask=false;if(!S.cur.bags.length)S.cur.sku=null;render()}
+function xReqExc(){const w=S.cur.bags.find(x=>x.wrong==="lot"&&!x.exc);if(w){S.exc={key:w.key,reason:""};render()}}
+function xReason(v){if(S.exc){S.exc.reason=v;render()}}
+function xSendExc(){if(!S.exc||!S.exc.reason)return;const b=S.cur.bags.find(x=>x.key===S.exc.key);if(b){b.exc="pending";S.excLog.push({key:b.key,need:b.need,reason:S.exc.reason,at:new Date().toISOString()})}S.exc=null;setAlert("warn",t("sentMgr"));render()}
+function xReq(){if(!xLocked()&&xKpbOff()){S.cur.appr=true;render()}}
+function xConfirm(){
+ if(!xCanPress())return;
+ const all=S.cur.bags.slice().reverse(),codes=[...new Set(all.map(x=>x.sku))];
+ for(const c of codes){const l=lineOf(c),left=l.whole-wholeDone(c),n=all.filter(x=>x.sku===c).length;if(n>left){beep(1);setAlert("bad",short(c)+": "+t("tooMany").replace("{n}",left));render();return}}
+ if(xKpbOff()){S.cur.ask=true;beep(1);render();return}
+ const kg=r1(SC.kg),tm=now(),first=S.batches.length+1;let rest=kg;
+ all.forEach(x=>S.used.add(x.key));
+ codes.forEach((c,i)=>{const bags=all.filter(x=>x.sku===c),part=i===codes.length-1?r1(rest):r1(kg*bags.length/all.length);rest-=part;   // several SKUs on the scale: split kg by bag count
+  S.batches.push({id:S.batches.length+1,type:"batch",sku:c,time:tm,bags,kg:part,pend:false,split:codes.length>1})});
+ const last=S.batches.length;
+ S.cur={sku:null,bags:[],appr:false,ask:false};setAlert("ok",t("batchDone")+" #"+(first===last?first:first+"–"+last)+" · "+fmt(kg)+" kg");render();
+}
+function xCanLoose(){return !xLocked()&&S.mode==="loose"&&S.src&&SC.stable&&SC.kg>0}
+function xLooseConfirm(){
+ if(!xCanLoose())return;
+ const L=lotOf(S.src.lot),b=srcBag(),kg=r1(SC.kg),need=xNeedLoose(S.src.sku);
+ if(kg>b.kg+0.05){beep(1);setAlert("bad",t("tooMuch")+" ("+fmt(b.kg)+" kg)");render();return}
+ if(kg>need+slipKg(S)*EXP_TOL_PCT/100){beep(1);setAlert("bad",t("overNeed").replace("{k}",fmt(need)));render();return}
+ b.kg=r1(b.kg-kg);b.partial=true;   // same tag; bag becomes a partial bag and stays in stock
+ if(b.kg<=0.05)S.used.add(S.src.key);
+ const id=S.batches.length+1;
+ S.batches.push({id,type:"loose",sku:S.src.sku,time:now(),bags:[{lot:L.lot,no:b.no}],kg,pend:false});
+ const still=xNeedLoose(S.src.sku);
+ setAlert("ok",t("looseDone").replace("{k}",fmt(kg)).replace("{b}",L.lot+" "+nn(b.no)).replace("{r}",fmt(b.kg))+(still>0?" · "+t("stillNeed").replace("{k}",fmt(still)):""));
+ S.src=null;SC.onScale=[];reweigh();
+}
+function xUndo(){const b=S.batches[S.batches.length-1];if(!b||b.pend||xLocked())return;b.pend=true;setAlert("warn",t("undoReq")+" (#"+b.id+")");render()}
+function xSend(){
+ if(xLocked())return;
+ if(S.cur.bags.length||S.src){setAlert("bad",t("openBatch"));render();return}
+ const miss=S.lines.map(l=>{const m=l.whole-wholeDone(l.sku),k=xNeedLoose(l.sku);return m>0||k>0.5?short(l.sku)+(m>0?" "+m+" "+t("bags").toLowerCase():"")+(k>0.5?" "+fmt(k)+" kg":""):null}).filter(Boolean);
+ if(miss.length){setAlert("bad",t("missing")+": "+miss.join(", "));render();return}
+ const exp=slipKg(S),d=(totalDone()-exp)/exp*100;
+ S.status="mgr";
+ if(Math.abs(d)>EXP_TOL_PCT)setAlert("warn-fixed",t("outTol")+" ("+pct(d)+")");else setAlert("ok-fixed",t("sentMgr")+" ("+pct(d)+")");
+ render();
+}
+
+/* ---------- simulator ---------- */
+function putBags(n){for(let i=0;i<n;i++)SC.onScale.push(bagW());reweigh()}
+/* customer bag after pouring: the scale shows net kg (customer bag tared on the scale) */
+function putCust(){let need=30;if(VIEW.name==="slip"&&S.src){need=xNeedLoose(S.src.sku);const b=srcBag();if(b&&b.kg<need)need=b.kg-0.05}SC.onScale=[Math.max(0.5,r1(need+(Math.random()-.5)*0.1))];reweigh()}
+function removeAll(){
+ SC.onScale=[];SC.tare=0;
+ if(S&&S.cur&&S.cur.bags.length){S.cur.bags.forEach(r=>S.removed.push({key:r.key||r.no,at:new Date().toISOString()}));S.cur.bags=[];S.cur.sku=null;if(S.exc)S.exc=null}
+ if(ALERT&&ALERT.type==="bad")ALERT=null;reweigh();
+}
+function rNext(c){const s=rSku(c);if(!s)return null;const u=rUsed(c);for(let i=1;i<=s.expBags;i++)if(!u.has(i))return i;return null}
+function xNextFull(L){return L.bags.find(b=>!b.partial&&!xTaken(keyOf(L.lot,b.no))&&!xInCur(keyOf(L.lot,b.no))&&!(S.src&&S.src.key===keyOf(L.lot,b.no)))}
+function scanSku(c){
+ if(VIEW.name==="receipt"){const n=rNext(c);if(n)rScan(rTag(c,n));return}
+ if(VIEW.name!=="slip")return;
+ const l=S.mode==="loose"?looseLot(c):assignedLot(c);if(!l)return;const L=lotOf(l),b=xNextFull(L);if(b)xScan(xTag(L,b));
+}
+function scanPartial(){const ln=looseLine();const c=ln?ln.sku:ROB;const l=looseLot(c);if(!l)return;const L=lotOf(l),b=partLeft(L)[0];if(b)xScan(xTag(L,b))}
+function scanWrongLot(){for(const l of S.lines){const c=l.sku,a=S.mode==="loose"?looseLot(c):assignedLot(c),ls=lotsOf(c),i=ls.findIndex(x=>x.lot===a),L=ls.slice(i+1).find(x=>xNextFull(x));if(L){xScan(xTag(L,xNextFull(L)));return}}}   // a bag from a newer lot of any SKU on the slip
+function scanDup(){
+ if(VIEW.name==="receipt"){const b=okBags()[0]||(S.batches.length&&S.batches[S.batches.length-1].bags.slice(-1)[0]);if(b)rScan(rTag(b.sku,b.no));return}
+ const b=okBags()[0]||(S.batches.filter(x=>x.type==="batch").slice(-1)[0]||{bags:[]}).bags.slice(-1)[0];if(b){const L=lotOf(b.lot);xScan(xTag(L,b))}
+}
+
+/* ---------- routing ---------- */
+function go(h){location.hash=h}
+function route(){
+ const h=location.hash.replace(/^#\/?/,"").split("/");
+ ALERT=null;
+ if(h[0]==="receipt"&&RC[h[1]]){VIEW={name:"receipt",id:h[1]};S=RC[h[1]]}
+ else if(h[0]==="labels"&&(RC[h[1]]||XS[h[1]])){VIEW={name:"labels",id:h[1],k:h[2]};S=null}
+ else if(h[0]==="stock"&&STS[h[1]]){VIEW={name:"stock",id:h[1]};S=STS[h[1]]}
+ else if(h[0]==="slip"&&XS[h[1]]){VIEW={name:"slip",id:h[1]};S=XS[h[1]]}
+ else{VIEW={name:h[0]||"receiving"};S=null}
+ if(!S)document.body.classList.remove("kiosk");
+ SC.onScale=[];SC.tare=0;SC.target=0;SC.kg=0;SC.settle=0;SC.stable=true;
+ render();
+}
+window.addEventListener("hashchange",()=>{if(CAM.on)camClose();route()});
+function setLang(l){LANG=l;try{localStorage.setItem("k7-lang",l)}catch(e){}document.documentElement.lang=l;render()}
+function toggleKiosk(){document.body.classList.toggle("kiosk");render()}
+
+/* ---------- view helpers ---------- */
+const ICON={
+ receiving:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2.5 3.5h3l2.6 11.2a1.5 1.5 0 0 0 1.5 1.1h8.1a1.5 1.5 0 0 0 1.5-1.1L21 7.5H6.3"/></svg>',
+ release:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v4"/><path d="M14 3v5h5"/><path d="M19 8v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-2"/><path d="M3 13h9m-3-3 3 3-3 3"/></svg>',
+ stocktakes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>',
+ stockReport:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+ calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>'};
+function railHTML(){
+ const recCnt=Object.values(RC).filter(r=>r.status==="labels"||r.status==="weigh").length;
+ const xsCnt=Object.values(XS).filter(x=>x.status==="ship").length;
+ const cur=VIEW.name==="receipt"?"receiving":VIEW.name==="slip"?"release":VIEW.name==="stock"?"stocktakes":VIEW.name;
+ const item=(k,c)=>`<a class="rl ${cur===k?"on":""}" href="#/${k}">${ICON[k]}<span>${t(k)}</span>${c?`<span class="cnt">${c}</span>`:""}</a>`;
+ return `<nav class="rail" aria-label="Menu"><div class="brand"><span class="ic">G</span><b>Ganico</b></div>
+  <div class="find"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>${t("find")}<kbd>⌘K</kbd></div>
+  <div class="grp-t">${t("flow")}</div>
+  ${item("receiving",recCnt)}${item("release",xsCnt)}${item("stocktakes")}${item("stockReport")}${item("calendar")}</nav>`;
+}
+function topHTML(title){return `<header class="top"><h1>${esc(title)}</h1>${S?`<button class="b-out" onclick="toggleKiosk()">${document.body.classList.contains("kiosk")?t("exitStation"):t("station")}</button>`:""}<div class="seg" role="group" aria-label="Language"><button aria-pressed="${LANG==="en"}" onclick="setLang('en')">EN</button><button aria-pressed="${LANG==="vi"}" onclick="setLang('vi')">VI</button></div></header>`}
+const ST={labels:["stLabels","warn"],weigh:["stWeigh","blue"],buying:["stBuying",""],acc:["stAcc",""],mgr:["stMgr","warn"],stock:["stStock","ok"],ship:["stShip","blue"],shipped:["stShipped","ok"]};
+const pill=s=>`<span class="pill ${ST[s][1]}">${t(ST[s][0])}</span>`;
+function stableHTML(){return (SC.stable?`<span class="chip ok">${t("stable")}</span>`:`<span class="chip warn">${t("unstable")}</span>`)+(SC.tare?`<span class="chip mute">${t("tared")} ${fmt(SC.tare,2)}</span>`:"")}
+function qrSVG(seed){let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;const n=21,sz=76/n;let r="";const rnd=()=>{h^=h<<13;h>>>=0;h^=h>>17;h^=h<<5;h>>>=0;return h%100};
+ const finder=(x,y)=>`<rect x="${x*sz}" y="${y*sz}" width="${7*sz}" height="${7*sz}" fill="#000"/><rect x="${(x+1)*sz}" y="${(y+1)*sz}" width="${5*sz}" height="${5*sz}" fill="#fff"/><rect x="${(x+2)*sz}" y="${(y+2)*sz}" width="${3*sz}" height="${3*sz}" fill="#000"/>`;
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;if(rnd()<48)r+=`<rect x="${x*sz}" y="${y*sz}" width="${sz}" height="${sz}" fill="#000"/>`}
+ return `<svg viewBox="0 0 76 76" aria-hidden="true">${finder(0,0)}${finder(14,0)}${finder(0,14)}${r}</svg>`}
+function alertBox(extra){
+ const a=ALERT;
+ if(extra)return extra;
+ if(a)return `<div class="alert ${a.type==="ok-fixed"?"ok":a.type==="warn-fixed"?"warn":a.type}" role="status"><span class="msg">${esc(a.text)}</span></div>`;
+ return `<div class="alert empty" role="status">&nbsp;</div>`;
+}
+function simHTML(kind){
+ if(kind==="stock")return S.status!=="count"?"":`<div class="sim" role="group" aria-label="${t("simLbl")}">${t("simLbl")}<div class="g"><b>${t("simScale")}:</b><button onclick="putBags(1)">${t("put1")}</button><button onclick="putBags(10)">${t("put10")}</button><button onclick="removeAll()">${t("removeAll")}</button></div><div class="g"><b>${t("simScanner")}:</b><button onclick="stScanN(1)">${t("stS1")}</button><button onclick="stScanN(10)">${t("stS10")}</button><button onclick="stGhost()">${t("stSGone")}</button><button onclick="stDupScan()">${t("scanDup")}</button></div><div class="g"><b>${t("ff")}:</b><button onclick="stAll()">${t("stSAll")}</button></div></div>`;
+ const sc=kind==="receipt"?`<button onclick="putBags(1)">${t("put1")}</button><button onclick="putBags(10)">${t("put10")}</button>`
+  :`<button onclick="putBags(1)">${t("put1")}</button><button onclick="putBags(10)">${t("put10")}</button><button onclick="putCust()">${t("putCust")}</button>`;
+ const sn=kind==="receipt"?S.skus.map(x=>`<button onclick="scanSku('${x.code}')">${t("scanBag")} ${esc(x.code.replace(/^CF_/,""))}</button>`).join("")+`<button onclick="scanDup()">${t("scanDup")}</button>`
+  :`<button onclick="scanSku('${ROB}')">${t("scanRob")}</button><button onclick="scanSku('${ARA}')">${t("scanArab")}</button><button onclick="scanPartial()">${t("scanPartial")}</button><button onclick="scanWrongLot()">${t("scanWrongLot")}</button><button onclick="scanDup()">${t("scanDup")}</button>`;
+ return `<div class="sim" role="group" aria-label="${t("simLbl")}">${t("simLbl")}<div class="g"><b>${t("simScale")}:</b>${sc}<button onclick="removeAll()">${t("removeAll")}</button></div><div class="g"><b>${t("simScanner")}:</b>${sn}</div></div>`;
+}
+function batchTable(rows,lotCol){
+ return `<table class="tbl"><thead><tr><th>#</th><th>${t("time")}</th><th>${lotCol?t("lot"):t("sku")}</th><th class="r">${t("bags")}</th><th class="r">${t("kg")}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ---------- QR labels page + phone camera scanner ---------- */
+function qrReal(text){
+ if(typeof qrcode!=="function")return qrSVG(text);
+ const q=qrcode(0,"M");q.addData(text);q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true});
+}
+function labelCard(code,name,sku,grn,lot,bag,slot){
+ return `<div class="tlabel"><div class="tq">${qrReal(code)}</div><div class="ti"><div class="tn">${esc(name)}</div><div class="ts">${esc(sku)}</div><div class="ts">${esc(grn)} · ${t("lot")} ${esc(lot)}${slot?" · "+esc(slot):""}</div><div class="tb">BAG ${esc(bag)}</div></div></div>`;
+}
+function a5Card(code,s,lot,bag){
+ return `<div class="a5"><div class="a5t"><div>${GN}</div><div>${esc(s.name)}</div><div>ORIGIN: ${ORIGIN}</div><div>NET WEIGHT: 60KG</div><div>LOT: ${esc(lot)}</div><div>SKU: ${esc(s.code)}</div></div><div class="a5q">${qrReal(code)}<div class="a5b">BAG ${esc(bag)}</div><div class="a5o">${esc(code.split("|")[0])}</div></div></div>`;
+}
+function pLabels(){
+ const id=VIEW.id;let cards="",title="";
+ if(RC[id]){const R=RC[id];title=R.id;
+  R.skus.filter((s,k)=>VIEW.k===undefined||String(k)===VIEW.k).forEach(s=>{cards+=`<div class="a5h">${esc(s.code)} · ${s.expBags} ${t("bags").toLowerCase()}</div>`;for(let i=1;i<=s.expBags;i++){const bag=nn(i)+"/"+nn(s.expBags);cards+=a5Card(`${R.id}|${R.lot}|${s.code}|${nn(i)}`,s,R.lot,bag)}});cards=`<div class="a5wrap">${cards}</div>`}
+ else if(XS[id]){const X=XS[id];title=X.id;
+  X.lines.forEach(l=>{let shown=0;lotsOf(l.sku).forEach(L=>{L.bags.forEach(b=>{if(shown>=24)return;shown++;const bag=nn(b.no)+"/"+nn(L.exp);cards+=labelCard(xTag(L,b),L.sku.replace(/^CF_/,"").replace(/_/g," "),L.sku,L.grn,L.lot,bag,b.partial?t("partial")+" "+fmt(b.kg)+" kg":"")})})})}
+ return `<div class="crumb"><a href="#/receiving">‹ ${t("receiving")}</a><span>${esc(title)}</span></div>
+ <div class="hd"><span class="ttl">${t("labelsOf")} ${esc(title)}</span><span class="sp"></span><button class="b-pri" onclick="window.print()">${t("printNow")}</button></div>
+ ${RC[id]?cards:`<div class="tgrid">${cards}</div>`}`;
+}
+let CAM={on:false,stream:null,last:"",lastT:0,raf:0};
+async function camOpen(){
+ if(CAM.on)return;
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setAlert("bad",t("camNoHttps"));render();return}
+ try{CAM.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})}
+ catch(e){setAlert("bad",t("camDenied"));render();return}
+ CAM.res=null;CAM.on=true;document.getElementById("camwrap").innerHTML=camHTML();camInfo();
+ const v=document.getElementById("camv");v.srcObject=CAM.stream;v.setAttribute("playsinline","");try{await v.play()}catch(e){}
+ const c=document.createElement("canvas"),ctx=c.getContext("2d",{willReadFrequently:true});let tick=0;
+ const loop=()=>{
+  if(!CAM.on)return;
+  CAM.raf=requestAnimationFrame(loop);
+  if(++tick%6||v.readyState<2||typeof jsQR!=="function")return;   // ~10 reads per second
+  const w=640,h=Math.round(v.videoHeight/v.videoWidth*640)||480;c.width=w;c.height=h;ctx.drawImage(v,0,0,w,h);
+  const r=jsQR(ctx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:"dontInvert"});
+  if(r&&r.data){const n=Date.now();if(r.data===CAM.last&&n-CAM.lastT<1500){CAM.lastT=n;return}CAM.last=r.data;CAM.lastT=n; /* same label held in view: read once; re-read only after it leaves view for 1.5 s */onScan(r.data);camResult(r.data);camInfo()}
+ };loop();
+}
+function camClose(){CAM.on=false;cancelAnimationFrame(CAM.raf);if(CAM.stream)CAM.stream.getTracks().forEach(x=>x.stop());CAM.stream=null;document.getElementById("camwrap").innerHTML="";render()}
+/* full-screen phone scanner: camera on top, big result panel below */
+function camResult(code){
+ const p=String(code).split("|"),tot=VIEW.name==="receipt"&&S&&S.skus?(S.skus.find(x=>x.code===p[2])||{}).expBags:VIEW.name==="stock"&&S&&S.snap&&p.length>3?(S.snap.find(b=>b.key===stKey(p))||{}).exp:(lotOf(p[1])||{}).exp,bag=p[3]?nn(parseInt(p[3],10))+(tot?"/"+nn(tot):""):"",line=(p[2]?short(p[2]):"")+(p[1]?" · "+p[1]:"");
+ const top=S&&S.cur?S.cur.bags[0]:null,isThis=top&&top.no===parseInt(bag,10)&&(top.lot||S.lot)===p[1];
+ let type="ok",title=t("scanned");
+ if(isThis&&top.wrong){type="bad";title=top.wrong==="lot"?t("wrongLot"):t("wrongSku");if(top.need)title+=" · "+t("pick")+" "+top.need}
+ else if(ALERT&&(ALERT.type==="bad")){type="bad";title=ALERT.text}
+ else if(ALERT&&ALERT.type==="warn"){type="warn";title=ALERT.text}
+ else if(VIEW.name==="slip"&&S.mode==="loose"&&S.src){title=t("l1")+" ✓"}
+ CAM.res={type,title,bag,line,canRemove:!!(isThis&&top.wrong)};
+ try{if(navigator.vibrate)navigator.vibrate(type==="ok"?60:[220,90,220])}catch(e){}
+}
+function camRemove(){if(!S||!S.cur.bags.length)return;if(VIEW.name==="receipt")rRemove(0);else if(VIEW.name==="stock")stRemove(0);else xRemove(0);CAM.res={type:"idle",title:t("camRemoved"),bag:"",line:""};camInfo()}
+function camConfirm(){if(VIEW.name==="receipt")rConfirm();else if(VIEW.name==="stock")stConfirm();else xConfirm();CAM.res={type:ALERT&&ALERT.type==="ok"?"ok":"warn",title:ALERT?ALERT.text:"",bag:"",line:""};camInfo()}
+function camSimPut(){const n=okBags().length;SC.onScale=[];for(let i=0;i<n;i++)SC.onScale.push(bagW());reweigh();camInfo()}
+function camCounts(){
+ if(VIEW.name==="stock"&&S)return `<div><span>${t("bagsInBatch")}</span><b>${S.cur.bags.length}</b></div><div><span>${t("wholeWh")}</span><b>${stWeighed().size+S.cur.bags.length}/${S.snap.length}</b></div>`;
+ if(!S||!S.cur)return "";
+ const n=okBags().length;
+ if(VIEW.name==="receipt"){const tot=S.skus.reduce((a,s)=>a+s.expBags,0),done=S.skus.reduce((a,s)=>a+rDoneBags(s.code),0);
+  return `<div><span>${t("bagsInBatch")}</span><b>${n}</b></div><div><span>${t("receiptDone")}</span><b>${done+n}/${tot}</b></div>`}
+ const l=S.cur.sku?lineOf(S.cur.sku):wholeLine();
+ if(S.mode==="loose"){const ln=S.src?lineOf(S.src.sku):looseLine();return ln?`<div><span>${t("needKg")}</span><b>${fmt(xNeedLoose(ln.sku))} kg</b></div>`:""}
+ return `<div><span>${t("bagsInBatch")}</span><b>${n}</b></div>`+(l?`<div><span>${short(l.sku)}</span><b>${wholeDone(l.sku)+n}/${l.whole}</b></div>`:"");
+}
+function camInfo(){
+ const box=document.getElementById("camres");if(!box)return;
+ const r=CAM.res||{type:"idle",title:t("camAim"),bag:"",line:""};
+ box.className="camres "+r.type;
+ box.innerHTML=`<div class="crt">${esc(r.title)}</div>${r.bag?`<div class="crb">${esc(r.bag)}</div>`:""}${r.line?`<div class="crl">${esc(r.line)}</div>`:""}${r.canRemove?`<button class="crx" onclick="camRemove()">${t("camRemoveBag")}</button>`:""}`;
+ const c=document.getElementById("camcnt");if(c)c.innerHTML=camCounts();
+ const k=document.getElementById("camkg");if(k)k.textContent=fmt(SC.kg)+" kg"+(SC.stable?"":" …");
+ const b=document.getElementById("camok");if(b){const can=VIEW.name==="receipt"?rCanPress():VIEW.name==="stock"?stCanPress():xCanPress();b.disabled=!can;b.style.display=VIEW.name==="slip"&&S.mode==="loose"?"none":""}
+}
+function camHTML(){if(!CAM.on)return "";const id=S?S.id:"";return `<div class="cam" role="dialog" aria-label="${t("camScan")}">
+ <div class="camtop"><b>${esc(id)}</b><button onclick="camClose()">${t("camClose")}</button></div>
+ <div class="camview"><video id="camv" muted playsinline></video><div class="camframe"></div></div>
+ <div id="camres" class="camres idle"></div>
+ <div id="camcnt" class="camcnt"></div>
+ <div class="cambot"><span id="camkg" class="camkg num">0.0 kg</span><button class="camsim" onclick="camSimPut()">${t("camSimPut")}</button><button id="camok" class="b-pri camok" onclick="camConfirm()">${t("confirm")}</button></div>
+</div>`}
+
+/* ---------- stocktake: whole warehouse every Friday, scan every bag and weigh by batch (like receiving) ---------- */
+const KK_TOL=0.5;                                   // % kg gap per order+SKU+lot that needs a reason
+const GHOST="PH-OD-62|300926AP|CF_ARABICA _S16_WP_G2|017";   // label of a bag already shipped
+const STS={};let ST_SEQ=1,STOCK=null;
+const stOpenOne=()=>Object.values(STS).some(s=>s.status!=="done");
+function stockBags(){                               // sample stock: the 3 purchase orders, already received
+ if(STOCK)return STOCK;STOCK=[];let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+ Object.values(RC).forEach(R=>R.skus.forEach(s=>{for(let i=1;i<=s.expBags;i++)STOCK.push({key:R.id+"|"+s.code+"|"+i,rc:R.id,lot:R.lot,sku:s.code,no:i,exp:s.expBags,kg:Math.round((59.6+rnd()*0.4)*100)/100})}));
+ return STOCK;
+}
+const grpOf=b=>b.rc+"|"+b.sku;
+const stKey=p=>p[0]+"|"+p[2]+"|"+parseInt(p[3],10);
+function stOpen(){
+ if(stOpenOne())return;
+ const id="KK-2711-"+String(ST_SEQ++).padStart(2,"0");
+ STS[id]={id,status:"count",opened:now(),snap:stockBags().filter(b=>b.kg>0.05).map(b=>({...b})),batches:[],cur:{sku:null,bags:[],ask:false},removed:[],notStock:[],why:{}};
+ go("/stock/"+id);
+}
+const stWeighed=()=>{const w=new Set();S.batches.forEach(bt=>bt.bags.forEach(x=>w.add(x.key)));return w};
+const stCanPress=()=>S.status==="count"&&SC.stable&&SC.kg>0&&S.cur.bags.length>0;
+function stScan(code){
+ if(S.status!=="count")return;
+ const p=String(code).trim().split("|");if(p.length<4)return;
+ const key=stKey(p),b=S.snap.find(x=>x.key===key);
+ if(!b){beep(2);flash();if(!S.notStock.includes(code))S.notStock.push(code);setAlert("bad",t("notInStock")+": "+p[0]+" · "+nn(parseInt(p[3],10)));render();return}
+ if(S.cur.bags.some(x=>x.key===key)||stWeighed().has(key)){beep(1);setAlert("warn",t("stDup")+": "+nn(b.no)+"/"+nn(b.exp)+" · "+short(b.sku));render();return}
+ S.cur.sku=b.sku;S.cur.bags.unshift({key,sku:b.sku,no:b.no,exp:b.exp,g:grpOf(b),wrong:false});
+ setAlert("ok",t("scanned")+": "+nn(b.no)+"/"+nn(b.exp)+" · "+short(b.sku));render();
+}
+function stRemove(i){const r=S.cur.bags.splice(i,1)[0];if(r)S.removed.push({key:r.key,at:new Date().toISOString()});S.cur.sku=S.cur.bags.length?S.cur.bags[0].sku:null;render()}
+function stConfirm(){
+ if(!stCanPress())return;
+ const kg=r1(SC.kg),all=S.cur.bags.slice().reverse(),gs=[...new Set(all.map(x=>x.g))],tm=now(),first=S.batches.length+1;let left=kg;
+ gs.forEach((g,i)=>{const bags=all.filter(x=>x.g===g),part=i===gs.length-1?r1(left):r1(kg*bags.length/all.length);left-=part;
+  S.batches.push({id:S.batches.length+1,time:tm,g,sku:bags[0].sku,bags,kg:part,split:gs.length>1})});
+ const last=S.batches.length;S.cur={sku:null,bags:[],ask:false};
+ setAlert("ok",t("batchDone")+" #"+(first===last?first:first+"–"+last)+" · "+fmt(kg)+" kg");render();
+}
+function stGroups(X){
+ X=X||S;const w=new Set(),gkg={};X.batches.forEach(bt=>{bt.bags.forEach(x=>w.add(x.key));gkg[bt.g]=(gkg[bt.g]||0)+bt.kg});
+ const G={};X.snap.forEach(b=>{const g=grpOf(b),o=G[g]||(G[g]={g,rc:b.rc,lot:b.lot,sku:b.sku,sys:0,sysKg:0,found:0,foundSysKg:0,missing:[]});
+  o.sys++;o.sysKg+=b.kg;if(w.has(b.key)){o.found++;o.foundSysKg+=b.kg}else o.missing.push(b.no)});
+ return Object.values(G).map(o=>{o.kg=r1(gkg[o.g]||0);o.diffKg=o.kg-o.foundSysKg;o.diffPct=o.foundSysKg?o.diffKg/o.foundSysKg*100:0;o.kgOff=o.found>0&&Math.abs(o.diffPct)>KK_TOL;o.needWhy=o.missing.length>0||o.kgOff;return o});
+}
+function stEnd(){if(S.status!=="count")return;if(S.cur.bags.length){setAlert("bad",t("openBatch"));render();return}S.status="review";ALERT=null;render()}
+function stRecount(){if(S.status!=="review")return;S.status="count";ALERT=null;render()}
+function stWhy(g,v){S.why[g]=v}
+function stClose(){
+ if(S.status!=="review")return;
+ const need=stGroups().filter(o=>o.needWhy&&!(S.why[o.g]||"").trim());
+ if(need.length){setAlert("bad",t("needWhy").replace("{n}",need.length));render();return}
+ S.status="acc";setAlert("ok-fixed",t("stSentAcc"));render();
+}
+function stApprove(){
+ if(S.status!=="acc")return;
+ const w=stWeighed(),G={};stGroups().forEach(o=>G[o.g]=o);
+ STOCK=STOCK.filter(b=>w.has(b.key));                                    // missing bags leave stock
+ STOCK.forEach(b=>{const o=G[grpOf(b)];if(o&&o.foundSysKg)b.kg=Math.round(b.kg*o.kg/o.foundSysKg*100)/100});   // kg follows the scale
+ S.status="done";setAlert("ok-fixed",t("stDone"));render();
+}
+/* simulator */
+const stTag=b=>`${b.rc}|${b.lot}|${b.sku}|${nn(b.no)}`;
+const stHide=b=>(b.rc==="PH-OD-67"&&b.sku.includes("S16")&&b.no===50)||(b.rc==="PH-OD-70"&&b.no===120);  // 2 sample bags "not found"
+function stNext(n){const w=stWeighed();const left=S.snap.filter(b=>!w.has(b.key)&&!S.cur.bags.some(x=>x.key===b.key)&&!stHide(b));const out=[];while(out.length<n&&left.length)out.push(left.splice(Math.floor(Math.random()*left.length),1)[0]);return out}
+function stScanN(n){stNext(n).forEach(b=>stScan(stTag(b)))}
+function stAll(){                                   // scan + weigh the whole warehouse, batches of 10; PH-OD-71 weighs 1% light
+ if(S.status!=="count")return;
+ if(S.cur.bags.length){SC.kg=r1(S.cur.bags.reduce((t,x)=>t+S.snap.find(b=>b.key===x.key).kg,0));SC.stable=true;stConfirm()}
+ const w=stWeighed();const todo=S.snap.filter(b=>!w.has(b.key)&&!stHide(b)&&!S.cur.bags.some(x=>x.key===b.key));
+ for(let i=0;i<todo.length;i+=10){const ch=todo.slice(i,i+10);ch.forEach(b=>S.cur.bags.unshift({key:b.key,sku:b.sku,no:b.no,exp:b.exp,g:grpOf(b),wrong:false}));
+  const kg=ch.reduce((a,b)=>a+b.kg*(b.rc==="PH-OD-71"?0.99:1)+(Math.random()-.5)*0.1,0);SC.kg=r1(kg);SC.stable=true;stConfirm()}
+ SC.onScale=[];SC.kg=0;SC.target=0;ALERT=null;render();
+}
+function stGhost(){stScan(GHOST)}
+function stDupScan(){const x=S.cur.bags[0]||(S.batches.length&&S.batches[S.batches.length-1].bags[0]);if(x){const b=S.snap.find(y=>y.key===x.key);stScan(stTag(b))}}
+
+const STST={count:["stCounting","blue"],review:["stReview","warn"],acc:["stAcc2","warn"],done:["stDoneP","ok"]};
+const stPill=s=>`<span class="pill ${STST[s][1]}">${t(STST[s][0])}</span>`;
+function pStocktakes(){
+ const list=Object.values(STS).slice().reverse(),open=stOpenOne();
+ const rows=list.map(s=>{const G=stGroups(s),miss=G.reduce((a,o)=>a+o.missing.length,0),off=G.filter(o=>o.kgOff).length,w=G.reduce((a,o)=>a+o.found,0);
+  return `<tr><td><a href="#/stock/${s.id}"><b>${s.id}</b></a></td><td class="num">${s.opened}</td><td class="r num">${w}/${s.snap.length}</td><td class="r num">${s.status==="count"?"–":miss}</td><td class="r num">${s.status==="count"?"–":off}</td><td>${stPill(s.status)}</td></tr>`}).join("");
+ return `<div class="page-h">${t("stocktakes")}</div><p class="page-d">${t("stD")}</p>
+  <div class="card"><h3>${t("waiting")} · 1</h3>${open?list.filter(x=>x.status!=="done").map(x=>`<div class="wrow"><span class="dot blue"></span><span class="tx"><b>${x.id}</b> · ${t(STST[x.status][0])} · ${stGroups(x).reduce((a,o)=>a+o.found,0)+x.cur.bags.length}/${x.snap.length} ${t("bags").toLowerCase()}</span><button class="b-pri" onclick="go('/stock/${x.id}')">${t("cont")}</button></div>`).join(""):`<div class="wrow"><span class="dot"></span><span class="tx">${t("calRow")}</span><button class="b-pri" onclick="stOpen()">${t("openSt")}</button></div>`}</div>
+  <div class="card"><h3>${t("stHistory")}</h3>${rows?`<table class="tbl"><thead><tr><th>#</th><th>${t("time")}</th><th class="r">${t("weighedBags")}</th><th class="r">${t("missingBags")}</th><th class="r">${t("kgOffRows")}</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:`<div class="empty">–</div>`}</div>`;
+}
+function pStock(){
+ const X=S,tot=X.snap.length,G=stGroups(),wd=G.reduce((a,o)=>a+o.found,0),n=X.cur.bags.length;
+ let main="";
+ if(X.status==="count"){
+  const bags=n?X.cur.bags.map((x,i)=>`<li><span class="bn">${nn(x.no)}/${nn(x.exp)}</span><span class="bs">${esc(x.sku)} · ${x.g.split("|")[0]}</span><button class="b-out" onclick="stRemove(${i})">${t("remove")}</button></li>`).join(""):`<li class="none">${t("noBags")}</li>`;
+  const prog=G.map(o=>{const c=o.found+X.cur.bags.filter(x=>x.g===o.g).length;return `<div class="skurow ${X.cur.sku===o.sku?"on":""}"><span class="nm">${esc(o.sku)}<span class="pill">${o.rc} · ${o.lot}</span></span>
+   <span class="ln"><span>${t("bags")}</span><b>${c} / ${o.sys}</b></span><span class="bar ${c>=o.sys?"done":""}"><i style="width:${Math.min(100,c/o.sys*100)}%"></i></span>
+   <span class="ln"><span>${t("kg")}</span><b>${fmt(o.kg)}</b></span></div>`}).join("");
+  const rows=X.batches.slice().reverse().slice(0,60).map(b=>`<tr><td class="num">#${b.id}</td><td class="num">${b.time}</td><td>${short(b.sku)}${b.split?" *":""}</td><td class="r num">${b.bags.length}</td><td class="r num">${fmt(b.kg)}</td><td></td></tr>`).join("");
+  const mix=[...new Set(X.cur.bags.map(x=>x.sku))];
+  main=`<div class="station"><div class="st-left">
+   <div class="card scale" style="margin:0"><div class="kg"><span id="kg">${fmt(SC.kg)}</span><small>kg</small></div><div class="side" id="stab">${stableHTML()}</div>
+    <div class="facts"><div class="fact"><div class="k">${t("batchSku")}</div><div class="v">${mix.length>1?mix.length+" SKU":mix.length?short(mix[0]):"–"}</div></div>
+    <div class="fact"><div class="k">${t("bagsInBatch")}</div><div class="v num">${n}</div></div>
+    <div class="fact"><div class="k">${t("wholeWh")}</div><div class="v num">${wd+n}/${tot}</div></div></div></div>
+   ${alertBox("")}
+   <div class="card bags" style="margin:0"><h3>${t("bagsInBatch")}<span class="num">${n}</span></h3><ul class="baglist">${bags}</ul></div>
+   <button class="b-pri confirm" onclick="stConfirm()" ${stCanPress()?"":"disabled"}>${t("confirm")}</button>
+   <button class="b-out confirm" onclick="stEnd()">${t("endCount")}</button>
+  </div><div class="st-right">
+   <div class="card" style="margin:0"><h3>${t("progress")}</h3>${prog}</div>
+   <div class="card" style="margin:0"><h3>${t("batches")} · ${X.batches.length}</h3><div style="max-height:300px;overflow:auto">${batchTable(rows,false)}</div></div>
+  </div></div>`;
+ }else{
+  const ro=X.status!=="review";
+  const rows=G.map(o=>`<tr class="${o.needWhy?"pend":""}"><td><b>${esc(o.sku)}</b><div class="sub">${o.rc} · ${t("lot")} ${o.lot}</div></td>
+   <td class="r num">${o.sys}</td><td class="r num">${o.found}</td><td class="r num ${o.missing.length?"off":""}">${o.missing.length}</td>
+   <td class="r num">${fmt(o.foundSysKg)}</td><td class="r num">${fmt(o.kg)}</td><td class="r num ${o.kgOff?"off":""}">${o.found?pct(o.diffPct):"–"}</td>
+   <td>${o.needWhy?(ro?esc(X.why[o.g]||""):`<input class="why" placeholder="${t("whyPh")}" value="${esc(X.why[o.g]||"")}" oninput="stWhy('${o.g}',this.value)">`):"✓"}</td></tr>`).join("");
+  const miss=G.filter(o=>o.missing.length).map(o=>`<tr><td>${esc(o.sku)} · ${o.rc}</td><td class="num">${o.missing.map(nn).join(", ")}</td></tr>`).join("");
+  const ns=X.notStock.map(c=>{const p=c.split("|");return `<tr><td class="num">${p[0]} · ${esc(p[2])} · ${nn(parseInt(p[3],10))}</td></tr>`}).join("");
+  main=`${ALERT?alertBox(""):""}
+   <div class="card" style="margin:0"><h3>${t("result")}</h3><div style="overflow:auto"><table class="tbl"><thead><tr><th>${t("skuLot")}</th><th class="r">${t("sysBags")}</th><th class="r">${t("foundBags")}</th><th class="r">${t("missingBags")}</th><th class="r">${t("sysKgFound")}</th><th class="r">${t("kgWeighed")}</th><th class="r">${t("gap")}</th><th>${t("why")}</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+   <div class="card" style="margin:0"><h3>${t("missingBags")}</h3>${miss?`<table class="tbl"><tbody>${miss}</tbody></table>`:`<div class="empty">–</div>`}</div>
+   <div class="card" style="margin:0"><h3>${t("notInStockN")} · ${X.notStock.length}</h3>${ns?`<table class="tbl"><tbody>${ns}</tbody></table>`:`<div class="empty">–</div>`}</div>
+   ${X.status==="review"?`<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="b-out confirm" style="flex:1" onclick="stRecount()">${t("recount")}</button><button class="b-pri confirm" style="flex:1" onclick="stClose()">${t("mgrClose")}</button></div>`:""}
+   ${X.status==="acc"?`<button class="b-pri confirm" onclick="stApprove()">${t("accApprove")}</button>`:""}`;
+ }
+ return `<div class="crumb"><a href="#/stocktakes">‹ ${t("stocktakes")}</a><span>${X.id}</span></div>
+ <div class="hd"><span class="ttl">${X.id}</span><span class="meta">${t("wholeWh")} · ${X.opened}</span>${stPill(X.status)}<span class="sp"></span>
+  <button class="camb" onclick="camOpen()" ${X.status==="count"?"":"disabled"}>${t("camScan")}</button></div>
+ ${X.status==="count"?main:`<div class="st-left" style="max-width:1000px">${main}</div>`}`;
+}
+
+/* ---------- pages ---------- */
+function pReceiving(){
+ const rs=Object.values(RC);
+ const wait=rs.filter(r=>r.status==="labels"||r.status==="weigh").map(r=>{
+  const tb=r.skus.reduce((a,s)=>a+s.expBags,0),db=r.batches.reduce((a,b)=>a+b.bags.length,0)+r.cur.bags.filter(x=>!x.wrong).length,kg=r.skus.reduce((a,s)=>a+s.expKg,0);
+  const txt=r.status==="labels"?`<b>${r.po}</b> · ${fmt(kg,0)} kg · ${t("arrivedToday")}`:`<b>${r.id}</b> · ${r.po} · ${t("inProgress")} ${db}/${tb} ${t("bags").toLowerCase()}`;
+  return `<div class="wrow"><span class="dot ${r.status==="weigh"?"blue":""}"></span><span class="tx">${txt}</span><button class="b-pri" onclick="go('/receipt/${r.id}')">${r.status==="labels"?t("receive"):t("cont")}</button></div>`}).join("");
+ const all=rs.map(r=>`<tr><td><a href="#/receipt/${r.id}"><b>${r.id}</b></a></td><td>${r.skus.map(x=>esc(x.code)).join("<br>")}</td><td class="r num">${r.skus.reduce((a,x)=>a+x.expBags,0)}</td><td class="r num">${fmt(r.skus.reduce((a,s)=>a+s.expKg,0),0)}</td><td>${pill(r.status)}</td></tr>`).join("")
+  +OTHER_RC.map(r=>`<tr><td><b>${r.id}</b></td><td>${r.po}</td><td>–</td><td class="r num">${fmt(r.kg,0)}</td><td>${pill(r.status)}</td></tr>`).join("");
+ return `<div class="page-h">${t("goodsIn")}</div><p class="page-d">${t("goodsInD")}</p>
+  <div class="card"><h3>${t("waiting")} · ${rs.filter(r=>r.status==="labels"||r.status==="weigh").length}</h3>${wait||`<div class="empty">–</div>`}</div>
+  <div class="card"><h3>${t("receipts")}</h3><table class="tbl"><thead><tr><th>#</th><th>SKU</th><th class="r">${t("bags")}</th><th class="r">kg</th><th></th></tr></thead><tbody>${all}</tbody></table></div>`;
+}
+function pReceipt(){
+ const R=S,n=okBags().length,lockLbl=R.status==="labels";
+ const labels=R.skus.map(s=>`<div class="lblrow"><div><div class="sku">${s.code}</div><div class="sub">${R.lot} · <span class="num">${s.printed}/${s.expBags}</span> ${t("printed")}</div></div>
+  <div class="lab">${qrSVG(R.id+s.code)}<div><div class="s">${s.code.replace(/_/g," ")}</div><div class="l">${R.id} · ${R.lot}</div><div class="n">001/${nn(s.expBags)}</div></div></div>
+  <div style="display:grid;gap:6px;justify-items:end">${s.printed<s.expBags?`<button class="b-pri" onclick="rPrint('${s.code}')">${t("printAll").replace("{n}",s.expBags)}</button>`:`<button class="b-out" onclick="window.open('#/labels/${R.id}/${R.skus.indexOf(s)}','_blank')">${t("viewLabels")}</button>${s.extra?`<span class="pill warn">${t("extraSent")}</span>`:`<button class="b-out" onclick="rExtra('${s.code}')">${t("extra")}</button>`}`}</div></div>`).join("");
+ let ex="";
+ const w=R.cur.bags.find(x=>x.wrong);
+ if(ALERT&&ALERT.type==="bad")ex="";
+ else if(w)ex=`<div class="alert bad" role="status"><span class="msg">${esc(t("wrongSku")+": "+w.sku+" "+rLabel(w))}</span></div>`;
+ else if(rKpbOff()&&R.cur.ask&&!rLocked())ex=`<div class="alert warn" role="status"><span class="msg">${esc(t("kpbOff").replace("{v}",fmt(rKpb(),1)))}</span>${R.cur.appr?`<span class="pill warn">${t("pending")}</span>`:`<button onclick="rReq()">${t("reqAppr")}</button>`}</div>`;
+ const bags=R.cur.bags.length?R.cur.bags.map((x,i)=>`<li class="${x.wrong?"wrong":""}"><span class="bn">${rLabel(x)}</span><span class="bs">${x.wrong?t("wrongSku")+" · ":""}${x.sku}</span><button class="${x.wrong?"b-bad":"b-out"}" onclick="rRemove(${i})">${t("remove")}</button></li>`).join(""):`<li class="none">${t("noBags")}</li>`;
+ const prog=R.skus.map(s=>{const b=rScanned(s.code),k=rDoneKg(s.code);return `<div class="skurow ${s.code===R.cur.sku?"on":""}"><span class="nm">${s.code}${b>=s.expBags?`<span class="pill ok">${s.expBags}/${s.expBags}</span>`:""}</span>
+  <span class="ln"><span>${t("bags")}</span><b>${b} / ${s.expBags}</b></span><span class="bar ${b>=s.expBags?"done":""}"><i style="width:${Math.min(100,b/s.expBags*100)}%"></i></span>
+  <span class="ln"><span>${t("kg")}</span><b>${fmt(k)} / ${fmt(s.expKg,0)}</b></span>${(()=>{const m=rMissing(s.code);return m.length&&m.length<=10?`<span class="miss">${t("stillMissing")}: <b class="num">${m.map(nn).join(", ")}</b></span>`:""})()}</div>`}).join("");
+ const rows=R.batches.slice().reverse().map(b=>`<tr class="${b.pend?"pend":""}"><td class="num">#${b.id}</td><td class="num">${b.time}</td><td>${short(b.sku)}${b.split?" *":""}</td><td class="r num">${b.bags.length}</td><td class="r num">${fmt(b.kg)}</td><td>${b.pend?t("pending"):""}</td></tr>`).join("");
+ const det=R.skus.map(s=>`<div class="skuhd">${s.code}</div><div class="detgrid">
+  <div class="fld"><label>${t("shelf")}</label><input value="${esc(s.shelf)}" onchange="rSku('${s.code}').shelf=this.value"></div>
+  <div class="fld"><label>${t("slot")}</label><input placeholder="${t("asOnBags")}" value="${esc(s.slot)}" onchange="rSku('${s.code}').slot=this.value"></div>
+  <div class="fld"><label>${t("made")}</label><input type="date" value="${esc(s.made)}" onchange="rSku('${s.code}').made=this.value"></div>
+  <div class="fld"><label>${t("expires")}</label><input type="date" value="${esc(s.exp)}" onchange="rSku('${s.code}').exp=this.value"></div></div>`).join("");
+ return `<div class="crumb"><a href="#/receiving">‹ ${t("receiving")}</a><span>${R.id}</span></div>
+ <div class="hd"><span class="ttl">${R.id}</span><span class="meta">${t("lot")} ${R.lot}</span>${pill(R.status)}<span class="sp"></span><button class="camb" onclick="camOpen()" ${rLocked()?"disabled":""}>${t("camScan")}</button><button class="b-pri" onclick="rSend()" ${rLocked()?"disabled":""}>${t("sendBuying")}</button></div>
+ <div class="card side-card"><h3>${t("c1")}</h3>${labels}</div>
+ <div class="card"><h3>${t("c2")}</h3>
+  <div class="station"><div class="st-left">
+   <div class="card scale" style="margin:0"><div class="kg"><span id="kg">${fmt(SC.kg)}</span><small>kg</small></div><div class="side" id="stab">${stableHTML()}</div>
+    <div class="facts"><div class="fact"><div class="k">${t("batchSku")}</div><div class="v">${(()=>{const c=[...new Set(R.cur.bags.map(x=>x.sku))];return c.length>1?c.length+" SKU":c.length?short(c[0]):"–"})()}</div></div>
+    <div class="fact"><div class="k">${t("bagsInBatch")}</div><div class="v num">${n}</div></div>
+    <div class="fact"><div class="k">${t("kgPerBag")}</div><div class="v num ${rKpbOff()?"off":""}" id="kpb">${rKpb()===null?"–":fmt(rKpb(),1)}</div></div></div></div>
+   ${alertBox(ex)}
+   <div class="card bags" style="margin:0"><h3>${t("bagsInBatch")}<span class="num">${n}</span></h3><ul class="baglist">${bags}</ul></div>
+   <button class="b-pri confirm" onclick="rConfirm()" ${rCanPress()?"":"disabled"}>${lockLbl?t("printFirst"):t("confirm")}</button>
+  </div><div class="st-right">
+   <div class="card" style="margin:0"><h3>${t("progress")}</h3>${prog}</div>
+   <div class="card" style="margin:0"><h3>${t("batches")} · ${R.batches.length}</h3><div style="max-height:300px;overflow:auto">${batchTable(rows,false)}</div>
+    <button class="b-out" style="margin-top:10px" onclick="rUndo()" ${!R.batches.length||R.batches[R.batches.length-1].pend||rLocked()?"disabled":""}>${t("undo")}</button></div>
+  </div></div></div>`;
+}
+function pRelease(){
+ const xs=Object.values(XS),skus=X=>X.lines.map(l=>short(l.sku)).join(", ");
+ const wait=xs.filter(x=>x.status==="ship").map(x=>`<div class="wrow"><span class="dot red"></span><span class="tx"><b>${x.id}</b> · ${fmt(slipKg(x),0)} kg · ${skus(x)} · ${x.cust}</span><button class="b-pri" onclick="go('/slip/${x.id}')">${t("weighShip")}</button></div>`).join("");
+ const all=xs.map(x=>`<tr><td><a href="#/slip/${x.id}"><b>${x.id}</b></a></td><td>${skus(x)}</td><td class="r num">${fmt(slipKg(x),0)}</td><td>${pill(x.status)}</td></tr>`).join("")
+  +OTHER_XS.map(x=>`<tr><td><b>${x.id}</b></td><td>${x.sku}</td><td class="r num">${fmt(x.kg,0)}</td><td>${pill(x.status)}</td></tr>`).join("");
+ return `<div class="page-h">${t("goodsOut")}</div><p class="page-d">${t("goodsOutD")}</p>
+  <div class="card"><h3>${t("waiting")} · ${xs.filter(x=>x.status==="ship").length}</h3>${wait||`<div class="empty">–</div>`}</div>
+  <div class="card"><h3>${t("release")}</h3><table class="tbl"><thead><tr><th>#</th><th>SKU</th><th class="r">kg</th><th></th></tr></thead><tbody>${all}</tbody></table></div>`;
+}
+function pSlip(){
+ const X=S,n=okBags().length;
+ let ex="";
+ if(S.exc&&!xLocked()){const w=X.cur.bags.find(x=>x.key===S.exc.key);const opts=["r1","r2","r3","r4"].map(r=>`<option value="${r}" ${S.exc.reason===r?"selected":""}>${esc(t(r))}</option>`).join("");
+  ex=`<div class="alert bad" role="status"><span class="msg">${esc(t("wrongLot")+": "+(w?w.lot+" "+xLabel(w):""))}</span><select aria-label="${t("chooseReason")}" onchange="xReason(this.value)"><option value="" ${S.exc.reason?"":"selected"} disabled>${t("chooseReason")}</option>${opts}</select><button onclick="xSendExc()" ${S.exc.reason?"":"disabled"}>${t("sendReq")}</button></div>`}
+ else if(!(ALERT&&(ALERT.type==="bad"||ALERT.type==="warn"))){
+  const w=X.cur.bags.find(x=>x.wrong&&!x.exc);
+  if(w&&w.wrong==="lot")ex=`<div class="alert bad" role="status"><span class="msg">${esc(t("wrongLot")+": "+w.lot+" "+xLabel(w)+" · "+t("pick")+" "+w.need)}</span><button onclick="xReqExc()">${t("reqExc")}</button></div>`;
+  else if(w)ex=`<div class="alert bad" role="status"><span class="msg">${esc(t("wrongSku")+": "+short(w.sku)+(X.cur.sku?" · "+t("batchIs")+" "+short(X.cur.sku):""))}</span></div>`;
+  else if(xKpbOff()&&X.cur.ask&&!xLocked())ex=`<div class="alert warn" role="status"><span class="msg">${esc(t("kpbOff").replace("{v}",fmt(xKpb(),1)))}</span>${X.cur.appr?`<span class="pill warn">${t("pending")}</span>`:`<button onclick="xReq()">${t("reqAppr")}</button>`}</div>`;
+ }
+ /* which SKU / lot the staff works on now */
+ let curSku,curLot;
+ if(X.mode==="whole"){curSku=X.cur.sku||(wholeLine()||{}).sku;curLot=curSku?assignedLot(curSku):null}
+ else{curSku=X.src?X.src.sku:(looseLine()||{}).sku;curLot=curSku?looseLot(curSku):null}
+ const pl=X.mode==="loose"&&curSku?partsOf(curSku):[];
+ const cl=curSku?lineOf(curSku):null,needTxt=!cl?"–":X.mode==="whole"?(cl.whole-wholeDone(curSku))+" "+t("bags").toLowerCase():fmt(xNeedLoose(curSku))+" kg";
+ const bags=X.cur.bags.length?X.cur.bags.map((x,i)=>{const st=x.wrong==="lot"?t("wrongLot")+" · "+x.lot:x.wrong==="sku"?t("wrongSku")+" · "+short(x.sku):short(x.sku)+" · "+x.lot;
+  return `<li class="${x.wrong?"wrong":""}"><span class="bn">${xLabel(x)}</span><span class="bs">${esc(st)}</span>${x.exc==="pending"?`<span class="pill warn">${t("pending")}</span>`:""}<button class="${x.wrong?"b-bad":"b-out"}" onclick="xRemove(${i})">${t("remove")}</button></li>`}).join(""):`<li class="none">${t("noBags")}</li>`;
+ let work;
+ if(X.mode==="whole"){
+  work=`<div class="card bags" style="margin:0"><h3>${t("bagsInBatch")}<span class="num">${n}</span></h3><ul class="baglist">${bags}</ul></div>
+   <button class="b-pri confirm" onclick="xConfirm()" ${xCanPress()?"":"disabled"}>${t("confirm")}</button>`;
+ }else if(!curSku){
+  work=`<div class="card" style="margin:0"><div class="empty">${t("noLooseLeft")}</div></div>`;
+ }else{
+  const src=srcBag(),need=xNeedLoose(curSku),pour=src?Math.min(need,src.kg):null,onSc=X.src&&SC.stable&&SC.kg>0;
+  const pourTxt=!src?"–":src.kg<need?t("pourAll").replace("{k}",fmt(src.kg)).replace("{m}",fmt(r1(need-src.kg))):t("pourX").replace("{k}",fmt(pour));
+  work=`<div class="card loose" style="margin:0">
+   <div class="need"><span>${short(curSku)} · ${t("needKg")}</span><b>${fmt(need)} kg</b></div>
+   <div class="lstep ${src?"done":"cur"}"><span class="no">1</span><span>${t("l1")}<span class="sub">${pl.length?t("partialFirst").replace("{n}",pl[0].lot+" "+nn(pl[0].no)+" · "+fmt(pl[0].kg)+" kg"):""}</span></span><span class="val">${src?`${X.src.lot} ${nn(X.src.no)} · ${fmt(src.kg)} kg`:"–"}</span></div>
+   <div class="lstep ${src?(onSc?"done":"cur"):""}"><span class="no">2</span><span>${t("l2")}<span class="sub">${esc(pourTxt)}</span></span><span class="val">${onSc?fmt(SC.kg)+" kg":"–"}</span></div>
+   <button class="b-pri confirm" onclick="xLooseConfirm()" ${xCanLoose()?"":"disabled"}>${t("l3")}</button></div>`;
+ }
+ const lineRow=l=>{const w=wholeDone(l.sku),lk=looseDoneKg(l.sku),done=w>=l.whole&&lk>=l.looseKg-0.5;
+  return `<div class="skurow ${l.sku===curSku?"on":""}"><span class="nm">${l.sku}${done?`<span class="pill ok">✓</span>`:""}</span>
+  <span class="ln"><span>${t("whole")}</span><b>${w} / ${l.whole}</b></span><span class="bar ${w>=l.whole?"done":""}"><i style="width:${l.whole?Math.min(100,w/l.whole*100):100}%"></i></span>
+  ${l.looseKg?`<span class="ln"><span>${t("loose")}</span><b>${fmt(lk)} / ${fmt(l.looseKg,0)}</b></span><span class="bar ${lk>=l.looseKg-0.5?"done":""}"><i style="width:${Math.min(100,lk/l.looseKg*100)}%"></i></span>`:""}</div>`};
+ const tw=X.lines.reduce((a,l)=>a+wholeDone(l.sku),0),tW=X.lines.reduce((a,l)=>a+l.whole,0),tl=X.lines.reduce((a,l)=>a+looseDoneKg(l.sku),0),tL=X.lines.reduce((a,l)=>a+l.looseKg,0);
+ const lots=X.lines.map(l=>`<div class="skuhd" style="margin-top:8px">${short(l.sku)}</div>`+lotsOf(l.sku).filter(L=>fullLeft(L).length||partLeft(L).length).map(L=>`<div class="lotrow ${L.lot===curLot&&l.sku===curSku?"on":""}"><span class="l1"><b>${L.lot}</b><span><span class="num">${fullLeft(L).length}</span> ${t("bags").toLowerCase()} ${t("left")}</span></span>${partLeft(L).map(b=>`<span class="pt">${t("partial")} ${nn(b.no)}/${nn(L.exp)} · ${fmt(b.kg)} kg</span>`).join("")}</div>`).join("")).join("");
+ const rows=X.batches.slice().reverse().map(b=>`<tr class="${b.pend?"pend":""}"><td class="num">#${b.id}</td><td class="num">${b.time}</td><td>${short(b.sku)}${b.split?" *":""}</td><td class="num">${[...new Set(b.bags.map(x=>x.lot))].join(", ")}</td><td class="r num">${b.type==="loose"?t("looseShort"):b.bags.length}</td><td class="r num">${fmt(b.kg)}</td><td>${b.pend?t("pending"):""}</td></tr>`).join("");
+ return `<div class="crumb"><a href="#/release">‹ ${t("release")}</a><span>${X.id}</span></div>
+ <div class="hd"><span class="ttl">${X.id}</span><span class="meta">${X.so} · ${X.cust} · ${fmt(slipKg(X),0)} kg</span>${pill(X.status)}<span class="sp"></span><button class="b-out" onclick="window.open('#/labels/${X.id}','_blank')">${t("stockLabels")}</button><button class="camb" onclick="camOpen()" ${xLocked()?"disabled":""}>${t("camScan")}</button><button class="b-pri" onclick="xSend()" ${xLocked()?"disabled":""}>${t("sendMgr")}</button></div>
+ <div class="station"><div class="st-left">
+  <div class="card scale" style="margin:0"><div class="kg"><span id="kg">${fmt(SC.kg)}</span><small>kg</small></div><div class="side" id="stab">${stableHTML()}</div>
+   <div class="facts"><div class="fact"><div class="k">SKU</div><div class="v">${curSku?short(curSku):"–"}</div></div><div class="fact"><div class="k">${t("stillNeedK")}</div><div class="v big num">${needTxt}</div></div>
+   ${X.mode==="whole"?`<div class="fact"><div class="k">${t("bagsInBatch")}</div><div class="v num">${n}</div></div><div class="fact"><div class="k">${t("kgPerBag")}</div><div class="v num ${xKpbOff()?"off":""}" id="kpb">${xKpb()===null?"–":fmt(xKpb(),1)}</div></div>`:""}</div></div>
+  <div class="tabs" role="group"><button aria-pressed="${X.mode==="whole"}" onclick="xMode('whole')">${t("whole")} · ${tw}/${tW}</button>${tL?`<button aria-pressed="${X.mode==="loose"}" onclick="xMode('loose')">${t("loose")} · ${fmt(tl)}/${fmt(tL,0)}</button>`:""}</div>
+  ${alertBox(ex)}
+  ${work}
+ </div><div class="st-right">
+  <div class="card" style="margin:0"><h3>${t("progress")} · ${X.lines.length} SKU</h3>${X.lines.map(lineRow).join("")}</div>
+  <div class="card" style="margin:0"><h3>${t("pickOrder")}</h3>${lots}</div>
+  <div class="card" style="margin:0"><h3>${t("batches")} · ${X.batches.length}</h3><div style="max-height:260px;overflow:auto"><table class="tbl"><thead><tr><th>#</th><th>${t("time")}</th><th>SKU</th><th>${t("lot")}</th><th class="r">${t("bags")}</th><th class="r">kg</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+   <button class="b-out" style="margin-top:10px" onclick="xUndo()" ${!X.batches.length||X.batches[X.batches.length-1].pend||xLocked()?"disabled":""}>${t("undo")}</button></div>
+ </div></div>`;
+}
+function pOther(){return `<div class="page-h">${t(VIEW.name)}</div><div class="card" style="margin-top:16px"><div class="empty">${t("notInDemo")}</div></div>`}
+
+function render(){
+ let body,title;
+ if(VIEW.name==="receipt"){title=t("receiving");body=pReceipt()}
+ else if(VIEW.name==="slip"){title=t("release");body=pSlip()}
+ else if(VIEW.name==="release"){title=t("release");body=pRelease()}
+ else if(VIEW.name==="labels"){title=t("labelsOf");body=pLabels()}
+ else if(VIEW.name==="stocktakes"){title=t("stocktakes");body=pStocktakes()}
+ else if(VIEW.name==="stock"){title=t("stocktakes");body=pStock()}
+ else if(VIEW.name==="receiving"){title=t("receiving");body=pReceiving()}
+ else{title=t(VIEW.name);body=pOther()}
+ const app=document.getElementById("app"),sc=app.querySelector(".content"),y=sc?sc.scrollTop:0;
+ app.innerHTML=`<div class="shell">${railHTML()}<div class="main">${topHTML(title)}<main class="content">${body}</main></div></div>${S?simHTML(VIEW.name):""}`;
+ camInfo();
+ const sc2=app.querySelector(".content");if(sc2)sc2.scrollTop=y;
+}
+function renderScale(){camInfo();const k=document.getElementById("kg");if(!k)return;k.textContent=fmt(SC.kg);const p=document.getElementById("kpb");if(p&&S){const v=VIEW.name==="receipt"?rKpb():VIEW.name==="stock"?null:xKpb();p.textContent=v===null?"–":fmt(v,1)}}
+document.documentElement.lang=LANG;
+route();
+</script>
+</body>
+</html>

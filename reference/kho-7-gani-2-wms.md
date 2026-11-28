@@ -216,3 +216,52 @@ Tài liệu chi tiết (luồng, thiết bị, phương án dự phòng): [Số 
 - **2026-11-17 (người dùng xác nhận):** dung sai −0,5% / +0,1% là **đã chốt** (bỏ ghi "đang bàn" ở mục 11 và khỏi danh sách "còn chờ chốt"). Định mức hao hụt +0,1%/tháng vẫn là đề xuất.
 - **2026-11-17 (người dùng nói):** thử nối cáp USB–RS232 vào cân FI05 **đã lấy được dữ liệu cân** trên máy tính (chương trình đọc cân do dev bên mình viết). Kho sắp chuyển sang kho mới (Joseph báo, chưa rõ ngày).
 - **2026-11-19 (người dùng nói):** vì nối cân đã lấy được dữ liệu, **chốt mua thiết bị rồi tự dựng phần mềm**, không mua phần phát triển 60 triệu của Nextwaves. Sếp đã duyệt hướng này chưa: chưa có thông tin. Ai viết và bảo trì: chưa rõ.
+
+## 13. Luồng nhập và xuất với QR + cân: bản 1, chốt 25/11/2026 [người dùng chốt]
+**Thay cho các ghi chú cũ trái nhau:**
+- **Phần mềm tự dựng hoàn toàn.** Nextwaves không giữ tồn, không đẩy dữ liệu sang. Áp dụng QR trước; RFID và Nextwaves tính sau. Hướng lai "Nextwaves phía sau + trạm cân" (17/11) bỏ.
+- **Số bao mỗi lượt cân tùy ý, cộng dồn.** Thay cho "10–12 bao" ở mục 10 và "tối đa 10 bao" của Nextwaves.
+- **Quản lý kho duyệt xuất.**
+
+**NHẬP**
+1. Đơn mua có sẵn trên hệ thống → kho tạo **phiếu nhập theo đơn mua**. Phiếu hiện SKU, **số bao dự kiến** (thêm mới) và **kg dự kiến**. Nhân viên kho **thấy cả kg dự kiến** khi cân. Một container là một lô.
+2. In tem QR theo số bao dự kiến, **in theo từng SKU**. Tem ghi tên SKU chữ to, mã lô, số phiếu, số thứ tự bao (ví dụ 012/120).
+3. Dỡ hàng, dán tem, so chữ trên tem với shipping mark trên bao.
+   - Bao rách, ẩm, mốc: **tách riêng, không nhập**, lập biên bản trả nhà cung cấp.
+   - Đếm theo số tem: thừa tem là thiếu bao. Hết tem mà còn bao: in thêm, cần QL kho duyệt.
+4. **Cân theo lượt.** Mỗi lượt **một SKU**, số bao tùy ý. Đưa bao lên cân trước, rồi quét QR từng bao trên cân. Quét khác SKU thì báo **"SAI SKU"** và không cho chốt lượt. Cân ổn định thì bấm **Chốt lượt**: kg lấy tự động từ cân (không gõ tay), chia đều cho các bao trong lượt. Các lượt cộng dồn. Không trừ bì. Hàng nhập luôn là bao nguyên 60 kg, không có bao lẻ.
+5. Chốt phiếu, đối chiếu với đơn mua:
+   - Số bao phải đủ.
+   - Tổng kg trong khoảng −0,5% đến +0,1%. Vượt thì QL kho duyệt.
+6. Mua hàng kiểm → **Kế toán Hoàn tất thì tồn tăng**. Người lập không tự duyệt.
+
+**Tem QR, 2 giai đoạn**
+- **Giai đoạn 1 (bây giờ):** kho tự in và dán khi dỡ hàng.
+- **Giai đoạn 2 (sau này):** hệ thống tạo mã trước khi đóng container. Nhà cung cấp in mã lên tem shipping mark. Kho bỏ bước in và dán, bước cân giữ nguyên. Tem hỏng thì in lại, cần QL kho duyệt.
+
+**XUẤT**
+1. Sale tạo đơn → CS kiểm → Kế toán kiểm tiền → **Kế toán tạo lệnh xuất** gửi kho → CS kiểm.
+2. Hệ thống chỉ định lô theo **FIFO**, **bao dở được ưu tiên trước**. Quét bao khác lô thì báo **"SAI LÔ"** và chặn. QL kho mở ngoại lệ được, phải ghi lý do, có nhật ký.
+3. Cân theo lượt như khi nhập: quét QR trên cân, kg tự động, cộng dồn.
+4. **Xuất lẻ** (ví dụ 30 kg từ bao 60 kg):
+   - Rạch bao, cân phần xuất, cân phần dư.
+   - Phần dư sang bao mới, in **tem QR mới** nối về bao gốc. Tem gốc bị hủy.
+   - Chênh lệch (kg gốc − kg xuất − kg dư) ghi là hao hụt rạch bao.
+5. So tổng kg cân với kg trên lệnh xuất theo dung sai. **Mức dung sai khi xuất chưa chốt**, để tạm. Định mức hao hụt theo thời gian lưu kho (+0,1%/tháng) vẫn là đề xuất.
+6. **QL kho duyệt xuất thì tồn trừ ngay.** Kế toán xem và đối chiếu sau.
+
+**Bổ sung 26/11/2026 (trạm cân, chốt qua wireframe `Trang web/ban-thu/kho7-tram-can/wireframe-a2.html`) [người dùng chốt]:**
+- **Bỏ bước chọn SKU.** Bao quét đầu tiên trong lượt quyết định SKU của lượt. Bao khác SKU báo WRONG SKU, kèm bíp và chớp đỏ.
+- **Cân và máy quét là 2 nguồn riêng.** Đặt bao lên cân hay quét tem trước đều được. Phần mềm chỉ kiểm khi bấm Confirm batch.
+- **Kiểm kg mỗi bao** = tổng kg ÷ số tem đã quét, để bắt quên quét hoặc quét lố. **Tạm đặt 58–60,5 kg**: bao không bao giờ vượt 60 kg, cộng 0,5 kg sai số cân. Cận dưới chờ biết bao hụt tối đa bao nhiêu kg. Ngoài khoảng thì chặn chốt và hiện cảnh báo (chỉ khi bấm Confirm), có nút xin QL kho duyệt.
+- **Bao nào cũng gỡ khỏi lượt được** (nút Remove). Phần mềm ghi lịch sử gỡ: bao nào, ai gỡ, lúc nào.
+- **Dung sai tổng kg khi nhập đổi thành −0,5% đến 0%** (thay cho +0,1% chốt 17/11). Lý do: bao chỉ hụt, không bao giờ dư.
+
+**Còn mở:**
+- Mức dung sai khi xuất.
+- Bao 60 kg hụt tối đa bao nhiêu kg (để chốt cận dưới kiểm kg mỗi bao).
+- Sếp đã đồng ý hướng tự dựng chưa.
+- Ai viết và bảo trì phần mềm.
+- Vị trí cất hàng.
+- Ngưỡng độ ẩm.
+- Kiểm kê.

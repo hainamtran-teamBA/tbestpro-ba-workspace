@@ -42,3 +42,11 @@ Ba nhịp tin: (1) **giao dịch** (đã gửi, mã vận đơn, không quảng 
 3. Kênh nào khách phản hồi tốt nhất (SMS, Viber, Messenger)?
 4. Phạm vi thí nghiệm: một thị trường và một nhóm sản phẩm nào?
 5. Ai duyệt nội dung tin (Marketing, pháp lý)?
+
+## 8. Chọn nhà cung cấp SMS (cập nhật 2026-11-28)
+- **Đang dẫn đầu: UniSMS** (unismsapi.com). Có API gửi tin và webhook báo tin đã tới máy, giá ₱0,47/tin ở mức 60.000 tin/tháng (₱0,42 nếu nạp 3 tháng một lần). Báo giá gốc: `Tài liệu gốc/pdf/proposal-tbestpro-sms.pdf` (ngày 19/10, **hết hạn 19/11**).
+- Semaphore (đang dùng): ₱0,56/credit, có API nhưng không có webhook. Cast.ph rẻ nhất (₱0,27) nhưng API phải xin cấp, không có webhook, nên chỉ dùng làm **giá để ép**. PhilSMS và M360 mới tra trên web, chưa liên hệ. Các bên quốc tế đắt gấp khoảng 20 lần nên loại.
+- **Email với UniSMS** (Gmail cá nhân của Hải Nam): ngày 23/10 xin báo giá chỉ gửi 1 chiều; 27/10 báo giá Semaphore "≈ 400 đ/tin, 56.000 peso/100.000 credit"; **28/10 UniSMS hỏi: Tbestpro có giấy đăng ký kinh doanh ở Philippines không, Semaphore có tính là tài khoản nước ngoài không → chưa trả lời**. Giá cuối phụ thuộc câu này.
+- Báo cáo so sánh (chờ duyệt): `Cho-duyet/03-sms/bao-cao/bao-cao-nha-cung-cap-sms.html`. Hải Nam chê bố cục còn chán, cần sửa tiếp **sau khi tự chụp màn hình được** (lần trước bị chặn chạy máy chủ tạm).
+- **Việc tiếp theo:** hỏi sếp, kế toán 3 câu (pháp nhân ở Philippines, tài khoản Semaphore đứng tên ai, giá trên hóa đơn) → trả lời UniSMS kèm giá Cast → dev dùng thử UniSMS → rút mẫu tin xuống dưới 160 ký tự (giảm 3–4 lần, đáng hơn đổi nhà cung cấp).
+- Ý sếp: không đợi dev viết tài liệu API, đẩy code Tizi lên GitHub rồi dùng Claude viết tài liệu đấu nối, dev chỉ đọc lại xác nhận.

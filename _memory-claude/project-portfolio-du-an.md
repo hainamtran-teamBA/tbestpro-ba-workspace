@@ -9,7 +9,7 @@ Từ 2026-10-27 anh nhờ Claude làm **PM** cho các dự án trong `Dự Án/`
 
 **Cấu trúc (dọn 2026-11-19):** mỗi dự án giữ `README.md` và `bao-cao/` (bản chính thức). File mẫu dùng chung nằm ở `Mẫu/` (báo cáo so sánh, mẫu giao diện Pinterest). Dự kiến thêm `nhap/` cho bản đang làm.
 - **Kho** (cập nhật 2026-11-21): **áp dụng QR trước** (mua máy in QR và máy quét cầm tay, tự dựng phần mềm), **sau đó mới tính mua thiết bị Nextwaves**. Đã xóa `kho-rfid` (dev giữ trên GitHub). Xem [[project-wms-kho7]].
-- **SMS** (2026-11-21): đang **test gửi tin cho 100 khách bằng phần mềm tự viết**. Giữ README và báo cáo.
+- **SMS** (2026-11-21): đang **test gửi tin cho 100 khách bằng phần mềm tự viết**. Giữ README và báo cáo. 2026-11-28: đang chọn nhà cung cấp, xem [[project-sms-nha-cung-cap]].
 - **Facebook Ads** (2026-11-21): **dev đang làm phần chi phí Facebook Ads**; phía mình **đang test kéo dữ liệu từ các nền tảng về** (bản dùng thử "Hiệu quả post", chi tiết ở `Dự Án/02 Facebook Ads/README.md` mục 10). Workspace giữ `Claude-CapCut/`, `bao-cao/`, `Test Data/`.
 - **Cổng báo cáo nội bộ:** giữ nguyên (báo cáo và README).
 

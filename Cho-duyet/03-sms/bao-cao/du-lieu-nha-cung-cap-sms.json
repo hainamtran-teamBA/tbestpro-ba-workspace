@@ -1,0 +1,75 @@
+{
+  "tieu_de": "SMS · So sánh nhà cung cấp",
+  "trang": [
+    {
+      "nhan": "SMS · SO SÁNH NHÀ CUNG CẤP",
+      "tieu_de": "Nên chuyển sang UniSMS",
+      "mo_ta": "Rẻ hơn Semaphore, có API và báo tin đã tới máy để nối với Tizi. Tính cho 60.000 tin/tháng.",
+      "khoi": [
+        { "loai": "chi-so",
+          "muc": [
+            { "so": "15,1 tr", "nhan": "Semaphore mỗi tháng", "phu": "đang dùng" },
+            { "so": "12,7 tr", "nhan": "UniSMS mỗi tháng", "phu": "theo báo giá" },
+            { "so": "2,4–7,8 tr", "nhan": "tiết kiệm mỗi tháng", "phu": "tùy ép giá được đến đâu" }
+          ] },
+        { "loai": "so-sanh", "kieu_anh": "logo",
+          "nhom": [
+            { "ten": "Nhà cung cấp",
+              "muc": [
+                { "ten": "Semaphore", "nhan": "Đang dùng" },
+                { "ten": "UniSMS", "de_xuat": true },
+                { "ten": "Cast.ph" },
+                { "ten": "PhilSMS" },
+                { "ten": "M360" }
+              ],
+              "dong": [
+                { "ten": "Giá 1 tin", "o": ["≈ 250 đ", { "v": "≈ 210 đ", "dam": true }, "≈ 120 đ", "≈ 160 đ", { "v": "Chưa công bố", "mo": true }] },
+                { "ten": "Tiền/tháng", "o": ["15,1 tr", { "v": "12,7 tr", "dam": true }, "7,3 tr", "9,5 tr", null] },
+                { "ten": "Gửi qua API", "o": ["Có", { "v": "Có", "dam": true }, { "v": "Phải xin", "mo": true }, "Có", "Có"] },
+                { "ten": "Báo tin đã tới máy", "o": [{ "v": "Không", "mo": true }, { "v": "Có", "dam": true }, { "v": "Không", "mo": true }, { "v": "Không", "mo": true }, "Có"] },
+                { "ten": "Đã làm việc", "o": ["Đang dùng", { "v": "Có báo giá", "dam": true }, { "v": "Tra web", "mo": true }, { "v": "Tra web", "mo": true }, { "v": "Tra web", "mo": true }] }
+              ]
+            }
+          ]
+        },
+        { "loai": "ghi-chu", "noi_dung": "Cast rẻ nhất nhưng không công khai API, không báo tin đã tới máy: dùng làm **giá để ép UniSMS**." }
+      ]
+    },
+    {
+      "nhan": "SMS · CHI PHÍ",
+      "tieu_de": "Đổi nhà cung cấp tiết kiệm ít, rút gọn mẫu tin tiết kiệm nhiều",
+      "mo_ta": "Mẫu tin hiện dài, bị tách 3–4 tin mỗi đơn.",
+      "khoi": [
+        { "loai": "bang-gia", "tieu_de": "Nếu đổi sang UniSMS (60.000 tin/tháng, đơn vị: đồng)",
+          "cot": ["Phương án", "Giá 1 tin", "Mỗi tháng", "Tiết kiệm"],
+          "dong": [
+            { "ten": "Semaphore (hiện tại)", "o": ["250", "15,1 tr", "—"] },
+            { "ten": "UniSMS, giá báo", "o": ["210", "12,7 tr", "2,4 tr"] },
+            { "ten": "UniSMS, nạp 3 tháng/lần", "o": ["190", "11,3 tr", "3,8 tr"] },
+            { "ten": "UniSMS, ép bằng giá Cast", "can_chot": "cần đàm phán", "o": ["120", "7,3 tr", "7,8 tr"] }
+          ] },
+        { "loai": "chi-so", "tieu_de": "Nếu rút mẫu tin xuống 1 tin (dưới 160 ký tự)",
+          "muc": [
+            { "so": "45 tr", "nhan": "chi phí SMS hiện nay mỗi tháng" },
+            { "so": "≈ 1.000 đ", "nhan": "mỗi đơn hiện nay" },
+            { "so": "≈ 210 đ", "nhan": "mỗi đơn sau khi rút gọn" }
+          ] },
+        { "loai": "ghi-chu", "noi_dung": "Nguồn: báo giá UniSMS 19/10/2026; web các bên xem 27/11/2026; số 45 triệu từ \"Đề xuất tối ưu chi phí SMS\". Quy đổi 1 peso ≈ 450 đ (giả định). Số ở trang này là ước tính." }
+      ]
+    },
+    {
+      "nhan": "SMS · BƯỚC TIẾP",
+      "tieu_de": "Cần hỏi 3 câu trước khi chốt",
+      "mo_ta": "Giá cuối của UniSMS phụ thuộc Tbestpro có đăng ký kinh doanh ở Philippines không.",
+      "khoi": [
+        { "loai": "danh-sach",
+          "muc": [
+            { "dam": "Tbestpro có giấy đăng ký kinh doanh ở Philippines không?", "noi_dung": "UniSMS hỏi ngày 28/10, chưa trả lời." },
+            { "dam": "Tài khoản Semaphore đứng tên ai?", "noi_dung": "Có bị tính là tài khoản nước ngoài không." },
+            { "dam": "Giá Semaphore trên hóa đơn là bao nhiêu?", "noi_dung": "Cần số đúng để đàm phán." }
+          ] },
+        { "loai": "ghi-chu", "kieu": "noi-bat", "noi_dung": "**Làm tiếp:** hỏi sếp, kế toán 3 câu trên → trả lời UniSMS, kèm giá Cast để ép giá → dev dùng thử UniSMS miễn phí, gửi thử từ Tizi → rút gọn mẫu tin." }
+      ]
+    }
+  ]
+}

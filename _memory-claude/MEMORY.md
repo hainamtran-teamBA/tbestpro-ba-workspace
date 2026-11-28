@@ -1,5 +1,5 @@
 - [Người dùng: PO/BA Tbestpro](user-po-ba-tbestpro.md) — vai trò Enterprise BA; cách thích làm việc; nguồn sự thật ở CLAUDE.md và reference/
-- [Dự án WMS Kho 7](project-wms-kho7.md) — 21/11: áp dụng QR trước (máy in + máy quét cầm tay), tự dựng; thiết bị Nextwaves tính sau; chi tiết ở reference/
+- [Dự án WMS Kho 7](project-wms-kho7.md) — 28/11: demo nhập/xuất/kiểm kê xong, luật xuất + kiểm kê đã chốt; chờ ok đăng, viết UC-02/03/07
 - [Danh mục 4 dự án (PM)](project-portfolio-du-an.md) — Kho, FB Ads, SMS, Cổng báo cáo; trạng thái cập nhật 21/11
 - [Bàn dự án](project-trang-quan-ly-du-an.md) — Trang web/ban-thu/v3 là bản chuẩn (17/11), tạm dừng; Hồ sơ BA chỉ tham khảo
 - [Cách làm việc với agent](project-thiet-ke-cach-lam-viec-agent.md) — các việc còn treo; phần đã chốt ở CLAUDE.md
@@ -13,3 +13,6 @@
 - [Báo cáo sếp ngắn gọn](feedback-bao-cao-sep-ngan-gon.md) — tin Zalo vài dòng, giọng người thật, không in đậm/bảng/phân tích dài
 - [Giao diện không chú thích thừa](feedback-giao-dien-khong-chu-thich-thua.md) — ẩn bộ lọc không có dữ liệu, không bộ lọc mặc định, không chữ phụ
 - [Trang cần đăng nhập](feedback-trang-can-dang-nhap.md) — người dùng tự đăng nhập một lần ở cửa sổ Playwright, rồi chạy ngầm; không xin mật khẩu
+- [Không tự giao agent dựng](feedback-khong-tu-giao-agent-dung.md) — "làm xong phần X" phải hỏi làm gì; hỏi trước khi giao agent ghi file, đúng phạm vi
+- [Luồng ít bước, có ví dụ](feedback-luong-it-buoc-vi-du.md) — giải thích luồng kho theo từng bước hiện trường, ví dụ số cụ thể, chọn bản ít thao tác
+- [SMS chọn nhà cung cấp](project-sms-nha-cung-cap.md) — 28/11: UniSMS dẫn đầu, chờ câu hỏi pháp nhân Philippines; báo cáo cần sửa bố cục

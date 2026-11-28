@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tem QR bao</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAFAFC;--ink:#111;--mute:#5F6367;--line:#E0E5EB;--primary:#0A81FF}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:24px 16px}
+h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.d{color:var(--mute);font-size:14px;margin-bottom:18px}
+.row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.bar{display:flex;gap:8px;margin-bottom:16px}
+.bar button{font:inherit;font-size:13px;font-weight:500;height:32px;padding:0 12px;border-radius:9px;border:1px solid #C6CCD5;background:#fff;cursor:pointer}
+.bar button.pri{background:var(--primary);color:#fff;border-color:var(--primary)}
+/* label: 100 x 75 mm */
+.label{width:100mm;height:75mm;background:#fff;border:1px solid #bbb;padding:3mm;display:grid;grid-template-columns:36mm 1fr;grid-template-rows:auto 1fr auto;gap:1.5mm 3mm;color:#000}
+.top{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;border-bottom:.4mm solid #000;padding-bottom:1mm}
+.top .t{font-size:9pt;font-weight:700;letter-spacing:.04em}
+.top .r{font-size:8pt}
+.qr{display:grid;gap:1mm;justify-items:center;align-content:start}
+.qr .code{width:34mm;height:34mm}
+.qr .code svg{width:100%;height:100%;display:block}
+.qr .id{font-family:'JetBrains Mono',monospace;font-size:6.5pt;text-align:center;line-height:1.2;word-break:break-all}
+.info{display:grid;align-content:start;gap:.8mm;font-size:8pt;line-height:1.25}
+.info .name{font-size:15pt;font-weight:700;line-height:1.05}
+.info .k{color:#333}
+.info b{font-weight:700}
+.bot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;border-top:.4mm solid #000;padding-top:1mm}
+.bot .bag{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22pt;line-height:1}
+.bot .bag small{font-size:9pt;font-weight:500;margin-right:1.5mm;font-family:'Be Vietnam Pro',sans-serif}
+.bot .rc{font-size:7.5pt;text-align:right;line-height:1.3}
+.cap{font-size:12px;color:var(--mute);margin-top:6px}
+@media print{
+ @page{size:100mm 75mm;margin:0}
+ body{padding:0;background:#fff}
+ h1,.d,.bar,.cap{display:none}
+ .row{display:block}
+ .label{border:0;page-break-after:always}
+}
+</style>
+</head>
+<body>
+<h1>Tem QR bao – mẫu 100 × 75 mm</h1>
+<p class="d">Mỗi bao một tem riêng (khác nhau ở số bao). Quét thử bằng camera điện thoại để xem nội dung mã.</p>
+<div class="bar"><button class="pri" onclick="window.print()">In thử</button></div>
+<div class="row" id="labels"></div>
+<script>
+const SAMPLE={product:"GREEN COFFEE BEAN",name:"ROBUSTA S18 CLEAN GRADE 1",origin:"VIET NAM",net:60,slot:"070926AP",sku:"CF_ROBUSTA_S18_CLEAN_G1",grn:"GRN-0123",lot:"L2611-01",total:120,date:"27/11/2026"};
+const nn=n=>String(n).padStart(3,"0");
+function qrSvg(text){
+ if(typeof qrcode!=="function")return '<div style="width:100%;height:100%;border:1px dashed #999;display:grid;place-items:center;font-size:8pt">QR</div>';
+ const q=qrcode(0,"M");q.addData(text);q.make();
+ return q.createSvgTag({cellSize:4,margin:2,scalable:true});
+}
+function label(no){
+ const d=SAMPLE,code=`${d.grn}|${d.lot}|${d.sku}|${nn(no)}/${nn(d.total)}`;
+ return `<div><div class="label">
+  <div class="top"><span class="t">${d.product}</span><span class="r">ORIGIN: ${d.origin}</span></div>
+  <div class="qr"><div class="code">${qrSvg(code)}</div><div class="id">${d.grn}·${d.lot}<br>${nn(no)}/${nn(d.total)}</div></div>
+  <div class="info">
+   <div class="name">${d.name}</div>
+   <div><span class="k">SKU:</span> <b>${d.sku}</b></div>
+   <div><span class="k">NET WEIGHT:</span> <b>${d.net} KG</b></div>
+   <div><span class="k">SUPPLIER LOT:</span> <b>${d.slot}</b></div>
+  </div>
+  <div class="bot"><span class="bag"><small>BAG</small>${nn(no)}/${nn(d.total)}</span><span class="rc">${d.grn} · LOT ${d.lot}<br>${d.date}</span></div>
+ </div><div class="cap">QR: ${code}</div></div>`;
+}
+document.getElementById("labels").innerHTML=[12,13].map(label).join("");
+</script>
+</body>
+</html>

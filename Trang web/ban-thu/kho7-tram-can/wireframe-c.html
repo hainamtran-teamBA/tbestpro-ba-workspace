@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inbound weighing · Wireframe C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F2F2F2;--panel:#FFFFFF;--line:#D4D4D4;--line2:#E6E6E6;--ink:#1A1A1A;--mute:#6B6B6B;--fill:#E9E9E9;--dark:#2B2B2B;
+--ok:#0F8A5F;--ok-bg:#E3F4EC;--warn:#B45309;--warn-bg:#FDF0DC;--bad:#C2333A;--bad-bg:#FBE4E5;
+--font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:18px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:2px solid var(--dark);background:var(--panel);border-radius:10px;min-height:56px;padding:0 22px;font-weight:600;font-size:20px}
+button:disabled{cursor:not-allowed;border-color:var(--line);color:#A8A8A8;background:var(--fill)}
+button:focus-visible{outline:3px solid #000;outline-offset:3px}
+.btn-primary{background:var(--dark);color:#fff}
+.btn-primary:disabled{background:var(--fill)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.lbl{font-size:15px;font-weight:600;color:var(--mute);letter-spacing:.02em}
+.top{display:flex;align-items:center;gap:20px;padding:0 24px;height:76px;background:var(--panel);border-bottom:1px solid var(--line)}
+.top .rc{font-size:24px;font-weight:700}
+.top .meta{font-size:18px;color:var(--mute)}
+.tag-sample{font-size:14px;font-weight:600;border:1px dashed var(--mute);color:var(--mute);border-radius:6px;padding:3px 8px}
+.sp{flex:1}
+.lang{display:flex;border:2px solid var(--dark);border-radius:10px;overflow:hidden}
+.lang button{border:0;border-radius:0;min-height:48px;min-width:60px;padding:0 12px;font-size:17px}
+.lang button[aria-pressed="true"]{background:var(--dark);color:#fff}
+.chip{display:inline-flex;align-items:center;gap:8px;font-weight:700;border-radius:999px;padding:6px 16px;font-size:20px}
+.chip::before{content:"";width:12px;height:12px;border-radius:50%;background:currentColor}
+.chip.ok{color:var(--ok);background:var(--ok-bg)}
+.chip.warn{color:var(--warn);background:var(--warn-bg)}
+.chip.bad{color:var(--bad);background:var(--bad-bg)}
+.chip.mute{color:var(--mute);background:var(--fill)}
+.alert{border-radius:10px;padding:14px 18px;font-weight:700;font-size:22px;min-height:60px;display:flex;align-items:center;gap:12px}
+.alert.empty{visibility:hidden}
+.alert.ok{background:var(--ok-bg);color:var(--ok)}
+.alert.warn{background:var(--warn-bg);color:var(--warn)}
+.alert.bad{background:var(--bad-bg);color:var(--bad);font-size:26px}
+.bar{display:block;height:10px;background:var(--fill);border-radius:5px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--dark)}
+.bar.done>i{background:var(--ok)}
+.baglist{list-style:none;overflow:auto;min-height:0}
+.baglist li{display:flex;align-items:center;gap:14px;padding:10px 4px;border-bottom:1px solid var(--line2);font-size:20px}
+.baglist li .bn{font-family:var(--mono);font-weight:700;min-width:96px}
+.baglist li .bs{color:var(--mute);flex:1}
+.baglist li.wrong{background:var(--bad-bg);color:var(--bad)}
+.baglist li.wrong .bs{color:var(--bad);font-weight:700}
+.baglist li button{min-height:44px;font-size:16px;padding:0 14px;border-color:var(--bad);color:var(--bad)}
+.baglist .none{color:var(--mute);padding:18px 4px;border:0}
+.btable{width:100%;border-collapse:collapse;font-size:17px}
+.btable th{text-align:left;font-size:14px;color:var(--mute);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
+.btable td{padding:9px 6px;border-bottom:1px solid var(--line2)}
+.btable td.r,.btable th.r{text-align:right}
+.btable tr.pend td{color:var(--warn)}
+.sim{position:fixed;right:14px;bottom:14px;display:flex;gap:6px;align-items:center;background:#fff;border:1px dashed #999;border-radius:10px;padding:6px 8px;font-size:13px;color:var(--mute);z-index:50}
+.sim button{min-height:32px;font-size:13px;padding:0 10px;border-width:1px;font-weight:500;border-radius:6px}
+
+body{display:grid;grid-template-rows:auto auto 1fr;height:100vh}
+.upper{display:grid;grid-template-columns:1fr 400px;gap:18px;padding:16px 24px 0;height:330px}
+.skut{padding:8px 16px;overflow:auto}
+.skut table{width:100%;border-collapse:collapse}
+.skut th{text-align:left;font-size:15px;color:var(--mute);font-weight:600;padding:10px 10px;border-bottom:1px solid var(--line)}
+.skut td{white-space:nowrap;padding:0 10px;height:84px;border-bottom:1px solid var(--line2);font-size:22px}
+.skut .r{text-align:right}
+.skut td.code{font-weight:700;font-size:26px}
+.skut td .num{font-weight:700}
+.skut td .ex{color:var(--mute);font-size:18px}
+.skut tr.sel td{background:#F4F4F4}
+.skut tr.sel td:first-child{box-shadow:inset 6px 0 0 var(--dark)}
+.skut td button{min-height:56px;min-width:130px;font-size:18px;padding:0 14px}
+.skut td button[aria-pressed="true"]{background:var(--dark);color:#fff}
+.skut .bar{width:110px}
+.bl{padding:10px 16px;display:grid;grid-template-rows:auto 1fr auto;min-height:0}
+.bl h2{font-size:18px;display:flex;justify-content:space-between;margin-bottom:4px}
+.bl .scroll{overflow:auto;min-height:0}
+.bl .undo{min-height:50px;font-size:17px;margin-top:8px}
+.band{margin:16px 24px 18px;display:grid;grid-template-columns:560px 1fr 320px;gap:0;background:var(--panel);border:2px solid var(--dark);border-radius:14px;min-height:0;overflow:hidden}
+.band>section{padding:18px 22px;min-height:0}
+.band>section+section{border-left:1px solid var(--line)}
+.sc{display:grid;align-content:space-between;gap:12px}
+.sc .sku{font-size:28px;font-weight:700}
+.sc .kg{font-family:var(--mono);font-weight:700;font-size:140px;line-height:1;letter-spacing:-.03em}
+.sc .kg small{font-size:44px;color:var(--mute);margin-left:8px}
+.bg{display:grid;grid-template-rows:auto auto 1fr;gap:10px;min-height:0}
+.bg h2{font-size:20px;display:flex;justify-content:space-between}
+.cf{display:grid;grid-template-rows:auto auto 1fr;gap:16px}
+.cf .v{font-family:var(--mono);font-size:44px;font-weight:700}
+.cf .confirm{min-height:120px;font-size:30px;align-self:end}
+.sim{bottom:auto;top:20px;right:auto;left:600px}
+</style>
+</head>
+<body>
+<header class="top" id="top"></header>
+<div class="upper" id="upper"></div>
+<main class="band" id="band"></main>
+<div id="simw"></div>
+<script>
+/* ===== Core: Sample data + state + scale simulation + scan ===== */
+const T={
+ en:{receipt:"Receipt",lot:"Lot",sample:"Sample data",stable:"Stable",unstable:"Unstable",batchSku:"Batch SKU",bagsInBatch:"Bags in batch",kgPerBag:"kg / bag",
+  confirm:"Confirm batch",close:"Close receipt",undo:"Undo last batch",progress:"Receipt progress",batches:"Batches",bags:"Bags",time:"Time",sku:"SKU",kg:"kg",
+  wrongSku:"WRONG SKU",dup:"Already scanned",remove:"Remove",noBags:"No bags",scanned:"Scanned",batchDone:"Batch confirmed",expected:"Expected",diff:"Diff",
+  missing:"Missing bags",outTol:"Kg out of tolerance, sent to warehouse manager",closed:"Receipt closed",undoReq:"Undo sent to warehouse manager",pending:"Awaiting manager",
+  step1:"Select SKU",step2:"Scan bags",step3:"Confirm",next:"Next",back:"Back",scale:"Scale",batch:"Batch",total:"Total",lastBatches:"Last batches",
+  simScan:"Simulate scan",simWrong:"Wrong SKU",simDup:"Duplicate",sim10:"+10 bags",simLbl:"Simulator"},
+ vi:{receipt:"Phiếu nhập",lot:"Lô",sample:"Dữ liệu mẫu",stable:"Ổn định",unstable:"Chưa ổn định",batchSku:"SKU lượt",bagsInBatch:"Bao trong lượt",kgPerBag:"kg / bao",
+  confirm:"Chốt lượt",close:"Chốt phiếu",undo:"Hủy lượt vừa chốt",progress:"Tiến độ phiếu",batches:"Các lượt",bags:"Bao",time:"Giờ",sku:"SKU",kg:"kg",
+  wrongSku:"SAI SKU",dup:"Đã quét",remove:"Bỏ ra",noBags:"Chưa có bao",scanned:"Đã quét",batchDone:"Đã chốt lượt",expected:"Dự kiến",diff:"Lệch",
+  missing:"Thiếu bao",outTol:"Kg vượt dung sai, đã chuyển QL kho duyệt",closed:"Đã chốt phiếu",undoReq:"Đã gửi QL kho duyệt hủy",pending:"Chờ QL kho",
+  step1:"Chọn SKU",step2:"Quét bao",step3:"Chốt",next:"Tiếp",back:"Quay lại",scale:"Cân",batch:"Lượt",total:"Tổng",lastBatches:"Lượt gần nhất",
+  simScan:"Giả lập quét",simWrong:"Sai SKU",simDup:"Trùng",sim10:"+10 bao",simLbl:"Giả lập"}};
+let LANG="en";
+try{LANG=localStorage.getItem("k7-lang")||"en"}catch(e){}
+const t=k=>T[LANG][k]||k;
+const fmt=(n,d=1)=>Number(n).toLocaleString(LANG==="vi"?"vi-VN":"en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=n=>(n>0?"+":n<0?"−":"")+fmt(Math.abs(n),2)+"%";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* Sample data */
+const S={
+ receipt:"GRN-0123",lot:"L2611-01",
+ skus:[{code:"ROBUSTA-S18",expBags:120,expKg:7200},{code:"ARABICA-A1",expBags:40,expKg:2400}],
+ batches:[],cur:{sku:"ROBUSTA-S18",bags:[]},
+ scale:{kg:0,target:0,settle:0,stable:true},
+ alert:null,status:"open",step:1
+};
+const bagW=()=>Math.round((59.85+Math.random()*0.2)*100)/100;
+(function prefill(){ // Sample data: 9 batches of ROBUSTA-S18 already weighed
+ let n=1;
+ for(let b=0;b<9;b++){
+  const bags=[];let kg=0;
+  for(let i=0;i<10;i++){const w=bagW();kg+=w;bags.push({no:n++,w})}
+  const m=5+b*6;S.batches.push({id:b+1,time:"08:"+String(m).padStart(2,"0"),sku:"ROBUSTA-S18",bags,kg:Math.round(kg*10)/10,pend:false});
+ }
+})();
+const skuOf=c=>S.skus.find(s=>s.code===c);
+const doneBags=c=>S.batches.filter(b=>b.sku===c).reduce((a,b)=>a+b.bags.length,0);
+const doneKg=c=>S.batches.filter(b=>b.sku===c).reduce((a,b)=>a+b.kg,0);
+const usedNos=c=>{const u=new Set();S.batches.filter(b=>b.sku===c).forEach(b=>b.bags.forEach(x=>u.add(x.no)));S.cur.bags.filter(x=>x.sku===c).forEach(x=>u.add(x.no));return u};
+const tag=(c,no)=>`${S.receipt}|${S.lot}|${c}|${String(no).padStart(3,"0")}/${String(skuOf(c).expBags).padStart(3,"0")}`;
+const bagLabel=x=>String(x.no).padStart(3,"0")+"/"+String(skuOf(x.sku).expBags).padStart(3,"0");
+const hasWrong=()=>S.cur.bags.some(x=>x.wrong);
+const canConfirm=()=>S.status==="open"&&S.scale.stable&&S.cur.bags.length>0&&!hasWrong()&&S.scale.kg>0;
+const locked=()=>S.status!=="open";
+
+function setAlert(type,text){S.alert={type,text,at:Date.now()};if(type==="ok"){const a=S.alert;setTimeout(()=>{if(S.alert===a){S.alert=null;render()}},2500)}}
+function retarget(){S.scale.target=S.cur.bags.reduce((a,x)=>a+x.w,0);S.scale.settle=12;S.scale.stable=false}
+
+function processScan(code){
+ if(locked())return;
+ const p=String(code).trim().split("|");
+ if(p.length<4)return;
+ const sku=p[2],no=parseInt(p[3],10);
+ if(!skuOf(sku))return;
+ if(usedNos(sku).has(no)){setAlert("warn",t("dup")+": "+sku+" "+String(no).padStart(3,"0"));render();return}
+ const bag={sku,no,w:bagW(),wrong:sku!==S.cur.sku};
+ S.cur.bags.unshift(bag);retarget();
+ if(bag.wrong)setAlert("bad",t("wrongSku")+": "+sku+" "+bagLabel(bag));
+ else setAlert("ok",t("scanned")+": "+bagLabel(bag));
+ render();
+}
+function removeBag(i){S.cur.bags.splice(i,1);retarget();if(!hasWrong()&&S.alert&&S.alert.type==="bad")S.alert=null;render()}
+function selectSku(c){if(locked()||S.cur.bags.length)return;S.cur.sku=c;render()}
+function confirmBatch(){
+ if(!canConfirm())return;
+ const d=new Date(),kg=Math.round(S.scale.kg*10)/10;
+ const id=S.batches.length+1;
+ S.batches.push({id,time:String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),sku:S.cur.sku,bags:S.cur.bags.slice().reverse(),kg,pend:false});
+ S.cur.bags=[];retarget();setAlert("ok",t("batchDone")+" #"+id+" · "+fmt(kg)+" kg");
+ if(typeof onConfirmed==="function")onConfirmed();
+ render();
+}
+function undoLast(){const b=S.batches[S.batches.length-1];if(!b||b.pend||locked())return;b.pend=true;setAlert("warn",t("undoReq")+" (#"+b.id+")");render()}
+function closeReceipt(){
+ if(locked())return;
+ const miss=S.skus.map(s=>({c:s.code,m:s.expBags-doneBags(s.code)})).filter(x=>x.m>0);
+ if(miss.length){setAlert("bad",t("missing")+": "+miss.map(x=>x.c+" "+x.m).join(", "));render();return}
+ const exp=S.skus.reduce((a,s)=>a+s.expKg,0),got=S.skus.reduce((a,s)=>a+doneKg(s.code),0),d=(got-exp)/exp*100;
+ if(d<-0.5||d>0.1){S.status="approval";setAlert("warn",t("outTol")+" ("+pct(d)+")")}
+ else{S.status="closed";setAlert("ok",t("closed")+" ("+pct(d)+")");S.alert.at=Infinity}
+ render();
+}
+/* simulator */
+function nextNo(c){const u=usedNos(c);for(let i=1;i<=skuOf(c).expBags;i++)if(!u.has(i))return i;return null}
+function simScan(){const n=nextNo(S.cur.sku);if(n)processScan(tag(S.cur.sku,n))}
+function simWrong(){const o=S.skus.find(s=>s.code!==S.cur.sku).code,n=nextNo(o);if(n)processScan(tag(o,n))}
+function simDup(){const b=S.cur.bags.find(x=>!x.wrong)||(S.batches.length&&S.batches[S.batches.length-1].bags[0]&&{sku:S.batches[S.batches.length-1].sku,no:S.batches[S.batches.length-1].bags[0].no});if(b)processScan(tag(b.sku,b.no))}
+function sim10(){for(let i=0;i<10;i++){const n=nextNo(S.cur.sku);if(!n)break;processScan(tag(S.cur.sku,n))}}
+
+/* scale tick */
+setInterval(()=>{
+ const s=S.scale,was=s.stable,old=s.kg.toFixed(1);
+ if(s.settle>0){s.settle--;const k=s.settle/12;s.kg=s.target+(Math.random()-.5)*Math.min(2,s.target*0.02+0.6)*k*2+(s.target-s.kg)*0;s.kg=Math.max(0,s.kg);s.stable=false}
+ else{s.kg=s.target;s.stable=true}
+ if(was!==s.stable||old!==s.kg.toFixed(1))renderScale();
+},120);
+
+/* keyboard-wedge QR scanner: chars + Enter */
+let buf="",bufT=0;
+document.addEventListener("keydown",e=>{
+ if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"))return;
+ const now=Date.now();if(now-bufT>80)buf="";bufT=now;
+ if(e.key==="Enter"&&buf.length>8){processScan(buf);buf="";e.preventDefault();return}
+ if(e.key.length===1)buf+=e.key;
+});
+
+function setLang(l){LANG=l;try{localStorage.setItem("k7-lang",l)}catch(e){}document.documentElement.lang=l;render()}
+
+/* shared pieces */
+function langHTML(){return `<div class="lang" role="group" aria-label="Language"><button aria-pressed="${LANG==="en"}" onclick="setLang('en')">EN</button><button aria-pressed="${LANG==="vi"}" onclick="setLang('vi')">VI</button></div>`}
+function stableHTML(){return S.scale.stable?`<span class="chip ok">${t("stable")}</span>`:`<span class="chip warn">${t("unstable")}</span>`}
+function alertHTML(){const a=S.alert;return a?`<div class="alert ${a.type}" role="status">${esc(a.text)}</div>`:`<div class="alert empty" role="status">&nbsp;</div>`}
+function bagsHTML(){
+ if(!S.cur.bags.length)return `<li class="none">${t("noBags")}</li>`;
+ return S.cur.bags.map((x,i)=>`<li class="${x.wrong?"wrong":""}"><span class="bn">${bagLabel(x)}</span><span class="bs">${x.wrong?t("wrongSku")+" · "+x.sku:x.sku}</span>${x.wrong?`<button onclick="removeBag(${i})">${t("remove")}</button>`:""}</li>`).join("");
+}
+function batchRowsHTML(limit){
+ const list=S.batches.slice().reverse().slice(0,limit||999);
+ return list.map(b=>`<tr class="${b.pend?"pend":""}"><td class="num">#${b.id}</td><td class="num">${b.time}</td><td>${b.sku}</td><td class="r num">${b.bags.length}</td><td class="r num">${fmt(b.kg)}</td><td>${b.pend?t("pending"):""}</td></tr>`).join("");
+}
+function batchTableHTML(limit){return `<table class="btable"><thead><tr><th>#</th><th>${t("time")}</th><th>${t("sku")}</th><th class="r">${t("bags")}</th><th class="r">${t("kg")}</th><th></th></tr></thead><tbody>${batchRowsHTML(limit)}</tbody></table>`}
+function simHTML(){return `<div class="sim" aria-label="${t("simLbl")}">${t("simLbl")}<button onclick="simScan()">${t("simScan")}</button><button onclick="simWrong()">${t("simWrong")}</button><button onclick="simDup()">${t("simDup")}</button><button onclick="sim10()">${t("sim10")}</button></div>`}
+function statusChip(){return S.status==="closed"?`<span class="chip ok">${t("closed")}</span>`:S.status==="approval"?`<span class="chip warn">${t("pending")}</span>`:""}
+function curKgPerBag(){const n=S.cur.bags.length;return n&&S.scale.stable&&!hasWrong()?fmt(S.scale.kg/n,2):"–"}
+document.documentElement.lang=LANG;
+
+function render(){
+ document.getElementById("top").innerHTML=`
+  <span class="rc">${t("receipt")} ${S.receipt}</span><span class="meta">${t("lot")} ${S.lot}</span><span class="tag-sample">${t("sample")}</span>
+  ${statusChip()}<span class="sp"></span>${langHTML()}
+  <button class="btn-primary" onclick="closeReceipt()" ${locked()?"disabled":""}>${t("close")}</button>`;
+ const tb=S.skus.reduce((a,s)=>a+doneBags(s.code),0),eb=S.skus.reduce((a,s)=>a+s.expBags,0),tk=S.skus.reduce((a,s)=>a+doneKg(s.code),0),ek=S.skus.reduce((a,s)=>a+s.expKg,0);
+ const last=S.batches[S.batches.length-1];
+ document.getElementById("upper").innerHTML=`
+  <div class="panel skut"><table>
+   <thead><tr><th>${t("sku")}</th><th class="r">${t("bags")}</th><th></th><th class="r">${t("kg")}</th><th class="r">${t("diff")}</th><th></th></tr></thead>
+   <tbody>${S.skus.map(s=>{const b=doneBags(s.code),k=doneKg(s.code),sel=s.code===S.cur.sku,d=b?((k-b*s.expKg/s.expBags)/(b*s.expKg/s.expBags)*100):0;return `
+    <tr class="${sel?"sel":""}">
+     <td class="code">${s.code}</td>
+     <td class="r"><span class="num">${b}</span> <span class="ex">/ ${s.expBags}</span></td>
+     <td><div class="bar ${b>=s.expBags?"done":""}"><i style="width:${Math.min(100,b/s.expBags*100)}%"></i></div></td>
+     <td class="r"><span class="num">${fmt(k)}</span> <span class="ex">/ ${fmt(s.expKg,0)}</span></td>
+     <td class="r num">${b?pct(d):"–"}</td>
+     <td class="r"><button aria-pressed="${sel}" onclick="selectSku('${s.code}')" ${locked()||(S.cur.bags.length&&!sel)?"disabled":""}>${sel?t("batchSku"):t("step1")}</button></td>
+    </tr>`}).join("")}
+    <tr><td class="code" style="font-size:20px">${t("total")}</td><td class="r"><span class="num">${tb}</span> <span class="ex">/ ${eb}</span></td><td></td><td class="r"><span class="num">${fmt(tk)}</span> <span class="ex">/ ${fmt(ek,0)}</span></td><td></td><td></td></tr>
+   </tbody></table></div>
+  <div class="panel bl"><h2>${t("batches")}<span class="num">${S.batches.length}</span></h2><div class="scroll">${batchTableHTML()}</div>
+   <button class="undo" onclick="undoLast()" ${!last||last.pend||locked()?"disabled":""}>${t("undo")}</button></div>`;
+ document.getElementById("band").innerHTML=`
+  <section class="sc"><div class="sku">${S.cur.sku}</div><div class="kg"><span id="kg">${fmt(S.scale.kg)}</span><small>kg</small></div><div id="stab">${stableHTML()}</div></section>
+  <section class="bg">${alertHTML()}<h2>${t("bagsInBatch")}<span class="num">${S.cur.bags.filter(x=>!x.wrong).length}</span></h2><ul class="baglist">${bagsHTML()}</ul></section>
+  <section class="cf"><div><div class="lbl">${t("bagsInBatch")}</div><div class="v">${S.cur.bags.filter(x=>!x.wrong).length}</div></div><div><div class="lbl">${t("kgPerBag")}</div><div class="v" id="kpb">${curKgPerBag()}</div></div>
+   <button class="btn-primary confirm" id="cf" onclick="confirmBatch()" ${canConfirm()?"":"disabled"}>${t("confirm")}</button></section>`;
+ document.getElementById("simw").innerHTML=simHTML();
+}
+function renderScale(){
+ const k=document.getElementById("kg");if(!k)return;
+ k.textContent=fmt(S.scale.kg);document.getElementById("stab").innerHTML=stableHTML();
+ document.getElementById("kpb").textContent=curKgPerBag();document.getElementById("cf").disabled=!canConfirm();
+}
+render();
+</script>
+</body>
+</html>
